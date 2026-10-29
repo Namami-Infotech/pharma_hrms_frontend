@@ -3,9 +3,6 @@ import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import { Box, useMediaQuery } from '@mui/material';
 import { useAuth } from '../components/auth/AuthContext';
-import ViewTickets from '../components/ticket/ViewTickets';
-import CheckpointList from '../components/checkpoints/CheckpointList';
-import AddCheckpointForm from '../components/checkpoints/AddCheckpointForm';
 import MenuList from '../components/menus/MenuList';
 import AddMenuForm from '../components/menus/AddMenuForm';
 

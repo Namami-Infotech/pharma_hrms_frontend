@@ -1,7 +1,6 @@
 import React, { useState } from "react"
 import PageWrapper from "../components/layout/PageWrapper"
-import { Button, Paper, Box, Typography, Divider, Stack, Fade } from "@mui/material"
-import { EventAvailable, AddCircle } from "@mui/icons-material"
+import { Box, Typography, Fade } from "@mui/material"
 import ApplyLeave from "../components/leave/ApplyLeave"
 import ViewLeave from "../components/leave/ViewLeave"
 import { useAuth } from "../components/auth/AuthContext"
@@ -10,7 +9,6 @@ function Leave() {
   const { user } = useAuth()
   const [openApplyLeaveDialog, setOpenApplyLeaveDialog] = useState(false)
 
-  const handleOpenApplyLeaveDialog = () => setOpenApplyLeaveDialog(true)
   const handleCloseApplyLeaveDialog = () => setOpenApplyLeaveDialog(false)
   const handleLeaveApplied = () => handleCloseApplyLeaveDialog()
 

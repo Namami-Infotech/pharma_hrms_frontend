@@ -42,8 +42,6 @@ import { useAuth } from "../auth/AuthContext"
 
 // Compact Stats Card Component
 const StatsCard = ({ title, value, color, icon }) => {
-  const theme = useTheme()
-
   return (
     <Card
       sx={{
@@ -79,7 +77,6 @@ function ViewTravel({ EmpId }) {
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const { user } = useAuth()
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
 
   const formatDate = (dateString) => {
     const date = new Date(dateString)

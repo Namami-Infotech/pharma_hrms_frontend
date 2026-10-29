@@ -3,34 +3,22 @@ import PageWrapper from '../components/layout/PageWrapper';
 import ViewExpense from '../components/expense/ViewExpense';
 import { useAuth } from '../components/auth/AuthContext';
 import {
-  Box,
-  Button,
   useMediaQuery,
-  Paper,
-  Typography,
   Fab,
   Tooltip,
-  Card,
-  CardContent,
-  Grid,
-  Chip,
-  Avatar,
 } from "@mui/material"
-import { Add, Receipt, TrendingUp, Assessment, AttachMoney } from "@mui/icons-material"
+import { Add } from "@mui/icons-material"
 import ApplyExpense from '../components/expense/ApplyExpense';
 
 import { motion, AnimatePresence } from "framer-motion"
 function EnhancedExpensePage() {
   const { user } = useAuth();
   const [openApplyExpenseDialog, setOpenApplyExpenseDialog] = useState(false)
-  const [refreshTrigger, setRefreshTrigger] = useState(0)
-const isMobile = useMediaQuery("(max-width:600px)")
-  const drawerWidth = isMobile ? 0 : 11
+  const isMobile = useMediaQuery("(max-width:600px)")
     const handleOpenApplyExpenseDialog = () => setOpenApplyExpenseDialog(true)
   const handleCloseApplyExpenseDialog = () => setOpenApplyExpenseDialog(false)
 
   const handleExpenseApplied = () => {
-    setRefreshTrigger((prev) => prev + 1)
     handleCloseApplyExpenseDialog()
   }
 

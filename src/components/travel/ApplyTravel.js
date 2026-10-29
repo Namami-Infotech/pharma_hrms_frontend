@@ -23,7 +23,7 @@ import {
   alpha,
   IconButton,
 } from "@mui/material"
-import { FlightTakeoff, CalendarToday, LocationOn, DirectionsCar, Close } from "@mui/icons-material"
+import { FlightTakeoff, CalendarToday, LocationOn, Close } from "@mui/icons-material"
 import axios from "axios"
 import { useAuth } from "../auth/AuthContext"
 

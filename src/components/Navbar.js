@@ -17,50 +17,20 @@ import {
   Divider,
   useTheme,
   useMediaQuery,
-  TextField,
-  InputAdornment,
   Breadcrumbs,
 } from "@mui/material"
 import {
-  Notifications,
   Menu as MenuIcon,
-  Search,
-  Settings,
   Person,
   ExitToApp,
-  DarkMode,
-  LightMode,
   ChevronRight,
-  ReceiptLongSharp,
   Receipt as ReceiptIcon,
 } from "@mui/icons-material"
 import { motion } from "framer-motion"
 
-const HRSmileLogo = () => (
-  <Box
-    sx={{
-      width: 120,
-      height: 38,
-      borderRadius: 1.5,
-      bgcolor: "#8d0638ff",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      color: "white",
-      fontWeight: "bold",
-      fontSize: "1.1rem",
-      letterSpacing: 0.8,
-    }}
-  >
-    HR SMILE
-  </Box>
-)
-
 function Navbar({ onMenuClick }) { // Add onMenuClick prop for mobile
   const [anchorEl, setAnchorEl] = useState(null)
   const [notificationAnchor, setNotificationAnchor] = useState(null)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [darkMode, setDarkMode] = useState(false)
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
@@ -81,7 +51,6 @@ function Navbar({ onMenuClick }) { // Add onMenuClick prop for mobile
     { id: 2, title: "Expense Due", unread: true },
     { id: 3, title: "Team Meeting Tomorrow", unread: false },
   ]
-  const unreadCount = notifications.filter((n) => n.unread).length
 
   const breadcrumbs = location.pathname
     .split("/")

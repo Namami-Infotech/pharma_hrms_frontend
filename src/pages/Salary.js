@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Typography,
   Tabs,
   Tab,
   Paper,
-  Container,
 } from '@mui/material';
 import {
   Receipt,
   FormatListBulleted,
-  Payments,
 } from '@mui/icons-material';
 import PageWrapper from '../components/layout/PageWrapper';
 import SalarySlip from '../components/employee/SalarySlip';
