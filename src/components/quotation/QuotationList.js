@@ -237,6 +237,10 @@ function QuotationList() {
   };
 
   const handleOpenEdit = (quote) => {
+    if (quote && quote.status !== "Draft") {
+      setError("Quotation cannot be edited once it has been sent or submitted for approval.");
+      return;
+    }
     setEditingQuotation(quote);
     setIsModalOpen(true);
   };
@@ -482,28 +486,21 @@ function QuotationList() {
             md={5.5}
             sx={{ display: "flex", gap: 1.5, justifyContent: "flex-end", alignItems: "center" }}
           >
-            <Tooltip title="View or change Quotation Approval Limit">
-              <Button
-                variant="outlined"
+            <Tooltip title="Approval Policy: Any item with discount > 35% requires RM approval before emailing client. Discounts ≤ 35% are emailed directly with CC to RM.">
+              <Chip
+                label="Rule: Disc > 35% → RM Approval"
                 size="small"
-                startIcon={<Tune sx={{ fontSize: "16px !important" }} />}
-                onClick={() => {
-                  setNewThresholdInput(threshold.toString());
-                  setThresholdDialogOpen(true);
-                }}
                 sx={{
-                  borderColor: "#8d0638",
+                  bgcolor: "rgba(141,6,56,0.08)",
                   color: "#8d0638",
-                  borderRadius: 2,
-                  textTransform: "none",
-                  fontWeight: 600,
+                  fontWeight: 700,
                   fontSize: "12px",
-                  py: 0.8,
-                  "&:hover": { borderColor: "#6b042d", bgcolor: "rgba(141,6,56,0.04)" },
+                  py: 1.8,
+                  px: 0.5,
+                  borderRadius: 2,
+                  border: "1px solid rgba(141,6,56,0.2)",
                 }}
-              >
-                Limit: ₹{threshold.toLocaleString("en-IN")}
-              </Button>
+              />
             </Tooltip>
 
             <IconButton onClick={fetchQuotations} color="primary" title="Refresh">
@@ -678,25 +675,30 @@ function QuotationList() {
                             </IconButton>
                           </Tooltip>
 
-                          <Tooltip title="Edit Quotation">
-                            <IconButton
-                              size="small"
-                              color="primary"
-                              onClick={() => handleOpenEdit(row)}
-                            >
-                              <Edit fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
+                          {/* Edit and Delete are only visible for Draft quotations; once sent or submitted, they are hidden */}
+                          {row.status === "Draft" && (
+                            <>
+                              <Tooltip title="Edit Quotation">
+                                <IconButton
+                                  size="small"
+                                  color="primary"
+                                  onClick={() => handleOpenEdit(row)}
+                                >
+                                  <Edit fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
 
-                          <Tooltip title="Delete Quotation">
-                            <IconButton
-                              size="small"
-                              color="error"
-                              onClick={() => setDeleteId(row.id)}
-                            >
-                              <Delete fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
+                              <Tooltip title="Delete Quotation">
+                                <IconButton
+                                  size="small"
+                                  color="error"
+                                  onClick={() => setDeleteId(row.id)}
+                                >
+                                  <Delete fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                            </>
+                          )}
                         </Box>
                       </TableCell>
                     </TableRow>

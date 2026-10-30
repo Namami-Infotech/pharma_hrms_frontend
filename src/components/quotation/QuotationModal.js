@@ -44,6 +44,7 @@ import {
   Receipt,
   ArrowBack,
   Schedule,
+  CheckCircle,
 } from "@mui/icons-material";
 import axios from "axios";
 import { useAuth } from "../auth/AuthContext";
@@ -358,10 +359,13 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
     const cgstAmount = isInterState ? 0 : Math.round((taxAmount / 2) * 100) / 100;
     const sgstAmount = isInterState ? 0 : Math.round((taxAmount / 2) * 100) / 100;
 
+    const hasHighDiscount = items.some((it) => (parseFloat(it.discount) || 0) > 35) || (parseFloat(formData.discount_percent) || 0) > 35;
+
     return {
       ...formData,
+      emp_id: user?.EmpId || user?.emp_id || user?.id,
       prepared_by: quotation?.prepared_by || loggedInName,
-      status: quotation?.status || "Sent", // Default status: Sent
+      status: quotation?.status || (hasHighDiscount ? "Pending Approval" : "Sent"),
       items,
       subtotal,
       discount_amount: discountAmount,
@@ -975,20 +979,35 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
                   </Typography>
                 </Box>
 
-                {!quotation && grandTotal > approvalThreshold && (
+                {!quotation && (
                   <Box sx={{ mt: 1.5, textAlign: "right" }}>
-                    <Chip
-                      size="small"
-                      icon={<Schedule sx={{ fontSize: "14px !important" }} />}
-                      label={`Exceeds limit ₹${approvalThreshold.toLocaleString("en-IN")} (Needs Approval)`}
-                      sx={{
-                        bgcolor: "#fef3c7",
-                        color: "#b45309",
-                        fontWeight: 700,
-                        fontSize: "11px",
-                        border: "1px solid #fde68a",
-                      }}
-                    />
+                    {items.some((it) => (parseFloat(it.discount) || 0) > 35) || (parseFloat(formData.discount_percent) || 0) > 35 ? (
+                      <Chip
+                        size="small"
+                        icon={<Schedule sx={{ fontSize: "14px !important" }} />}
+                        label="Item discount > 35% (Requires RM Approval)"
+                        sx={{
+                          bgcolor: "#fef3c7",
+                          color: "#b45309",
+                          fontWeight: 700,
+                          fontSize: "11px",
+                          border: "1px solid #fde68a",
+                        }}
+                      />
+                    ) : (
+                      <Chip
+                        size="small"
+                        icon={<CheckCircle sx={{ fontSize: "14px !important" }} />}
+                        label="All discounts ≤ 35% (Direct Send to Client & CC to RM)"
+                        sx={{
+                          bgcolor: "#ecfdf5",
+                          color: "#047857",
+                          fontWeight: 700,
+                          fontSize: "11px",
+                          border: "1px solid #a7f3d0",
+                        }}
+                      />
+                    )}
                   </Box>
                 )}
               </Paper>

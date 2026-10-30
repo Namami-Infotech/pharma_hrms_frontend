@@ -98,7 +98,19 @@ function DealerList() {
         return
       }
 
-      setDealers(dealerResponse.data.data.reverse())
+      const rawData = Array.isArray(dealerResponse.data.data) ? dealerResponse.data.data : []
+      const sorted = [...rawData].sort((a, b) => {
+        const idA = parseInt(a.DealerID || a.ActivityId || 0, 10)
+        const idB = parseInt(b.DealerID || b.ActivityId || 0, 10)
+        if (!isNaN(idA) && !isNaN(idB) && idA !== idB) {
+          return idB - idA // Recent/highest ID on top
+        }
+        const dateA = new Date(a.CreatedAt || a.CreateDate || 0).getTime()
+        const dateB = new Date(b.CreatedAt || b.CreateDate || 0).getTime()
+        return dateB - dateA // Recent date on top
+      })
+
+      setDealers(sorted)
     } catch (error) {
       setError("Error fetching data")
       console.error("Error:", error)
@@ -239,7 +251,7 @@ function DealerList() {
               transition: 'all 0.2s ease',
             }}
           >
-            + Add Lead
+            Add Lead
           </Button>
         </Box>
       </motion.div>
@@ -276,28 +288,6 @@ function DealerList() {
                 </Typography>
               </Box>
               <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap', gap: 1.5 }}>
-                <Button
-                  variant="contained"
-                  onClick={() => setOpenAddModal(true)}
-                  startIcon={<Add />}
-                  sx={{
-                    bgcolor: COLORS.primary,
-                    borderRadius: 2,
-                    px: 3,
-                    py: 1.5,
-                    fontWeight: 600,
-                    color: '#fff',
-                    "&:hover": { 
-                      bgcolor: '#70042c',
-                      transform: 'translateY(-1px)',
-                      boxShadow: `0 6px 20px ${COLORS.primary}40`
-                    },
-                    transition: 'all 0.2s ease',
-                    minWidth: 140,
-                  }}
-                >
-                  + Add Lead
-                </Button>
                 <Button
                   variant="outlined"
                   onClick={exportToCsv}

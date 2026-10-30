@@ -26,7 +26,6 @@ import {
   Save,
   Medication,
   LocalPharmacy,
-  Inventory2,
   Science,
 } from "@mui/icons-material";
 import axios from "axios";
@@ -40,38 +39,23 @@ const STANDARD_UNITS = [
   "Tube",
   "Tablet",
   "Capsule",
+  "Caps",
+  "Softgel Caps",
+  "Suspension",
   "Ampoule",
   "Sachet",
   "Pack",
   "Pcs",
 ];
 
-// Common pharma categories
-const STANDARD_CATEGORIES = [
-  "Antibiotics",
-  "Analgesics / Antipyretics",
-  "Cardiovascular",
-  "Gastrointestinal",
-  "Respiratory",
-  "Topical Pain Relief",
-  "Nutraceuticals / Supplements",
-  "Injections",
-  "Anti-diabetic",
-  "Dermatology",
-  "General",
-];
-
 function ProductModal({ open, onClose, product, onSuccess }) {
   const [formData, setFormData] = useState({
     name: "",
     unit: "Strip",
-    packaging: "",
     price: "",
     product_code: "",
     hsn: "3004",
-    category: "General",
     composition: "",
-    description: "",
     status: "Active",
   });
 
@@ -83,26 +67,20 @@ function ProductModal({ open, onClose, product, onSuccess }) {
       setFormData({
         name: product.name || "",
         unit: product.unit || "Strip",
-        packaging: product.packaging || "",
         price: product.price !== undefined ? product.price : "",
         product_code: product.product_code || "",
         hsn: product.hsn || "3004",
-        category: product.category || "General",
         composition: product.composition || "",
-        description: product.description || "",
         status: product.status || "Active",
       });
     } else {
       setFormData({
         name: "",
         unit: "Strip",
-        packaging: "",
         price: "",
         product_code: "",
         hsn: "3004",
-        category: "General",
         composition: "",
-        description: "",
         status: "Active",
       });
     }
@@ -124,10 +102,6 @@ function ProductModal({ open, onClose, product, onSuccess }) {
       setError("Please specify the Product Unit (e.g. Strip, Box, Bottle).");
       return;
     }
-    if (!formData.packaging.trim()) {
-      setError("Please enter the Packaging (e.g. 10x10 Tablets, 100ml Bottle).");
-      return;
-    }
     if (
       formData.price === "" ||
       isNaN(parseFloat(formData.price)) ||
@@ -141,16 +115,23 @@ function ProductModal({ open, onClose, product, onSuccess }) {
     setError("");
 
     try {
+      const payload = {
+        ...formData,
+        packaging: product?.packaging || formData.unit,
+        category: product?.category || "General",
+        description: product?.description || "",
+      };
+
       let res;
       if (product && product.id) {
         res = await axios.post(
           `${BASE_URL}/product/update_product.php`,
-          { ...formData, id: product.id }
+          { ...payload, id: product.id }
         );
       } else {
         res = await axios.post(
           `${BASE_URL}/product/add_product.php`,
-          formData
+          payload
         );
       }
 
@@ -246,6 +227,18 @@ function ProductModal({ open, onClose, product, onSuccess }) {
                   value={formData.unit}
                   label="Unit *"
                   onChange={(e) => handleChange("unit", e.target.value)}
+                  MenuProps={{
+                    PaperProps: {
+                      sx: {
+                        maxHeight: 220,
+                        "&::-webkit-scrollbar": { width: "6px" },
+                        "&::-webkit-scrollbar-thumb": {
+                          backgroundColor: "#cbd5e1",
+                          borderRadius: "3px",
+                        },
+                      },
+                    },
+                  }}
                 >
                   {STANDARD_UNITS.map((u) => (
                     <MenuItem key={u} value={u}>
@@ -254,25 +247,6 @@ function ProductModal({ open, onClose, product, onSuccess }) {
                   ))}
                 </Select>
               </FormControl>
-            </Grid>
-
-            {/* Packaging */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Packaging *"
-                placeholder="e.g. 10x10 Tablets, 100ml Bottle"
-                value={formData.packaging}
-                onChange={(e) => handleChange("packaging", e.target.value)}
-                required
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Inventory2 sx={{ color: "action.active", fontSize: 22 }} />
-                    </InputAdornment>
-                  ),
-                }}
-              />
             </Grid>
 
             {/* Price (Rate in ₹) */}
@@ -307,30 +281,12 @@ function ProductModal({ open, onClose, product, onSuccess }) {
               />
             </Grid>
 
-            {/* Therapeutic Category */}
-            <Grid item xs={12}>
-              <FormControl fullWidth>
-                <InputLabel>Therapeutic Category</InputLabel>
-                <Select
-                  value={formData.category}
-                  label="Therapeutic Category"
-                  onChange={(e) => handleChange("category", e.target.value)}
-                >
-                  {STANDARD_CATEGORIES.map((cat) => (
-                    <MenuItem key={cat} value={cat}>
-                      {cat}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-
             {/* Composition (Salt / Active Ingredients) */}
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label="Composition (Salt / Formulation) *"
-                placeholder="e.g. Paracetamol IP 650mg, Amoxicillin 500mg + Clavulanate 125mg"
+                label="Composition (Salt / Formulation)"
+                placeholder="e.g. Paracetamol IP 650mg"
                 value={formData.composition}
                 onChange={(e) => handleChange("composition", e.target.value)}
                 InputProps={{
@@ -341,19 +297,6 @@ function ProductModal({ open, onClose, product, onSuccess }) {
                   ),
                 }}
                 helperText="Active pharmaceutical ingredients / salt formulation"
-              />
-            </Grid>
-
-            {/* Description / Notes */}
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                multiline
-                rows={2}
-                label="Description / Usage Notes"
-                placeholder="e.g. Effective relief for fever and mild to moderate pain"
-                value={formData.description}
-                onChange={(e) => handleChange("description", e.target.value)}
               />
             </Grid>
           </Grid>

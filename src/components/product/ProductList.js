@@ -103,6 +103,9 @@ const STANDARD_UNITS = [
   "Tube",
   "Tablet",
   "Capsule",
+  "Caps",
+  "Softgel Caps",
+  "Suspension",
   "Ampoule",
   "Pack",
 ];
@@ -407,6 +410,18 @@ function ProductList() {
                     value={unitFilter}
                     label="Unit"
                     onChange={(e) => setUnitFilter(e.target.value)}
+                    MenuProps={{
+                      PaperProps: {
+                        sx: {
+                          maxHeight: 220,
+                          "&::-webkit-scrollbar": { width: "6px" },
+                          "&::-webkit-scrollbar-thumb": {
+                            backgroundColor: "#cbd5e1",
+                            borderRadius: "3px",
+                          },
+                        },
+                      },
+                    }}
                   >
                     {STANDARD_UNITS.map((u) => (
                       <MenuItem key={u} value={u}>
@@ -461,10 +476,9 @@ function ProductList() {
                 <TableCell sx={{ fontWeight: 800, color: "#1e293b", py: 1.5 }}>Code</TableCell>
                 <TableCell sx={{ fontWeight: 800, color: "#1e293b" }}>Product Name</TableCell>
                 <TableCell sx={{ fontWeight: 800, color: "#1e293b" }}>Composition</TableCell>
+                <TableCell sx={{ fontWeight: 800, color: "#1e293b", textAlign: "center" }}>HSN Code</TableCell>
                 <TableCell sx={{ fontWeight: 800, color: "#1e293b" }}>Unit</TableCell>
-                <TableCell sx={{ fontWeight: 800, color: "#1e293b" }}>Packaging</TableCell>
                 <TableCell sx={{ fontWeight: 800, color: "#1e293b", textAlign: "right" }}>Price (₹)</TableCell>
-                <TableCell sx={{ fontWeight: 800, color: "#1e293b" }}>Category</TableCell>
                 <TableCell sx={{ fontWeight: 800, color: "#1e293b" }}>Status</TableCell>
                 <TableCell sx={{ fontWeight: 800, color: "#1e293b", textAlign: "center" }}>Actions</TableCell>
               </TableRow>
@@ -472,7 +486,7 @@ function ProductList() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={9} sx={{ textAlign: "center", py: 5 }}>
+                  <TableCell colSpan={8} sx={{ textAlign: "center", py: 5 }}>
                     <CircularProgress size={32} sx={{ color: "#8d0638", mb: 1 }} />
                     <Typography variant="body2" color="text.secondary">
                       Loading products catalog...
@@ -481,7 +495,7 @@ function ProductList() {
                 </TableRow>
               ) : products.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} sx={{ textAlign: "center", py: 5 }}>
+                  <TableCell colSpan={8} sx={{ textAlign: "center", py: 5 }}>
                     <LocalPharmacy sx={{ fontSize: 44, color: "#cbd5e1", mb: 1 }} />
                     <Typography variant="subtitle1" fontWeight="bold" color="text.secondary">
                       No products found
@@ -528,11 +542,6 @@ function ProductList() {
                         <Typography variant="subtitle2" fontWeight="700" color="#1e293b">
                           {prd.name}
                         </Typography>
-                        {prd.hsn && (
-                          <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
-                            HSN: {prd.hsn}
-                          </Typography>
-                        )}
                       </TableCell>
 
                       {/* Composition */}
@@ -556,6 +565,21 @@ function ProductList() {
                         </Typography>
                       </TableCell>
 
+                      {/* HSN Code */}
+                      <TableCell sx={{ textAlign: "center" }}>
+                        <Chip
+                          size="small"
+                          label={prd.hsn || "3004"}
+                          sx={{
+                            fontWeight: 700,
+                            fontSize: "11px",
+                            bgcolor: "#f8fafc",
+                            color: "#475569",
+                            border: "1px solid #e2e8f0",
+                          }}
+                        />
+                      </TableCell>
+
                       {/* Unit */}
                       <TableCell>
                         <Chip
@@ -570,24 +594,10 @@ function ProductList() {
                         />
                       </TableCell>
 
-                      {/* Packaging */}
-                      <TableCell>
-                        <Typography variant="body2" fontWeight="600" color="#334155">
-                          {prd.packaging}
-                        </Typography>
-                      </TableCell>
-
                       {/* Price (Rate in ₹) */}
                       <TableCell sx={{ textAlign: "right" }}>
                         <Typography variant="subtitle2" fontWeight="800" color="#8d0638">
                           ₹{parseFloat(prd.price || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-                        </Typography>
-                      </TableCell>
-
-                      {/* Category */}
-                      <TableCell>
-                        <Typography variant="caption" color="text.secondary">
-                          {prd.category || "General"}
                         </Typography>
                       </TableCell>
 

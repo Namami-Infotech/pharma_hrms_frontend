@@ -138,7 +138,7 @@ function QuotationSlip({ quotation, onBack, onEdit }) {
         </Button>
 
         <Box sx={{ display: "flex", gap: 1.5 }}>
-          {onEdit && (
+          {onEdit && quotation.status === "Draft" && (
             <Button
               startIcon={<Edit />}
               variant="outlined"

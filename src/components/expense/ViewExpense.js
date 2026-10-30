@@ -207,11 +207,36 @@ function EnhancedViewExpense() {
     }
   };
 
-  const handleViewImage = (base64Data) => {
-    if (!base64Data.startsWith('data:image/')) {
-      base64Data = `data:image/png;base64,${base64Data}`;
+  const handleViewImage = (imageData) => {
+    if (!imageData) return;
+
+    let finalSrc = String(imageData).trim();
+
+    // If it's a full URL or relative path
+    if (
+      finalSrc.startsWith("http://") ||
+      finalSrc.startsWith("https://") ||
+      finalSrc.startsWith("blob:")
+    ) {
+      // If URL points to remote dev domain or starts with old domain, rewrite to current backend if on localhost
+      if (
+        typeof window !== "undefined" &&
+        (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") &&
+        finalSrc.includes("namami-infotech.com")
+      ) {
+        finalSrc = finalSrc.replace(/https?:\/\/namami-infotech\.com\/(?:SAFEGUARD\/src|HR-SMILE-BACKEND)/, "http://localhost:5000");
+      }
+    } else if (finalSrc.startsWith("/")) {
+      const backendOrigin = BASE_URL.replace(/\/SAFEGUARD\/api\/?$/, "");
+      finalSrc = `${backendOrigin}${finalSrc}`;
+    } else if (finalSrc.startsWith("data:image/")) {
+      // Already valid data URI
+    } else {
+      // Plain base64 string
+      finalSrc = `data:image/png;base64,${finalSrc}`;
     }
-    setSelectedImage(base64Data);
+
+    setSelectedImage(finalSrc);
     setImageDialogOpen(true);
   };
 
@@ -771,17 +796,21 @@ function EnhancedViewExpense() {
         fullWidth
       >
         <DialogTitle>Receipt Image</DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ p: 2, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           {selectedImage && (
-            <img
-              src={selectedImage || "/placeholder.svg"}
-              alt="Receipt"
-              style={{
-                width: '100%',
-                height: 'auto',
-                borderRadius: '8px'
-              }}
-            />
+            <Box sx={{ maxWidth: '100%', textAlign: 'center' }}>
+              <img
+                src={selectedImage}
+                alt="Receipt"
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '75vh',
+                  objectFit: 'contain',
+                  borderRadius: '8px',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+                }}
+              />
+            </Box>
           )}
         </DialogContent>
         <DialogActions>
