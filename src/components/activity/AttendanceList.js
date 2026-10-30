@@ -2,7 +2,7 @@
 import { BASE_URL } from "../../api/endpoints";
 
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Alert,
   Button,
@@ -508,6 +508,16 @@ const TodayAttendanceCard = ({ attendance, isMobile, employees }) => {
   );
 };
 
+// Helper function to determine if employee is active
+const isEmployeeActive = (employee) => {
+  if (!employee) return false;
+  return (
+    employee.IsActive === 1 ||
+    employee.IsActive === "1" ||
+    employee.IsActive === true
+  );
+};
+
 const AttendanceList = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -515,10 +525,44 @@ const AttendanceList = () => {
   const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const isHrOrAdmin = ["HR", "Admin", "admin", "SuperAdmin"].includes(user?.role);
+  const isAdmin = ["Admin", "admin", "SuperAdmin"].includes(user?.role);
+  const isRM = user?.is_rm || user?.isRM || Boolean(user?.subordinates && user.subordinates.length > 0);
+  const canSelectEmployee = isAdmin || isRM;
   const [selectedEmpId, setSelectedEmpId] = useState(
-    isHrOrAdmin ? "" : user.emp_id,
+    isAdmin ? "" : user.emp_id,
   );
+
+  // Employees visible to the current user:
+  // - Admin: all active employees
+  // - RM: self + active employees reporting to this RM
+  // - Plain Employee: strictly only self
+  const allowedEmployees = useMemo(() => {
+    if (isAdmin) {
+      return employees.filter((emp) => isEmployeeActive(emp));
+    }
+    const currentEmpId = String(user?.emp_id || "").trim().toLowerCase();
+    const currentName = String(user?.username || user?.name || "").trim().toLowerCase();
+    const userSubordinates = Array.isArray(user?.subordinates) ? user.subordinates : [];
+
+    if (isRM) {
+      return employees.filter((emp) => {
+        if (!isEmployeeActive(emp)) return false;
+        const empId = String(emp.EmpId || "").trim().toLowerCase();
+        const empRM = String(emp.RM || "").trim().toLowerCase();
+        const isSelf = empId === currentEmpId;
+        const isDirectSub = (currentEmpId && empRM === currentEmpId) || (currentName && empRM === currentName);
+        const isInSubList = userSubordinates.some((s) => String(s).trim().toLowerCase() === empId);
+        return isSelf || isDirectSub || isInSubList;
+      });
+    }
+
+    // Plain Employee: ONLY self
+    return employees.filter((emp) => {
+      const empId = String(emp.EmpId || "").trim().toLowerCase();
+      return empId === currentEmpId && isEmployeeActive(emp);
+    });
+  }, [employees, isAdmin, isRM, user]);
+
   const [allActivities, setAllActivities] = useState([]);
   const [filteredActivities, setFilteredActivities] = useState([]);
   const [todayAttendance, setTodayAttendance] = useState([]);
@@ -548,16 +592,6 @@ const AttendanceList = () => {
   const [employeeFilter, setEmployeeFilter] = useState("active"); // "active", "inactive", "all"
 
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
-  // Helper function to determine if employee is active
-  const isEmployeeActive = (employee) => {
-    // Check IsActive field - 1 means active, 0 or other means inactive
-    return (
-      employee.IsActive === 1 ||
-      employee.IsActive === "1" ||
-      employee.IsActive === true
-    );
-  };
 
   // Generate week off events
   const generateWeekOffEvents = (employee, startDate, endDate) => {
@@ -710,6 +744,10 @@ const AttendanceList = () => {
         {
           params: {
             date: format(date, "yyyy-MM-dd"),
+            role: user?.role,
+            EmpId: user?.emp_id,
+            is_rm: isRM ? "true" : "false",
+            Tenent_Id: user?.tenent_id,
           },
           timeout: 10000,
         },
@@ -732,24 +770,32 @@ const AttendanceList = () => {
     }
   };
 
-  // Filter today's attendance based on present/absent filter
+  // Filter today's attendance based on present/absent filter and allowed employees
   useEffect(() => {
-    // Get active employees only
-    const activeEmployees = employees.filter((emp) => isEmployeeActive(emp));
+    const allowedEmpIds = new Set(
+      allowedEmployees.map((emp) =>
+        String(emp.EmpId || "").trim().toLowerCase(),
+      ),
+    );
 
-    // Create a set of employee IDs that have attendance records
+    // Only include attendance records of employees the current user is permitted to see
+    const visibleTodayAttendance = todayAttendance.filter((att) =>
+      allowedEmpIds.has(String(att.EmpId || "").trim().toLowerCase()),
+    );
+
+    // Create a set of employee IDs that have attendance records among allowed employees
     const presentEmpIds = new Set(
-      todayAttendance.map((att) =>
+      visibleTodayAttendance.map((att) =>
         String(att.EmpId || "").trim().toLowerCase(),
       ),
     );
 
-    // Create combined data with all active employees
+    // Create combined data with allowed active employees
     const combinedData = [];
 
     // Add present employees with their attendance data
-    todayAttendance.forEach((att) => {
-      const emp = employees.find(
+    visibleTodayAttendance.forEach((att) => {
+      const emp = allowedEmployees.find(
         (e) =>
           String(e.EmpId || "").trim().toLowerCase() ===
           String(att.EmpId || "").trim().toLowerCase(),
@@ -761,8 +807,8 @@ const AttendanceList = () => {
       });
     });
 
-    // Add absent employees (active employees not in todayAttendance)
-    activeEmployees.forEach((emp) => {
+    // Add absent employees (allowed active employees not in visibleTodayAttendance)
+    allowedEmployees.forEach((emp) => {
       const cleanEmpId = String(emp.EmpId || "").trim().toLowerCase();
       if (!presentEmpIds.has(cleanEmpId)) {
         combinedData.push({
@@ -791,7 +837,7 @@ const AttendanceList = () => {
 
     setFilteredTodayAttendance(filtered);
     setTodayPage(0); // Reset pagination when filter changes
-  }, [todayAttendance, employees, todayFilter, selectedTodayDate]);
+  }, [todayAttendance, allowedEmployees, todayFilter, selectedTodayDate]);
 
   const fetchAttendance = async () => {
     if (!selectedEmpId) return;
@@ -1015,8 +1061,27 @@ const AttendanceList = () => {
           console.log("Active employees count:", activeEmployees.length);
           setFilteredEmployees(activeEmployees);
 
-          // If user is not HR/Admin, set current user as selected
-          if (!isHrOrAdmin) {
+          // If user is RM, filter list to self + subordinates
+          if (isRM && !isAdmin) {
+            const teamEmployees = activeEmployees.filter((emp) =>
+              emp.EmpId === user.emp_id ||
+              emp.RM === user.emp_id ||
+              (user.username && emp.RM === user.username) ||
+              (user.subordinates && user.subordinates.includes(emp.EmpId))
+            );
+            console.log("Team employees count for RM:", teamEmployees.length);
+            const selfEmp = activeEmployees.filter((emp) => emp.EmpId === user.emp_id);
+            setFilteredEmployees(teamEmployees.length > 0 ? teamEmployees : (selfEmp.length > 0 ? selfEmp : activeEmployees));
+
+            if (!selectedEmpId) {
+              const selfOrFirst = teamEmployees.find((emp) => emp.EmpId === user.emp_id) || teamEmployees[0];
+              if (selfOrFirst) {
+                setSelectedEmployee(selfOrFirst);
+                setSelectedEmpId(selfOrFirst.EmpId);
+              }
+            }
+          } else if (!isAdmin) {
+            // Plain employee: only self
             const currentUserEmployee = fetchedEmployees.find(
               (emp) => emp.EmpId === user.emp_id,
             ) || {
@@ -1026,6 +1091,7 @@ const AttendanceList = () => {
               Shift: user.shift || "9:00 AM - 6:00 PM",
               IsActive: 1,
             };
+            setFilteredEmployees([currentUserEmployee]);
             setSelectedEmployee(currentUserEmployee);
             setSelectedEmpId(user.emp_id);
           } else if (fetchedEmployees.length > 0) {
@@ -1289,12 +1355,15 @@ const AttendanceList = () => {
     (a) => a.type === "leave",
   ).length;
 
-  // Today's attendance statistics (based on active employees only)
-  const activeEmployeesCount = employees.filter((emp) =>
-    isEmployeeActive(emp),
-  ).length;
-  const presentCount = todayAttendance.length; // API returns only present employees
-  const absentCount = activeEmployeesCount - presentCount;
+  // Today's attendance statistics (based on allowed active employees only)
+  const activeEmployeesCount = allowedEmployees.length;
+  const presentCount = allowedEmployees.filter((emp) => {
+    const cleanId = String(emp.EmpId || "").trim().toLowerCase();
+    return todayAttendance.some(
+      (att) => String(att.EmpId || "").trim().toLowerCase() === cleanId
+    );
+  }).length;
+  const absentCount = Math.max(0, activeEmployeesCount - presentCount);
 
   const eventStyleGetter = (event) => {
     let backgroundColor = "#3174ad";
@@ -1412,7 +1481,7 @@ const AttendanceList = () => {
                   sx={{ width: { xs: "100%", md: "auto" } }}
                 >
                   {/* Select Employee field: Only shown in Attendance History tab (activeTab === 0), hidden in Today's Attendance tab so all employees are shown */}
-                  {isHrOrAdmin && activeTab === 0 && (
+                  {canSelectEmployee && activeTab === 0 && (
                     <>
                       <Box flex={{ xs: 1, sm: 1 }}>
                         <Autocomplete
@@ -1561,7 +1630,7 @@ const AttendanceList = () => {
 
                   {/* Action Buttons */}
                   <Stack direction="row" spacing={0.5} alignItems="center">
-                    {isHrOrAdmin && (
+                    {(isAdmin || isRM) && (
                       <Tooltip title="Regularise">
                         <IconButton
                           onClick={regularise}

@@ -189,7 +189,7 @@ function Navbar({ onMenuClick }) { // Add onMenuClick prop for mobile
         <MenuItem onClick={() => navigate("/profile")}>
           <Person fontSize="small" sx={{ mr: 1 }} /> Profile
         </MenuItem>
-        {user && (user.role === "HR" || user.role === "Admin" || user.role === "admin" || user.role === "SuperAdmin" || (Array.isArray(user.modules) && user.modules.includes(7))) && (
+        {user && (["Admin", "admin", "SuperAdmin"].includes(user.role) || (Array.isArray(user.modules) && user.modules.includes(7))) && (
           <MenuItem onClick={() => navigate("/invoices")}>
             <ReceiptIcon fontSize="small" sx={{ mr: 1 }} /> Invoices
           </MenuItem>

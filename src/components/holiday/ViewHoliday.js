@@ -189,6 +189,7 @@ function ViewHoliday() {
   const [refreshing, setRefreshing] = useState(false)
 
   const { user } = useAuth()
+  const isAdmin = ["Admin", "admin", "SuperAdmin"].includes(user?.role)
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
 
@@ -358,7 +359,7 @@ function ViewHoliday() {
           </Grid>
 
           <Grid item xs={12} sm={12} md={4}>
-            {user && user.role === "HR" && (
+            {isAdmin && (
               <Button
                 variant="contained"
                 startIcon={<Add />}

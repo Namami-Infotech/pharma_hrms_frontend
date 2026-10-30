@@ -36,9 +36,13 @@ const defaultCenter = { lat: 28.5, lng: 77.2 };
 function LiveTrack() {
   const mapRef = useRef(null);
   const { user } = useAuth();
+  const isAdmin = ["Admin", "admin", "SuperAdmin"].includes(user?.role);
+  const isRM = user?.is_rm || user?.isRM || Boolean(user?.subordinates && user.subordinates.length > 0);
+  const canSelectEmployee = isAdmin || isRM;
+
   const [employees, setEmployees] = useState([]);
   const [selectedEmpId, setSelectedEmpId] = useState(
-    user.role === "HR" ? "" : user.emp_id,
+    canSelectEmployee ? "" : user.emp_id,
   );
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [locations, setLocations] = useState([]);
@@ -48,10 +52,10 @@ function LiveTrack() {
   const [selectedMarker, setSelectedMarker] = useState(null);
 
   useEffect(() => {
-    if (user.role === "HR") {
+    if (canSelectEmployee) {
       fetchEmployees();
     }
-  }, [user.role]);
+  }, [user.role, canSelectEmployee]);
 
   const fetchEmployees = async () => {
     try {
@@ -59,7 +63,15 @@ function LiveTrack() {
         `${BASE_URL}/employee/list_employee.php?Tenent_Id=${user.tenent_id}`,
       );
       if (response.data.success) {
-        setEmployees(response.data.data);
+        const allEmps = response.data.data || [];
+        if (isRM && !isAdmin) {
+          const teamEmps = allEmps.filter(
+            (emp) => emp.EmpId === user.emp_id || emp.RM === user.emp_id || (user?.subordinates && user.subordinates.includes(emp.EmpId))
+          );
+          setEmployees(teamEmps);
+        } else {
+          setEmployees(allEmps);
+        }
       } else {
         console.log("Failed to fetch employee list");
       }
@@ -200,7 +212,7 @@ function LiveTrack() {
     <Box mb={2}>
       {/* Filters: Employee Select & Date Picker */}
       <Box display="flex" gap={2} mb={2}>
-        {user.role === "HR" && (
+        {canSelectEmployee && (
           <FormControl variant="outlined">
             <Autocomplete
               options={employees}

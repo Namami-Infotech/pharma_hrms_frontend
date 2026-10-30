@@ -115,8 +115,30 @@ export const ROLE_PERMISSIONS = {
     "/notification",
   ],
 
-  // --- HR: Human Resources & Administrative Access ---
-  HR: [
+  // --- EMPLOYEE: Self-Service & RM Team Management ---
+  Employee: [
+    "/dashboard",
+    "/employees",
+    "/attendance",
+    "/manual-attendance",
+    "/regularise",
+    "/leave",
+    "/holiday",
+    "/salary",
+    "/expense",
+    "/quotation",
+    "/products",
+    "/travel",
+    "/visit",
+    "/maps",
+    "/registration",
+    "/policy",
+    "/tickets",
+    "/notification",
+  ],
+
+  // Aliases for compatibility
+  SuperAdmin: [
     "/dashboard",
     "/employees",
     "/offices",
@@ -127,21 +149,26 @@ export const ROLE_PERMISSIONS = {
     "/holiday",
     "/salary",
     "/expense",
-    "/assets",
-    "/tickets",
-    "/registration",
-    "/policy",
-    "/report",
     "/invoices",
     "/quotation",
     "/products",
+    "/travel",
+    "/visit",
+    "/maps",
+    "/registration",
+    "/assets",
+    "/policy",
+    "/tickets",
+    "/docket",
+    "/report",
     "/notification",
   ],
 
-  // --- MANAGER: Team Supervision & Operational Access ---
-  Manager: [
+  default: [
     "/dashboard",
+    "/employees",
     "/attendance",
+    "/manual-attendance",
     "/regularise",
     "/leave",
     "/holiday",
@@ -152,49 +179,9 @@ export const ROLE_PERMISSIONS = {
     "/travel",
     "/visit",
     "/maps",
-    "/policy",
-    "/notification",
-  ],
-
-  // --- SALES: Field & Business Development Access ---
-  Sales: [
-    "/dashboard",
     "/registration",
-    "/visit",
-    "/maps",
-    "/salary",
-    "/expense",
-    "/quotation",
-    "/products",
-    "/travel",
-    "/attendance",
-    "/leave",
-    "/holiday",
-    "/policy",
-    "/notification",
-  ],
-
-  // --- EMPLOYEE: General Employee Self-Service Access ---
-  Employee: [
-    "/dashboard",
-    "/attendance",
-    "/leave",
-    "/salary",
-    "/expense",
-    "/travel",
-    "/holiday",
     "/policy",
     "/tickets",
-    "/notification",
-  ],
-
-  // --- DEFAULT FALLBACK: For any new or unspecified role ---
-  default: [
-    "/dashboard",
-    "/attendance",
-    "/leave",
-    "/holiday",
-    "/policy",
     "/notification",
   ],
 };

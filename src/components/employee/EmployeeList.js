@@ -696,6 +696,8 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
 
 function EmployeeList() {
   const { user } = useAuth();
+  const isAdmin = ["Admin", "admin", "SuperAdmin"].includes(user?.role);
+  const isRM = user?.is_rm || user?.isRM || Boolean(user?.subordinates && user.subordinates.length > 0);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -777,7 +779,7 @@ function EmployeeList() {
   ];
 
   // Get distinct roles from employees data
-  const roleOptions1 = ["HR", "Employee"];
+  const roleOptions1 = ["Admin", "Employee"];
   const roleOptions = [
     ...new Set(employees.map((emp) => emp.Role).filter((role) => role)),
   ].sort();
@@ -854,7 +856,26 @@ function EmployeeList() {
         `${BASE_URL}/employee/list_employee.php?Tenent_Id=${user.tenent_id}`
       );
       if (response.data.success) {
-        setEmployees(response.data.data);
+        const allEmployees = response.data.data;
+        const isAdmin = ["Admin", "admin", "SuperAdmin"].includes(user?.role);
+        const isRM = user?.is_rm || user?.isRM || Boolean(user?.subordinates && user.subordinates.length > 0);
+
+        let visibleEmployees = allEmployees;
+        if (!isAdmin) {
+          if (isRM) {
+            // RM can see themselves AND all subordinates reporting to them
+            visibleEmployees = allEmployees.filter(
+              (emp) => emp.EmpId === user.emp_id || emp.RM === user.emp_id || (user?.subordinates && user.subordinates.includes(emp.EmpId))
+            );
+          } else {
+            // Plain employee only sees themselves
+            visibleEmployees = allEmployees.filter(
+              (emp) => emp.EmpId === user.emp_id
+            );
+          }
+        }
+
+        setEmployees(visibleEmployees);
 
         if (response.data.message) {
           setLastEmpIdFromBackend(response.data.message);
@@ -1470,7 +1491,7 @@ const exportToExcel = () => {
   const totalEmployees = employees.length;
   const activeEmployeesCount = employees.filter((emp) => emp.IsActive).length;
   const inactiveEmployees = totalEmployees - activeEmployeesCount;
-  const hrCount = employees.filter((emp) => emp.Role === "HR").length;
+  const adminCount = employees.filter((emp) => ["Admin", "admin", "SuperAdmin"].includes(emp.Role)).length;
 
   if (loading) {
     return (
@@ -1568,20 +1589,22 @@ const exportToExcel = () => {
                 {exporting ? "Exporting..." : "Export"}
               </Button>
               
-              <Button
-                variant="contained"
-                startIcon={<PersonAdd />}
-                onClick={() => handleOpenForm("add")}
-                sx={{
-                  bgcolor: "#8d0638ff",
-                  color: "white",
-                  "&:hover": { bgcolor: "#6b042d" },
-                  borderRadius: 2,
-                  textTransform: "none",
-                }}
-              >
-                Add Employee
-              </Button>
+              {isAdmin && (
+                <Button
+                  variant="contained"
+                  startIcon={<PersonAdd />}
+                  onClick={() => handleOpenForm("add")}
+                  sx={{
+                    bgcolor: "#8d0638ff",
+                    color: "white",
+                    "&:hover": { bgcolor: "#6b042d" },
+                    borderRadius: 2,
+                    textTransform: "none",
+                  }}
+                >
+                  Add Employee
+                </Button>
+              )}
             </Box>
           </Box>
 

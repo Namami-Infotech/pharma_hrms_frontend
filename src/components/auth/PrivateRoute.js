@@ -33,7 +33,7 @@ const PrivateRoute = ({ children, requiredRole }) => {
       ? requiredRole.map((r) => r.toLowerCase())
       : [requiredRole.toLowerCase()];
 
-    if (allowed.includes('hr') && (currentRole === 'hr' || currentRole === 'admin' || currentRole === 'superadmin')) {
+    if ((allowed.includes('admin') || allowed.includes('hr')) && (currentRole === 'admin' || currentRole === 'superadmin')) {
       return children;
     }
 

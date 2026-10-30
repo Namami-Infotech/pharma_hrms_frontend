@@ -147,9 +147,24 @@ const ManualAttendancePage = () => {
       );
 
       if (response.data.success && response.data.data) {
-        const activeEmployees = response.data.data.filter(
+        let activeEmployees = response.data.data.filter(
           (emp) => emp.IsActive === 1 || emp.IsActive === "1" || emp.IsActive === true,
         );
+
+        const isAdmin = ["Admin", "admin", "SuperAdmin"].includes(user?.role);
+        const isRM = user?.is_rm || user?.isRM || Boolean(user?.subordinates && user.subordinates.length > 0);
+
+        if (!isAdmin) {
+          if (isRM) {
+            // RM can mark manual attendance for their subordinates
+            activeEmployees = activeEmployees.filter(
+              (emp) => emp.RM === user.emp_id || (user?.subordinates && user.subordinates.includes(emp.EmpId))
+            );
+          } else {
+            // Plain employees cannot mark manual attendance
+            activeEmployees = [];
+          }
+        }
 
         const employeesData = activeEmployees.map((emp) => ({
           ...emp,

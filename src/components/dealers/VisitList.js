@@ -31,8 +31,13 @@ import AttendanceReport from "./AttendanceReport"
 import SalaryList from "../employee/SalaryList"
 import SalarySlip from "../employee/SalarySlip"
 import MonthlyInOutReport from "../activity/MonthlyInOutReport"
+import { useAuth } from "../auth/AuthContext"
  
 const VisitList = () => {
+  const { user } = useAuth()
+  const isAdmin = ["Admin", "admin", "SuperAdmin"].includes(user?.role)
+  const isRM = user?.is_rm || user?.isRM || Boolean(user?.subordinates && user.subordinates.length > 0)
+
   const [employees, setEmployees] = useState([])
   const [visits, setVisits] = useState([])
   const [loading, setLoading] = useState(false)
@@ -45,18 +50,33 @@ const VisitList = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
+        const tenantId = user?.tenent_id || 1
         const response = await axios.get(
-          `${BASE_URL}/employee/list_employee.php?Tenent_Id=1`,
+          `${BASE_URL}/employee/list_employee.php?Tenent_Id=${tenantId}`,
         )
         if (response.data.success) {
-          setEmployees(response.data.data)
+          const allEmps = response.data.data || []
+          if (isAdmin) {
+            setEmployees(allEmps)
+          } else if (isRM) {
+            setEmployees(
+              allEmps.filter(
+                (e) =>
+                  e.EmpId === user?.emp_id ||
+                  e.RM === user?.emp_id ||
+                  (user?.subordinates && user.subordinates.includes(e.EmpId)),
+              ),
+            )
+          } else {
+            setEmployees(allEmps.filter((e) => e.EmpId === user?.emp_id))
+          }
         }
       } catch (error) {
         console.error("Error fetching employees:", error)
       }
     }
     fetchEmployees()
-  }, [])
+  }, [user, isAdmin, isRM])
  
   useEffect(() => {
     const fetchVisits = async () => {
@@ -65,13 +85,25 @@ const VisitList = () => {
       setLoading(true)
       setError("")
       try {
+        const params = isAdmin ? { role: "Admin" } : { EmpId: user?.emp_id, role: user?.role }
         const response = await axios.get(
-          `${BASE_URL}/visit/get_visits_entry.php?role=HR`,
+          `${BASE_URL}/visit/get_visits_entry.php`,
+          { params },
         )
         if (response.data.success) {
-          const filteredVisits = response.data.data.filter((visit) => {
+          const rawVisits = response.data.data || []
+          const filteredVisits = rawVisits.filter((visit) => {
             const visitDate = new Date(visit.VisitDateTime)
-            return visitDate >= new Date(fromDate) && visitDate <= new Date(toDate)
+            const inRange = visitDate >= new Date(fromDate) && visitDate <= new Date(toDate)
+            if (!inRange) return false
+            if (isAdmin) return true
+            if (isRM) {
+              return (
+                visit.EmpId === user?.emp_id ||
+                (user?.subordinates && user.subordinates.includes(visit.EmpId))
+              )
+            }
+            return visit.EmpId === user?.emp_id
           })
           setVisits(filteredVisits)
         } else {
@@ -86,7 +118,7 @@ const VisitList = () => {
       }
     }
     fetchVisits()
-  }, [fromDate, toDate])
+  }, [fromDate, toDate, user, isAdmin, isRM])
  
   const handleDateChange = (event, type) => {
     type === "from" ? setFromDate(event.target.value) : setToDate(event.target.value)

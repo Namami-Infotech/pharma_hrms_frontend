@@ -195,11 +195,15 @@ function MapPage() {
   const [visits, setVisits] = useState([])
   const [attendanceData, setAttendanceData] = useState(null)
   const { user } = useAuth()
+  const isAdmin = ["Admin", "admin", "SuperAdmin"].includes(user?.role)
+  const isRM = user?.is_rm || user?.isRM || Boolean(user?.subordinates && user.subordinates.length > 0)
+  const canSelectEmployee = isAdmin || isRM
+
   const [mapCenter, setMapCenter] = useState({ lat: 28.6139, lng: 77.209 })
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [markers, setMarkers] = useState([])
   const [employees, setEmployees] = useState([])
-  const [selectedEmpId, setSelectedEmpId] = useState(user.role === "HR" ? "" : user.emp_id)
+  const [selectedEmpId, setSelectedEmpId] = useState(canSelectEmployee ? "" : user.emp_id)
   const [totalDistance, setTotalDistance] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -208,16 +212,24 @@ function MapPage() {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
 
-  // Fetch employees for HR role
+  // Fetch employees for Admin or RM role
   useEffect(() => {
-    if (user.role === "HR") {
+    if (canSelectEmployee) {
       const fetchEmployees = async () => {
         try {
           const response = await axios.get(
             `${BASE_URL}/employee/list_employee.php?Tenent_Id=${user.tenent_id}`,
           )
           if (response.data.success) {
-            setEmployees(response.data.data)
+            const allEmps = response.data.data || []
+            if (isRM && !isAdmin) {
+              const teamEmps = allEmps.filter(
+                (emp) => emp.EmpId === user.emp_id || emp.RM === user.emp_id || (user?.subordinates && user.subordinates.includes(emp.EmpId))
+              )
+              setEmployees(teamEmps)
+            } else {
+              setEmployees(allEmps)
+            }
           }
         } catch (error) {
           console.error("Error fetching employee list:", error.message)
@@ -225,7 +237,7 @@ function MapPage() {
       }
       fetchEmployees()
     }
-  }, [user.role, user.tenent_id])
+  }, [user.role, user.tenent_id, canSelectEmployee])
 
   // Update map center and calculate total distance when markers change
   useEffect(() => {
@@ -449,7 +461,7 @@ function MapPage() {
 
         {/* Filters */}
         <Grid container spacing={2} alignItems="center" sx={{ mt: 2 }}>
-          {user.role === "HR" && (
+          {canSelectEmployee && (
             <Grid item xs={12} sm={6} md={4}>
               <Autocomplete
                 size="small"

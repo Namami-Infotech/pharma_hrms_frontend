@@ -59,12 +59,14 @@ import {
   TrendingUp,
   AccessTime,
   Category,
+  AccountBalanceWallet,
 } from "@mui/icons-material"
 import { motion, AnimatePresence } from "framer-motion"
 import { format, parseISO, isValid, differenceInDays } from "date-fns"
 import axios from "axios"
 import { useAuth } from "../auth/AuthContext"
 import ApplyLeave from "./ApplyLeave"
+import ManageLeaveBalance from "./ManageLeaveBalance"
 
 // Enhanced Compact Stats Card Component
 const StatsCard = ({ icon, title, value, color, subtitle, trend }) => {
@@ -127,7 +129,7 @@ const StatsCard = ({ icon, title, value, color, subtitle, trend }) => {
 }
 
 // Enhanced Leave Card for Mobile View
-const LeaveCard = ({ leave, employee, onStatusChange, isHR, index }) => {
+const LeaveCard = ({ leave, employee, onStatusChange, isHR, isAdmin, currentUserEmpId, index }) => {
   const theme = useTheme()
   const [anchorEl, setAnchorEl] = useState(null)
 const [expanded, setExpanded] = useState(false);
@@ -173,7 +175,7 @@ const [expanded, setExpanded] = useState(false);
   }
 
   const handleStatusChange = (status) => {
-    onStatusChange(leave.Id, status)
+    onStatusChange(leave.id || leave.Id, status)
     handleMenuClose()
   }
 
@@ -226,7 +228,7 @@ const [expanded, setExpanded] = useState(false);
                   <Visibility fontSize="small" />
                 </IconButton>
               </Tooltip>
-              {isHR && leave.Status === "Pending" && (
+              {isHR && leave.Status === "Pending" && (isAdmin || leave.EmpId !== currentUserEmpId) && (
                 <>
                   <IconButton size="small" onClick={handleMenuClick}>
                     <MoreVert fontSize="small" />
@@ -266,7 +268,7 @@ const [expanded, setExpanded] = useState(false);
                 </Typography>
               </Box>
               <Typography variant="body2" fontWeight="medium" sx={{ fontSize: '0.8rem' }}>
-                {leave.Category}
+                {leave.category || leave.Category || leave.LeaveType || "Leave"}
               </Typography>
             </Grid>
             <Grid item xs={12}>
@@ -298,28 +300,38 @@ const [expanded, setExpanded] = useState(false);
               Applied: {leave.CreatedAt}
             </Typography>
             {isHR && leave.Status === "Pending" && (
-              <Box sx={{ display: "flex", gap: 0.5 }}>
-                <Button
+              leave.EmpId === currentUserEmpId && !isAdmin ? (
+                <Chip
+                  label="Pending"
                   size="small"
+                  color="warning"
                   variant="outlined"
-                  color="success"
-                  startIcon={<Check />}
-                  onClick={() => onStatusChange(leave.Id, "Approved")}
-                  sx={{ fontSize: '0.7rem', py: 0.25, px: 1 }}
-                >
-                  Approve
-                </Button>
-                <Button
-                  size="small"
-                  variant="outlined"
-                  color="error"
-                  startIcon={<Cancel />}
-                  onClick={() => onStatusChange(leave.Id, "Rejected")}
-                  sx={{ fontSize: '0.7rem', py: 0.25, px: 1 }}
-                >
-                  Reject
-                </Button>
-              </Box>
+                  sx={{ fontSize: "0.7rem", height: 22 }}
+                />
+              ) : (
+                <Box sx={{ display: "flex", gap: 0.5 }}>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="success"
+                    startIcon={<Check />}
+                    onClick={() => onStatusChange(leave.id || leave.Id, "Approved")}
+                    sx={{ fontSize: '0.7rem', py: 0.25, px: 1 }}
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="error"
+                    startIcon={<Cancel />}
+                    onClick={() => onStatusChange(leave.id || leave.Id, "Rejected")}
+                    sx={{ fontSize: '0.7rem', py: 0.25, px: 1 }}
+                  >
+                    Reject
+                  </Button>
+                </Box>
+              )
             )}
           </Box>
         </CardContent>
@@ -340,7 +352,9 @@ const formatDateTime = (dateString) => {
 };
 function ViewLeave() {
   const { user } = useAuth()
-  const isHR = ["HR", "Admin", "admin", "SuperAdmin"].includes(user?.role)
+  const isAdmin = ["Admin", "admin", "SuperAdmin"].includes(user?.role)
+  const isRM = user?.is_rm || user?.isRM || Boolean(user?.subordinates && user.subordinates.length > 0)
+  const isHR = isAdmin || isRM
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
 const [expanded, setExpanded] = useState(false);
@@ -356,6 +370,7 @@ const [expanded, setExpanded] = useState(false);
   const [refreshing, setRefreshing] = useState(false)
   const [viewMode, setViewMode] = useState("table") // 'table' or 'cards'
   const [applyLeaveOpen, setApplyLeaveOpen] = useState(false)
+  const [manageBalanceOpen, setManageBalanceOpen] = useState(false)
 
   const formatDate = (dateString) => {
     try {
@@ -405,7 +420,8 @@ const [expanded, setExpanded] = useState(false);
 
     try {
       setLoading(true)
-      const params = isHR ? { role: user.role } : { empId: user.emp_id }
+      const isActualAdmin = ["HR", "Admin", "admin", "SuperAdmin"].includes(user?.role);
+      const params = isActualAdmin ? { role: user.role } : { empId: user.emp_id, role: user.role };
       const response = await axios.get(`${BASE_URL}/leave/get_leave.php`, {
         params,
       })
@@ -445,20 +461,28 @@ const [expanded, setExpanded] = useState(false);
   }
 
   const handleStatusChange = async (id, newStatus) => {
+    const cleanId = id || ""
+    if (!cleanId) {
+      setError("Invalid leave ID")
+      return
+    }
     try {
       const response = await axios.post(`${BASE_URL}/leave/approve_leave.php`, {
-        id,
+        id: cleanId,
+        leaveId: cleanId,
         status: newStatus,
+        role: user?.role,
+        userEmpId: user?.emp_id,
       })
 
       if (response.data.success) {
-        setLeaves(leaves.map((leave) => (leave.Id === id ? { ...leave, Status: newStatus } : leave)))
+        setLeaves(leaves.map((leave) => ((leave.id === cleanId || leave.Id === cleanId) ? { ...leave, Status: newStatus } : leave)))
         fetchLeaves()
       } else {
         setError(response.data.message)
       }
     } catch (error) {
-      setError("Error updating leave status")
+      setError("Error updating leave status: " + (error.response?.data?.message || error.message))
       console.error("Error:", error)
     }
   }
@@ -532,7 +556,27 @@ const [expanded, setExpanded] = useState(false);
           <Typography variant="h5" fontWeight="bold" color="#8d0638ff">
             Leave Management
           </Typography>
-          <Box sx={{ display: "flex", gap: 1 }}>
+          <Box sx={{ display: "flex", gap: 1, alignItems: "center", flexWrap: "wrap" }}>
+            <Button
+              variant="contained"
+              startIcon={<Add />}
+              onClick={() => setApplyLeaveOpen(true)}
+              size="small"
+              sx={{
+                borderRadius: 2,
+                bgcolor: "#8d0638ff",
+                color: "white",
+                fontWeight: 600,
+                textTransform: "none",
+                px: 2,
+                py: 0.75,
+                "&:hover": {
+                  bgcolor: "#6d0430ff",
+                },
+              }}
+            >
+              Add Leave
+            </Button>
             <Tooltip title="Refresh">
               <IconButton onClick={handleRefresh} disabled={refreshing} size="small">
                 {refreshing ? <CircularProgress size={18} /> : <Refresh fontSize="small" />}
@@ -662,11 +706,13 @@ const [expanded, setExpanded] = useState(false);
                 const employee = employees.find((emp) => emp.EmpId === leave.EmpId)
                 return (
                   <LeaveCard
-                    key={leave.Id}
+                    key={leave.id || leave.Id || index}
                     leave={leave}
                     employee={employee}
                     onStatusChange={handleStatusChange}
                     isHR={isHR}
+                    isAdmin={isAdmin}
+                    currentUserEmpId={user?.emp_id}
                     index={index}
                   />
                 )
@@ -747,7 +793,7 @@ const [expanded, setExpanded] = useState(false);
 
             return (
               <motion.tr
-                key={leave.Id}
+                key={leave.id || leave.Id || index}
                 component={TableRow}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -801,10 +847,10 @@ const [expanded, setExpanded] = useState(false);
                 </TableCell>
                 <TableCell sx={{ py: 1 }}>
                   <Chip
-                    label={leave.Category}
+                    label={leave.category || leave.Category || leave.LeaveType || "Leave"}
                     variant="outlined"
                     size="small"
-                    sx={{ height: 22, fontSize: "0.7rem" }}
+                    sx={{ height: 22, fontSize: "0.7rem", fontWeight: 600 }}
                   />
                 </TableCell>
                 <TableCell sx={{ py: 1 }}>
@@ -852,40 +898,46 @@ const [expanded, setExpanded] = useState(false);
                 </TableCell>
                 {isHR && (
                   <TableCell sx={{ py: 1 }}>
-                    <Box sx={{ display: "flex", gap: 0.5 }}>
-                      <Tooltip title="Approve">
-                        <IconButton
-                          size="small"
-                          color="success"
-                          onClick={() =>
-                            handleStatusChange(leave.Id, "Approved")
-                          }
-                          disabled={
-                            leave.Status === "Approved" ||
-                            leave.Status === "Rejected"
-                          }
-                          sx={{ fontSize: "0.8rem" }}
-                        >
-                          <Check fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Reject">
-                        <IconButton
-                          size="small"
-                          color="error"
-                          onClick={() =>
-                            handleStatusChange(leave.Id, "Rejected")
-                          }
-                          disabled={
-                            leave.Status === "Approved" ||
-                            leave.Status === "Rejected"
-                          }
-                          sx={{ fontSize: "0.8rem" }}
-                        >
-                          <Cancel fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
+                    {leave.Status !== "Pending" ? (
+                      <Typography variant="caption" color="text.secondary">
+                        -
+                      </Typography>
+                    ) : leave.EmpId === user?.emp_id && !isAdmin ? (
+                      <Chip
+                        label="Pending"
+                        size="small"
+                        color="warning"
+                        variant="outlined"
+                        sx={{ fontSize: "0.7rem", height: 22 }}
+                      />
+                    ) : (
+                      <Box sx={{ display: "flex", gap: 0.5 }}>
+                        <Tooltip title="Approve">
+                          <IconButton
+                            size="small"
+                            color="success"
+                            onClick={() =>
+                              handleStatusChange(leave.id || leave.Id, "Approved")
+                            }
+                            sx={{ fontSize: "0.8rem" }}
+                          >
+                            <Check fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Reject">
+                          <IconButton
+                            size="small"
+                            color="error"
+                            onClick={() =>
+                              handleStatusChange(leave.id || leave.Id, "Rejected")
+                            }
+                            sx={{ fontSize: "0.8rem" }}
+                          >
+                            <Cancel fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    )}
                   </TableCell>
                 )}
               </motion.tr>
@@ -910,25 +962,27 @@ const [expanded, setExpanded] = useState(false);
       </Paper>
 
       {/* Floating Action Button */}
-      {/* <Zoom in={true}>
-        <Fab
-          color="primary"
-          onClick={() => setApplyLeaveOpen(true)}
-          sx={{
-            position: "fixed",
-            bottom: 16,
-            right: 16,
-            zIndex: theme.zIndex.speedDial,
-            bgcolor: '#8d0638ff',
-            '&:hover': {
-              bgcolor: '#6d0430ff',
-            }
-          }}
-          size="medium"
-        >
-          <Add />
-        </Fab>
-      </Zoom> */}
+      <Zoom in={true}>
+        <Tooltip title="Add Leave">
+          <Fab
+            onClick={() => setApplyLeaveOpen(true)}
+            sx={{
+              position: "fixed",
+              bottom: 24,
+              right: 24,
+              zIndex: theme.zIndex.speedDial,
+              bgcolor: '#8d0638ff',
+              color: 'white',
+              '&:hover': {
+                bgcolor: '#6d0430ff',
+              }
+            }}
+            size="medium"
+          >
+            <Add />
+          </Fab>
+        </Tooltip>
+      </Zoom>
 
       {/* Apply Leave Dialog */}
       <ApplyLeave

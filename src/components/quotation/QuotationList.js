@@ -100,6 +100,9 @@ const StatCard = ({ title, value, color, icon, subtitle }) => {
 
 function QuotationList() {
   const { user } = useAuth();
+  const isAdmin = ["Admin", "admin", "SuperAdmin"].includes(user?.role);
+  const isRM = user?.is_rm || user?.isRM || Boolean(user?.subordinates && user.subordinates.length > 0);
+  const canApproveQuotation = isAdmin || isRM;
 
   const [quotations, setQuotations] = useState([]);
   const [stats, setStats] = useState({
@@ -609,25 +612,29 @@ function QuotationList() {
                         })}
                       </TableCell>
                       <TableCell sx={{ textAlign: "center" }}>
-                        <FormControl size="small" variant="standard">
-                          <Select
-                            value={row.status || "Sent"}
-                            onChange={(e) => handleStatusChange(row.id, e.target.value)}
-                            disableUnderline
-                            renderValue={() => getStatusChip(row.status)}
-                            sx={{ "& .MuiSelect-select": { py: 0 } }}
-                          >
-                            <MenuItem value="Draft">Draft</MenuItem>
-                            <MenuItem value="Pending Approval">Pending Approval</MenuItem>
-                            <MenuItem value="Sent">Sent</MenuItem>
-                            <MenuItem value="Approved">Approved</MenuItem>
-                            <MenuItem value="Rejected">Rejected</MenuItem>
-                          </Select>
-                        </FormControl>
+                        {canApproveQuotation ? (
+                          <FormControl size="small" variant="standard">
+                            <Select
+                              value={row.status || "Sent"}
+                              onChange={(e) => handleStatusChange(row.id, e.target.value)}
+                              disableUnderline
+                              renderValue={() => getStatusChip(row.status)}
+                              sx={{ "& .MuiSelect-select": { py: 0 } }}
+                            >
+                              <MenuItem value="Draft">Draft</MenuItem>
+                              <MenuItem value="Pending Approval">Pending Approval</MenuItem>
+                              <MenuItem value="Sent">Sent</MenuItem>
+                              <MenuItem value="Approved">Approved</MenuItem>
+                              <MenuItem value="Rejected">Rejected</MenuItem>
+                            </Select>
+                          </FormControl>
+                        ) : (
+                          getStatusChip(row.status)
+                        )}
                       </TableCell>
                       <TableCell sx={{ textAlign: "center" }}>
                         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 0.5 }}>
-                          {(row.status === "Pending Approval" || (row.status || "").toLowerCase() === "pending") && (
+                          {canApproveQuotation && (row.status === "Pending Approval" || (row.status || "").toLowerCase() === "pending") && (
                             <Tooltip title="Approve & Send to Client Email">
                               <span>
                                 <Button

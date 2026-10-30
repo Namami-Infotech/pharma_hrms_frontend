@@ -30,6 +30,8 @@ import { useAuth } from '../auth/AuthContext'; // Adjust import according to you
 
 const AssetList = () => {
     const { user } = useAuth(); // Custom hook to get user information
+    const isAdmin = ["Admin", "admin", "SuperAdmin"].includes(user?.role);
+    const isRM = user?.is_rm || user?.isRM || Boolean(user?.subordinates && user.subordinates.length > 0);
     const [assets, setAssets] = useState([]);
     const [availableAssets, setAvailableAssets] = useState([]);
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -80,8 +82,8 @@ const AssetList = () => {
     const fetchAssets = async () => {
         try {
             const params = {
-                role: user.role === 'HR' ? 'HR' : undefined,
-                EmpId: user.role === 'HR' ? undefined : user.emp_id,
+                role: isAdmin ? 'Admin' : (isRM ? 'RM' : 'Employee'),
+                EmpId: isAdmin ? undefined : user.emp_id,
                 page,
                 limit: rowsPerPage
             };
@@ -258,7 +260,7 @@ const AssetList = () => {
 
     return (
         <div>
-            {user.role === 'HR' && (
+            {isAdmin && (
                 <Button
                     variant="contained"
                     color="#8d0638ff"
@@ -299,11 +301,11 @@ const AssetList = () => {
                                         open={Boolean(anchorEl)}
                                         onClose={handleMenuClose}
                                     >
-                                        {user.role === 'HR' ? (
+                                        {isAdmin ? (
                                             <>
                                                 <MenuItem onClick={() => handleStatusChange('Issued')}>Issued</MenuItem>
                                                 <MenuItem onClick={() => handleStatusChange('Returned')}>Returned</MenuItem>
-                                                <MenuItem onClick={() => handleStatusChange('Received by HR')}>Received by HR</MenuItem>
+                                                <MenuItem onClick={() => handleStatusChange('Received by Admin')}>Received by Admin</MenuItem>
                                             </>
                                         ) : (
                                             <>

@@ -57,9 +57,13 @@ function VisitTable() {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
 
+  const isAdmin = ["Admin", "admin", "SuperAdmin"].includes(user?.role);
+  const isRM = user?.is_rm || user?.isRM || Boolean(user?.subordinates && user.subordinates.length > 0);
+  const canSelectEmployee = isAdmin || isRM;
+
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [employees, setEmployees] = useState([])
-  const [selectedEmpId, setSelectedEmpId] = useState(user.role === "HR" ? "" : user.emp_id)
+  const [selectedEmpId, setSelectedEmpId] = useState(canSelectEmployee ? "" : user.emp_id)
   const [loading, setLoading] = useState(false)
   const [noData, setNoData] = useState(false)
 
@@ -70,7 +74,7 @@ function VisitTable() {
   const [address, setAddress] = useState("")
   const [time, setTime] = useState("")
   useEffect(() => {
-    if (user.role === "HR") {
+    if (canSelectEmployee) {
       const fetchEmployees = async () => {
         try {
           const response = await axios.get(
@@ -78,7 +82,15 @@ function VisitTable() {
           )
 
           if (response.data.success) {
-            setEmployees(response.data.data)
+            const allEmps = response.data.data || [];
+            if (isRM && !isAdmin) {
+              const teamEmps = allEmps.filter(
+                (emp) => emp.EmpId === user.emp_id || emp.RM === user.emp_id || (user.subordinates && user.subordinates.includes(emp.EmpId))
+              );
+              setEmployees(teamEmps);
+            } else {
+              setEmployees(allEmps);
+            }
           } else {
             console.log("Failed to fetch employee list")
           }
@@ -88,7 +100,7 @@ function VisitTable() {
       }
       fetchEmployees()
     }
-  }, [user.role])
+  }, [user.role, user.tenent_id])
 
   const fetchVisits = async () => {
     setLoading(true)
@@ -216,7 +228,7 @@ function VisitTable() {
         }}
       >
         <Grid container spacing={2} alignItems="center">
-          {user.role === "HR" && (
+          {canSelectEmployee && (
             <Grid item xs={12} md={4}>
               <Autocomplete
                 options={employees}
@@ -247,7 +259,7 @@ function VisitTable() {
             </Grid>
           )}
 
-          <Grid item xs={12} md={user.role === "HR" ? 3 : 4}>
+          <Grid item xs={12} md={canSelectEmployee ? 3 : 4}>
             <TextField
               type="date"
               value={selectedDate.toISOString().substr(0, 10)}
@@ -289,7 +301,7 @@ function VisitTable() {
             </Button>
           </Grid>
 
-          <Grid item xs={12} md={user.role === "HR" ? 3 : 3}>
+          <Grid item xs={12} md={canSelectEmployee ? 3 : 3}>
             <Button
               variant="outlined"
               fullWidth

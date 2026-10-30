@@ -330,6 +330,9 @@ const RegulariseList = () => {
   const { user } = useAuth();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isAdmin = ["Admin", "admin", "SuperAdmin"].includes(user?.role);
+  const isRM = user?.is_rm || user?.isRM || Boolean(user?.subordinates && user.subordinates.length > 0);
+  const isHR = isAdmin || isRM;
 
   const [regularisations, setRegularisations] = useState([]);
   const [employees, setEmployees] = useState([]);
@@ -667,7 +670,7 @@ const RegulariseList = () => {
                     regularise={regularise}
                     employee={employee}
                     onStatusChange={handleStatusChange}
-                    isHR={user.role === "HR"}
+                    isHR={isHR}
                     index={index}
                   />
                 );
@@ -718,7 +721,7 @@ const RegulariseList = () => {
                     </Box>
                   </TableCell>
                   <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>Status</TableCell>
-                  {user.role === "HR" && <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>Actions</TableCell>}
+                  {isHR && <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>Actions</TableCell>}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -801,7 +804,7 @@ const RegulariseList = () => {
                               sx={{ height: 22, fontSize: '0.7rem' }}
                             />
                           </TableCell>
-                          {user.role === "HR" && (
+                          {isHR && (
                             <TableCell sx={{ py: 1 }}>
                               <Box sx={{ display: "flex", gap: 0.5 }}>
                                 <Tooltip title="Approve">

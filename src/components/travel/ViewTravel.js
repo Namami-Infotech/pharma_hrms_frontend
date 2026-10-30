@@ -77,6 +77,9 @@ function ViewTravel({ EmpId }) {
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const { user } = useAuth()
   const theme = useTheme()
+  const isAdmin = user && ["Admin", "admin", "SuperAdmin"].includes(user.role);
+  const isRM = user && (user.is_rm || user.isRM || Boolean(user.subordinates && user.subordinates.length > 0));
+  const canManage = isAdmin || isRM;
 
   const formatDate = (dateString) => {
     const date = new Date(dateString)
@@ -361,7 +364,7 @@ function ViewTravel({ EmpId }) {
                     </Box>
                   </TableCell>
                   <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>Status</TableCell>
-                  {user && user.role === "HR" && (
+                  {canManage && (
                     <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>Actions</TableCell>
                   )}
                 </TableRow>
@@ -407,7 +410,7 @@ function ViewTravel({ EmpId }) {
                     <TableCell sx={{ py: 1 }}>
                       <Chip label={expense.status} size="small" color={getStatusColor(expense.status)} sx={{ height: 24, fontSize: '0.7rem' }} />
                     </TableCell>
-                    {user && user.role === "HR" && (
+                    {canManage && (
                       <TableCell sx={{ py: 1 }}>
                         {expense.status === "Pending" && (
                           <Stack direction="row" spacing={0.5}>

@@ -173,6 +173,7 @@ const PolicyCard = ({ policy, onView, onToggle, isHR }) => {
 
 function PolicyList() {
   const { user } = useAuth()
+  const isAdmin = ["Admin", "admin", "SuperAdmin"].includes(user?.role)
   const [policies, setPolicies] = useState([])
   const [dialogOpen, setDialogOpen] = useState(false)
   const [page, setPage] = useState(0)
@@ -260,7 +261,7 @@ function PolicyList() {
   }
 
   const filteredPolicies = policies.filter((policy) => {
-    if (user && user.role === "HR") return true
+    if (isAdmin) return true
     return policy.IsActive === 1
   })
 
@@ -302,7 +303,7 @@ function PolicyList() {
               Manage and view company policies and documents
             </Typography>
           </Box>
-          {user && user.role === "HR" && (
+          {isAdmin && (
             <Button
               variant="contained"
               onClick={handleOpenDialog}
@@ -321,8 +322,8 @@ function PolicyList() {
           )}
         </Box>
 
-        {/* Stats Cards for HR */}
-        {user && user.role === "HR" && policies.length > 0 && (
+        {/* Stats Cards for Admin */}
+        {isAdmin && policies.length > 0 && (
           <Grid container spacing={1.5} sx={{ mb: 2 }}>
             <Grid item xs={4}>
               <StatsCard
@@ -384,7 +385,7 @@ function PolicyList() {
               No Policies Available
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {user?.role === "HR" ? "Add your first company policy to get started." : "No active policies at the moment."}
+              {isAdmin ? "Add your first company policy to get started." : "No active policies at the moment."}
             </Typography>
           </Box>
         ) : isMobile ? (
@@ -402,7 +403,7 @@ function PolicyList() {
                     policy={policy}
                     onView={handleViewPDF}
                     onToggle={handleTogglePolicyStatus}
-                    isHR={user?.role === "HR"}
+                    isHR={isAdmin}
                   />
                 ))}
             </AnimatePresence>
@@ -427,7 +428,7 @@ function PolicyList() {
                       View
                     </Box>
                   </TableCell>
-                  {user && user.role === "HR" && (
+                  {isAdmin && (
                     <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>Actions</TableCell>
                   )}
                 </TableRow>
@@ -505,7 +506,7 @@ function PolicyList() {
                             </IconButton>
                           </Tooltip>
                         </TableCell>
-                        {user && user.role === "HR" && (
+                        {isAdmin && (
                           <TableCell sx={{ py: 1 }}>
                             <Tooltip title={policy.IsActive ? "Deactivate" : "Activate"}>
                               <IconButton

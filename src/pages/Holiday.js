@@ -9,8 +9,8 @@ function Holiday() {
 
     return (
         <PageWrapper title="Holidays">
-            {/* Show AddHoliday component only for HR users */}
-            {user && user.role === 'HR' && <AddHoliday />}
+            {/* Show AddHoliday component only for Admin users */}
+            {user && ['Admin', 'admin', 'SuperAdmin'].includes(user.role) && <AddHoliday />}
             
             {/* Show ViewHoliday for all users */}
             <ViewHoliday />

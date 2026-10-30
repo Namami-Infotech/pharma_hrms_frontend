@@ -1,69 +1,13 @@
-import { useState } from "react"
+import React from 'react';
 import PageWrapper from '../components/layout/PageWrapper';
 import ViewExpense from '../components/expense/ViewExpense';
-import { useAuth } from '../components/auth/AuthContext';
-import {
-  useMediaQuery,
-  Fab,
-  Tooltip,
-} from "@mui/material"
-import { Add } from "@mui/icons-material"
-import ApplyExpense from '../components/expense/ApplyExpense';
 
-import { motion, AnimatePresence } from "framer-motion"
 function EnhancedExpensePage() {
-  const { user } = useAuth();
-  const [openApplyExpenseDialog, setOpenApplyExpenseDialog] = useState(false)
-  const isMobile = useMediaQuery("(max-width:600px)")
-    const handleOpenApplyExpenseDialog = () => setOpenApplyExpenseDialog(true)
-  const handleCloseApplyExpenseDialog = () => setOpenApplyExpenseDialog(false)
-
-  const handleExpenseApplied = () => {
-    handleCloseApplyExpenseDialog()
-  }
-
-    return (
-        <PageWrapper title="Holidays">
-          
-        <ViewExpense />
-        <AnimatePresence>
-          {isMobile && (
-            <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Tooltip title="Quick Apply Expense">
-                <Fab
-                  z
-                  onClick={handleOpenApplyExpenseDialog}
-                  sx={{
-                    position: "fixed",
-                    bottom: 24,
-                    right: 24,
-                    background: "linear-gradient(45deg, #667eea 30%, #764ba2 90%)",
-                    "&:hover": {
-                      background: "linear-gradient(45deg, #667eea 60%, #764ba2 100%)",
-                      transform: "scale(1.1)",
-                    },
-                    transition: "all 0.3s ease",
-                    zIndex: 1000,
-                  }}
-                >
-                  <Add />
-                </Fab>
-              </Tooltip>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        {user && user.role === 'HR' &&  <ApplyExpense
-          open={openApplyExpenseDialog}
-          onClose={handleCloseApplyExpenseDialog}
-          onExpenseApplied={handleExpenseApplied}
-        />}
-        </PageWrapper>
-    );
+  return (
+    <PageWrapper title="Expense Management">
+      <ViewExpense />
+    </PageWrapper>
+  );
 }
 
 export default EnhancedExpensePage;

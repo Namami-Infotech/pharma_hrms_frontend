@@ -424,6 +424,7 @@ function ViewNotifications() {
   const [detailModalOpen, setDetailModalOpen] = useState(false)
 
   const { user } = useAuth()
+  const isAdmin = ["Admin", "admin", "SuperAdmin"].includes(user?.role)
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
 
@@ -599,7 +600,7 @@ function ViewNotifications() {
               >
                 Cards
               </Button>
-              {user?.role === "HR" && (
+              {isAdmin && (
                 <Button
                   variant="contained"
                   startIcon={<Add />}
@@ -876,7 +877,7 @@ function ViewNotifications() {
       </Paper>
 
       {/* Floating Action Button */}
-      {user?.role === "HR" && (
+      {isAdmin && (
         <Zoom in={true}>
           <Fab
             onClick={handleOpenDialog}

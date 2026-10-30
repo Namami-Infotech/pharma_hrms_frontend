@@ -62,6 +62,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { useAuth } from '../auth/AuthContext';
+import ApplyExpense from './ApplyExpense';
 
 function EnhancedViewExpense() {
   const { user } = useAuth();
@@ -79,8 +80,13 @@ function EnhancedViewExpense() {
   const [viewMode, setViewMode] = useState(isMobile ? 'card' : 'table');
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
+  const [createExpenseOpen, setCreateExpenseOpen] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [anchorEl, setAnchorEl] = useState(null);
+
+  const isAdmin = user && ['Admin', 'admin', 'SuperAdmin'].includes(user.role);
+  const isRM = user && (user.is_rm || user.isRM || Boolean(user.subordinates && user.subordinates.length > 0));
+  const canApproveOrReject = isAdmin || isRM;
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -123,47 +129,47 @@ function EnhancedViewExpense() {
     fetchEmployeeData();
   }, [user.tenent_id]);
 
-  useEffect(() => {
-    const fetchExpenses = async () => {
-      if (employeeData.length === 0) return;
+  const fetchExpenses = async () => {
+    if (employeeData.length === 0) return;
 
-      try {
-        if (!user || !user.emp_id) {
-          setError('User is not authenticated');
-          setLoading(false);
-          return;
-        }
+    try {
+      if (!user || !user.emp_id) {
+        setError('User is not authenticated');
+        setLoading(false);
+        return;
+      }
 
-        const response = await axios.get(
-          `${BASE_URL}/expense/get_expense.php`,
-          { params: { EmpId: user.emp_id, role: user.role } }
+      const response = await axios.get(
+        `${BASE_URL}/expense/get_expense.php`,
+        { params: { EmpId: user.emp_id, role: user.role } }
+      );
+
+      if (response.data.success) {
+        const filteredExpenses = response.data.data.filter(expense =>
+          employeeData.some(emp => emp.EmpId === expense.empId && emp.Tenent_Id === user.tenent_id)
         );
 
-        if (response.data.success) {
-          const filteredExpenses = response.data.data.filter(expense =>
-            employeeData.some(emp => emp.EmpId === expense.empId && emp.Tenent_Id === user.tenent_id)
-          );
+        const expenseData = filteredExpenses.map(expense => {
+          const employee = employeeData.find(emp => emp.EmpId === expense.empId);
+          return {
+            ...expense,
+            employeeName: employee ? employee.Name : 'Unknown'
+          };
+        });
 
-          const expenseData = filteredExpenses.map(expense => {
-            const employee = employeeData.find(emp => emp.EmpId === expense.empId);
-            return {
-              ...expense,
-              employeeName: employee ? employee.Name : 'Unknown'
-            };
-          });
-
-          setExpenses(expenseData);
-        } else {
-          setError(response.data.message);
-        }
-      } catch (error) {
-        setError('Error fetching expense data');
-        console.error('Error:', error);
-      } finally {
-        setLoading(false);
+        setExpenses(expenseData);
+      } else {
+        setError(response.data.message);
       }
-    };
+    } catch (error) {
+      setError('Error fetching expense data');
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchExpenses();
   }, [user, employeeData, user.tenent_id]);
 
@@ -306,6 +312,25 @@ function EnhancedViewExpense() {
             💰 Expense Management
           </Typography>
           <Box display="flex" gap={2}>
+            <Button
+              variant="contained"
+              startIcon={<Add />}
+              onClick={() => setCreateExpenseOpen(true)}
+              sx={{
+                borderRadius: 2,
+                bgcolor: '#8d0638ff',
+                color: '#fff',
+                fontWeight: 'bold',
+                textTransform: 'none',
+                px: 2,
+                boxShadow: '0 3px 10px rgba(141, 6, 56, 0.3)',
+                '&:hover': {
+                  bgcolor: '#6d0430ff',
+                }
+              }}
+            >
+              Add Expense
+            </Button>
             <Tooltip title="Export to CSV">
               <Button
                 variant="contained"
@@ -496,8 +521,8 @@ function EnhancedViewExpense() {
                   <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Amount</TableCell>
                   <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Receipt</TableCell>
                   <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Status</TableCell>
-                  {user?.role === 'HR' && (
-                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Actions</TableCell>
+                  {canApproveOrReject && (
+                    <TableCell sx={{ color: 'white', fontWeight: 'bold', textAlign: 'center' }}>Action</TableCell>
                   )}
                 </TableRow>
               </TableHead>
@@ -559,33 +584,39 @@ function EnhancedViewExpense() {
                             label={expense.Status}
                             color={getStatusColor(expense.Status)}
                             variant="outlined"
-                            sx={{ borderRadius: 2 }}
+                            sx={{ borderRadius: 2, fontWeight: 'bold' }}
                           />
                         </TableCell>
-                        {user?.role === 'HR' && (
-                          <TableCell>
-                            <Box display="flex" gap={1}>
-                              <Tooltip title="Approve">
-                                <IconButton
+                        {canApproveOrReject && (
+                          <TableCell sx={{ textAlign: 'center' }}>
+                            {expense.Status === 'Pending' ? (
+                              <Box display="flex" gap={1} justifyContent="center">
+                                <Button
+                                  variant="contained"
                                   color="success"
                                   size="small"
+                                  startIcon={<Check />}
                                   onClick={() => handleStatusChange(expense.detailId, 'Approved')}
-                                  disabled={expense.Status === 'Approved' || expense.Status === 'Rejected'}
+                                  sx={{ borderRadius: 2, textTransform: 'none', px: 1.5 }}
                                 >
-                                  <Check />
-                                </IconButton>
-                              </Tooltip>
-                              <Tooltip title="Reject">
-                                <IconButton
+                                  Approve
+                                </Button>
+                                <Button
+                                  variant="contained"
                                   color="error"
                                   size="small"
+                                  startIcon={<Cancel />}
                                   onClick={() => handleStatusChange(expense.detailId, 'Rejected')}
-                                  disabled={expense.Status === 'Approved' || expense.Status === 'Rejected'}
+                                  sx={{ borderRadius: 2, textTransform: 'none', px: 1.5 }}
                                 >
-                                  <Cancel />
-                                </IconButton>
-                              </Tooltip>
-                            </Box>
+                                  Reject
+                                </Button>
+                              </Box>
+                            ) : (
+                              <Typography variant="caption" color="textSecondary" sx={{ fontStyle: 'italic' }}>
+                                Processed
+                              </Typography>
+                            )}
                           </TableCell>
                         )}
                       </motion.tr>
@@ -697,26 +728,28 @@ function EnhancedViewExpense() {
                               </Typography>
                             )}
 
-                            {user?.role === 'HR' && expense.Status === 'Pending' && (
+                            {canApproveOrReject && expense.Status === 'Pending' && (
                               <Box display="flex" gap={1}>
-                                <Tooltip title="Approve">
-                                  <IconButton
-                                    color="success"
-                                    size="small"
-                                    onClick={() => handleStatusChange(expense.detailId, 'Approved')}
-                                  >
-                                    <Check />
-                                  </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Reject">
-                                  <IconButton
-                                    color="error"
-                                    size="small"
-                                    onClick={() => handleStatusChange(expense.detailId, 'Rejected')}
-                                  >
-                                    <Cancel />
-                                  </IconButton>
-                                </Tooltip>
+                                <Button
+                                  variant="contained"
+                                  color="success"
+                                  size="small"
+                                  startIcon={<Check />}
+                                  onClick={() => handleStatusChange(expense.detailId, 'Approved')}
+                                  sx={{ borderRadius: 2, textTransform: 'none' }}
+                                >
+                                  Approve
+                                </Button>
+                                <Button
+                                  variant="contained"
+                                  color="error"
+                                  size="small"
+                                  startIcon={<Cancel />}
+                                  onClick={() => handleStatusChange(expense.detailId, 'Rejected')}
+                                  sx={{ borderRadius: 2, textTransform: 'none' }}
+                                >
+                                  Reject
+                                </Button>
                               </Box>
                             )}
                           </Box>
@@ -755,6 +788,37 @@ function EnhancedViewExpense() {
           <Button onClick={() => setImageDialogOpen(false)}>Close</Button>
         </DialogActions>
       </Dialog>
+
+      {/* Floating Action Button */}
+      <Tooltip title="Add Expense">
+        <Fab
+          onClick={() => setCreateExpenseOpen(true)}
+          sx={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            zIndex: theme.zIndex.speedDial,
+            bgcolor: '#8d0638ff',
+            color: 'white',
+            '&:hover': {
+              bgcolor: '#6d0430ff',
+            }
+          }}
+          size="medium"
+        >
+          <Add />
+        </Fab>
+      </Tooltip>
+
+      {/* Create / Apply Expense Dialog */}
+      <ApplyExpense
+        open={createExpenseOpen}
+        onClose={() => setCreateExpenseOpen(false)}
+        onExpenseApplied={() => {
+          setCreateExpenseOpen(false);
+          fetchExpenses();
+        }}
+      />
 
       {/* Snackbar */}
       <Snackbar

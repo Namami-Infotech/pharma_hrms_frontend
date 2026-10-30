@@ -18,6 +18,9 @@ function ViewTickets() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const { user } = useAuth();
+    const isAdmin = ["Admin", "admin", "SuperAdmin"].includes(user?.role);
+    const isRM = user?.is_rm || user?.isRM || Boolean(user?.subordinates && user.subordinates.length > 0);
+    const canManage = isAdmin || isRM;
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -155,7 +158,7 @@ function ViewTickets() {
                                     <TableCell style={{ color: "white" }}>Remark</TableCell>
                                     <TableCell style={{ color: "white" }}>Date</TableCell>
                                     <TableCell style={{ color: "white" }}>Status</TableCell>
-                                    {user.role === 'HR' && <TableCell style={{ color: "white" }}>Actions</TableCell>}
+                                    {canManage && <TableCell style={{ color: "white" }}>Actions</TableCell>}
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -167,7 +170,7 @@ function ViewTickets() {
                                         <TableCell>{ticket.Remark}</TableCell>
                                         <TableCell>{formatDate(ticket.Date)}</TableCell>
                                         <TableCell>{ticket.Status}</TableCell>
-                                        {user.role === 'HR' && (
+                                        {canManage && (
                                             <TableCell>
                                                 {ticket.Status === 'Pending' && (
                                                     <>

@@ -65,6 +65,9 @@ function SalarySlip() {
 
   const slipRef = useRef(null);
 
+  const isAdmin = ["Admin", "admin", "SuperAdmin"].includes(user?.role);
+  const isRM = user?.is_rm || user?.isRM || Boolean(user?.subordinates && user.subordinates.length > 0);
+
   // 1. Fetch active employees list
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -74,12 +77,25 @@ function SalarySlip() {
           `${BASE_URL}/employee/list_employee.php?Tenent_Id=${tenantId}`
         );
         if (res.data.success && res.data.data) {
-          setEmployees(res.data.data);
-          // Auto select current logged-in employee or first employee
-          if (user?.role === "Employee" && user?.empId) {
-            setSelectedEmpId(user.empId);
-          } else if (res.data.data.length > 0 && !selectedEmpId) {
-            setSelectedEmpId(res.data.data[0].EmpId);
+          const allEmps = res.data.data;
+          const userEmpId = user?.emp_id || user?.empId;
+
+          let allowedEmps = allEmps;
+          if (!isAdmin) {
+            if (isRM) {
+              // RM can generate salary slip for self and all subordinates
+              allowedEmps = allEmps.filter(
+                (emp) => emp.EmpId === userEmpId || emp.RM === userEmpId || (user?.subordinates && user.subordinates.includes(emp.EmpId))
+              );
+            } else {
+              // Plain employee can only see their own salary slip
+              allowedEmps = allEmps.filter((emp) => emp.EmpId === userEmpId);
+            }
+          }
+
+          setEmployees(allowedEmps);
+          if (!selectedEmpId || !allowedEmps.some((e) => e.EmpId === selectedEmpId)) {
+            setSelectedEmpId(userEmpId || (allowedEmps[0]?.EmpId || ""));
           }
         }
       } catch (err) {
@@ -87,7 +103,7 @@ function SalarySlip() {
       }
     };
     fetchEmployees();
-  }, [user]);
+  }, [user, isAdmin, isRM]);
 
   // Reset custom days when changing employee, month, or year
   const handleEmpChange = (newEmpId) => {
@@ -250,6 +266,7 @@ function SalarySlip() {
           <Grid item xs={12} sm={3.5} md={3.2}>
             <Autocomplete
               size="small"
+              disabled={!isAdmin && !isRM}
               options={employees}
               getOptionLabel={(option) =>
                 `${option.Name || ""} (${option.EmpId || ""})`

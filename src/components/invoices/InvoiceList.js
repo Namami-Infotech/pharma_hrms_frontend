@@ -571,7 +571,7 @@ function InvoiceList() {
   const [error, setError] = useState("")
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
-  const isAdmin = user?.role === "HR" // This is now only used for display purposes
+  const isAdmin = ["Admin", "admin", "SuperAdmin"].includes(user?.role)
 
   // Date format function for dd/mm/yyyy
   const formatDate = (dateString) => {
