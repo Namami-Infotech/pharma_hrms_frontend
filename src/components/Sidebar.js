@@ -174,6 +174,15 @@ function Sidebar({ open, onClose, variant = "permanent" }) { // Add props for mo
     }
   })
 
+  // Ensure Advance (/advance) is included in sidebar if permitted by role
+  const roleName = user?.Role || user?.role || "default"
+  const roleAllowed = ROLE_PERMISSIONS[roleName] || ROLE_PERMISSIONS.default || []
+  if (roleAllowed.includes("/advance") && !seenPaths["/advance"]) {
+    const advanceRoute = MODULES_BY_ID[24] || { id: 24, path: "/advance", name: "Advance", category: "Finance" }
+    seenPaths["/advance"] = true
+    routes.push(advanceRoute)
+  }
+
   // 3. Group routes by category
   const groupedRoutes = routes.reduce((acc, r) => {
     const cat = r.category || "Other"

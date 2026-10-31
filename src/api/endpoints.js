@@ -107,6 +107,13 @@ export const SALARY_API = {
   GET_SALARY_SLIP: `${BASE_URL}/salary/salary_slip`,
 };
 
+// 9b. Advance Payment Module
+export const ADVANCE_API = {
+  APPLY_ADVANCE: `${BASE_URL}/advance/apply_advance.php`,
+  GET_ADVANCES: `${BASE_URL}/advance/get_advances.php`,
+  APPROVE_ADVANCE: `${BASE_URL}/advance/approve_advance.php`,
+};
+
 // 10. Task Management Module
 export const TASK_API = {
   GET_TASKS: `${BASE_URL}/task/get_task`,
@@ -194,6 +201,7 @@ export const API_ROUTES = {
   TRAVEL: TRAVEL_API,
   VISIT: VISIT_API,
   SALARY: SALARY_API,
+  ADVANCE: ADVANCE_API,
   TASK: TASK_API,
   HOLIDAY: HOLIDAY_API,
   INVOICE: INVOICE_API,

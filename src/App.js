@@ -32,6 +32,7 @@ import Invoices from './pages/Invoices';
 import Salary from './pages/Salary';
 import Quotation from './pages/Quotation';
 import Product from './pages/Product';
+import Advance from './pages/Advance';
 
 // Wrapper component for routes that need layout
 const LayoutWrapper = ({ children }) => {
@@ -169,6 +170,14 @@ function App() {
               <PrivateRoute>
                 <LayoutWrapper>
                   <Salary />
+                </LayoutWrapper>
+              </PrivateRoute>
+            } />
+
+            <Route path="/advance" element={
+              <PrivateRoute>
+                <LayoutWrapper>
+                  <Advance />
                 </LayoutWrapper>
               </PrivateRoute>
             } />

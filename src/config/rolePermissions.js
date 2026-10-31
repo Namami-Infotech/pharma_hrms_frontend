@@ -35,6 +35,7 @@ export const ALL_NAV_ITEMS = [
   { path: "/leave", name: "Leave", icon: <Person />, category: "HR" },
   { path: "/holiday", name: "Holiday", icon: <HolidayVillage />, category: "HR" },
   { path: "/salary", name: "Salary", icon: <Payments />, category: "Finance" },
+  { path: "/advance", name: "Advance", icon: <AccountBalanceWallet />, category: "Finance" },
   { path: "/expense", name: "Expense", icon: <AccountBalanceWallet />, category: "Finance" },
   { path: "/invoices", name: "Invoices", icon: <ReceiptIcon />, category: "Finance" },
   { path: "/quotation", name: "Quotation", icon: <RequestQuote />, category: "Finance" },
@@ -77,6 +78,7 @@ export const MODULES_BY_ID = {
   21: { id: 21, path: "/dashboard", name: "Dashboard", icon: <Dashboard />, category: "Main" },
   22: { id: 22, path: "/notification", name: "Notifications", icon: <Notifications />, category: "Main", hasNotification: true },
   23: { id: 23, path: "/maps", name: "Maps", icon: <Map />, category: "Field" },
+  24: { id: 24, path: "/advance", name: "Advance", icon: <AccountBalanceWallet />, category: "Finance" },
 };
 
 export const MODULE_ID_TO_PATH = Object.fromEntries(
@@ -99,6 +101,7 @@ export const ROLE_PERMISSIONS = {
     "/leave",
     "/holiday",
     "/salary",
+    "/advance",
     "/expense",
     "/invoices",
     "/quotation",
@@ -125,6 +128,7 @@ export const ROLE_PERMISSIONS = {
     "/leave",
     "/holiday",
     "/salary",
+    "/advance",
     "/expense",
     "/quotation",
     "/products",
@@ -148,6 +152,7 @@ export const ROLE_PERMISSIONS = {
     "/leave",
     "/holiday",
     "/salary",
+    "/advance",
     "/expense",
     "/invoices",
     "/quotation",
@@ -173,6 +178,7 @@ export const ROLE_PERMISSIONS = {
     "/leave",
     "/holiday",
     "/salary",
+    "/advance",
     "/expense",
     "/quotation",
     "/products",
