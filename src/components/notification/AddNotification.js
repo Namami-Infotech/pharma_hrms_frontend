@@ -401,7 +401,7 @@ function AddNotification({ open, onClose, onNotificationAdded }) {
     >
       <DialogTitle
         sx={{
-          bgcolor: "#8d0638ff",
+          bgcolor: "#f37021",
           color: "white",
           display: "flex",
           justifyContent: "space-between",
@@ -521,7 +521,7 @@ function AddNotification({ open, onClose, onNotificationAdded }) {
                     Low Priority
                   </MenuItem>
                   <MenuItem value="normal">
-                    <Chip label="Normal" sx={{color:"#8d0638ff",mr: 1}} size="small"  />
+                    <Chip label="Normal" sx={{color:"#f37021",mr: 1}} size="small"  />
                     Normal Priority
                   </MenuItem>
                   <MenuItem value="high">
@@ -607,7 +607,7 @@ function AddNotification({ open, onClose, onNotificationAdded }) {
             disabled={loading || !formData.subject || !formData.body}
             startIcon={loading ? <CircularProgress size={20} /> : <Send />}
             sx={{
-              bgcolor: "#8d0638ff",
+              bgcolor: "#f37021",
               "&:hover": {
                 bgcolor: "#0f1f3d",
               },

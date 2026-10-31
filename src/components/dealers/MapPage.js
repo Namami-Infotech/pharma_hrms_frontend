@@ -433,7 +433,7 @@ function MapPage() {
       {/* Header */}
       <Paper elevation={1} sx={{ p: 3, mb: 3, borderRadius: 2 }}>
         <Box sx={{ display: "flex", flexDirection: { xs: 'column', md: 'row' }, justifyContent: "space-between", alignItems: { xs: 'stretch', md: 'center' }, gap: 2 }}>
-          <Typography variant="h5" fontWeight="bold" color="#8d0638ff">
+          <Typography variant="h5" fontWeight="bold" color="#f37021">
             Field Activity Tracker
           </Typography>
           

@@ -134,7 +134,7 @@ export default function ManageLeaveBalance({ open, onClose, employees = [], onUp
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle
         sx={{
-          bgcolor: "#8d0638ff",
+          bgcolor: "#f37021",
           color: "white",
           display: "flex",
           justifyContent: "space-between",
@@ -205,7 +205,7 @@ export default function ManageLeaveBalance({ open, onClose, employees = [], onUp
         {/* Leave Allocation Cards */}
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center", py: 5 }}>
-            <CircularProgress size={40} sx={{ color: "#8d0638ff" }} />
+            <CircularProgress size={40} sx={{ color: "#f37021" }} />
           </Box>
         ) : (
           <Box>
@@ -259,9 +259,9 @@ export default function ManageLeaveBalance({ open, onClose, employees = [], onUp
           startIcon={saving ? <CircularProgress size={18} color="inherit" /> : <Save />}
           disabled={saving || loading || !selectedEmpId}
           sx={{
-            bgcolor: "#8d0638ff",
+            bgcolor: "#f37021",
             color: "white",
-            "&:hover": { bgcolor: "#6d0430ff" },
+            "&:hover": { bgcolor: "#d95300" },
             px: 3,
           }}
         >

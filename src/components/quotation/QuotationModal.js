@@ -92,7 +92,7 @@ const numberToWords = (num) => {
   return inWords(val) + " Rupees Only";
 };
 
-function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold = 35000 }) {
+function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold = 35 }) {
   const { user } = useAuth();
 
   const [clients, setClients] = useState([]);
@@ -357,9 +357,8 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
     const cgstPercent = isInterState ? 0 : taxPercent / 2;
     const sgstPercent = isInterState ? 0 : taxPercent / 2;
     const cgstAmount = isInterState ? 0 : Math.round((taxAmount / 2) * 100) / 100;
-    const sgstAmount = isInterState ? 0 : Math.round((taxAmount / 2) * 100) / 100;
-
-    const hasHighDiscount = items.some((it) => (parseFloat(it.discount) || 0) > 35) || (parseFloat(formData.discount_percent) || 0) > 35;
+    const thresholdLimit = parseFloat(approvalThreshold) || 35;
+    const hasHighDiscount = items.some((it) => (parseFloat(it.discount) || 0) > thresholdLimit) || (parseFloat(formData.discount_percent) || 0) > thresholdLimit;
 
     return {
       ...formData,
@@ -462,7 +461,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
       <Dialog open={open} onClose={() => setShowPreview(false)} maxWidth="lg" fullWidth>
         <DialogTitle
           sx={{
-            bgcolor: "#8d0638",
+            bgcolor: "#f37021",
             color: "#ffffff",
             display: "flex",
             justifyContent: "space-between",
@@ -506,8 +505,8 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
             onClick={handleSubmit}
             disabled={loading}
             sx={{
-              bgcolor: "#8d0638",
-              "&:hover": { bgcolor: "#6b042d" },
+              bgcolor: "#f37021",
+              "&:hover": { bgcolor: "#d95300" },
               fontWeight: 700,
               px: 3,
             }}
@@ -523,7 +522,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle
         sx={{
-          bgcolor: "#8d0638",
+          bgcolor: "#f37021",
           color: "#ffffff",
           display: "flex",
           justifyContent: "space-between",
@@ -552,7 +551,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
             variant="subtitle2"
             sx={{
               fontWeight: 800,
-              color: "#8d0638",
+              color: "#f37021",
               textTransform: "uppercase",
               letterSpacing: 0.5,
               mb: 1.5,
@@ -665,7 +664,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
             variant="subtitle2"
             sx={{
               fontWeight: 800,
-              color: "#8d0638",
+              color: "#f37021",
               textTransform: "uppercase",
               letterSpacing: 0.5,
               mb: 1.5,
@@ -712,7 +711,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
               variant="subtitle2"
               sx={{
                 fontWeight: 800,
-                color: "#8d0638",
+                color: "#f37021",
                 textTransform: "uppercase",
                 letterSpacing: 0.5,
               }}
@@ -725,8 +724,8 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
               variant="outlined"
               onClick={handleAddItem}
               sx={{
-                borderColor: "#8d0638",
-                color: "#8d0638",
+                borderColor: "#f37021",
+                color: "#f37021",
                 textTransform: "none",
                 fontWeight: 600,
               }}
@@ -854,7 +853,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
                     </TableCell>
 
                     {/* Line Total */}
-                    <TableCell sx={{ textAlign: "right", fontWeight: 800, color: "#8d0638" }}>
+                    <TableCell sx={{ textAlign: "right", fontWeight: 800, color: "#f37021" }}>
                       ₹{parseFloat(it.amount || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                     </TableCell>
 
@@ -971,10 +970,10 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
                 <Divider sx={{ my: 1.5, borderColor: "#000000" }} />
 
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <Typography variant="subtitle1" fontWeight="bold" color="#8d0638">
+                  <Typography variant="subtitle1" fontWeight="bold" color="#f37021">
                     Grand Total:
                   </Typography>
-                  <Typography variant="h6" fontWeight="bold" color="#8d0638">
+                  <Typography variant="h6" fontWeight="bold" color="#f37021">
                     ₹{grandTotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                   </Typography>
                 </Box>
@@ -1028,11 +1027,11 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
               onClick={handleOpenPreview}
               disabled={loading}
               sx={{
-                borderColor: "#8d0638",
-                color: "#8d0638",
+                borderColor: "#f37021",
+                color: "#f37021",
                 textTransform: "none",
                 fontWeight: 600,
-                "&:hover": { borderColor: "#6b042d", bgcolor: "rgba(141,6,56,0.04)" },
+                "&:hover": { borderColor: "#d95300", bgcolor: "rgba(243, 112, 33,0.04)" },
               }}
             >
               Preview
@@ -1045,8 +1044,8 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
               startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <Save />}
               disabled={loading}
               sx={{
-                bgcolor: "#8d0638",
-                "&:hover": { bgcolor: "#6b042d" },
+                bgcolor: "#f37021",
+                "&:hover": { bgcolor: "#d95300" },
                 fontWeight: 700,
                 px: 3,
               }}

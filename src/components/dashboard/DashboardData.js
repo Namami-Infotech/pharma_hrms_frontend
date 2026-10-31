@@ -315,7 +315,7 @@ const DashboardData = () => {
           p: { xs: 2, md: 3 },
           mb: 3,
           borderRadius: 2,
-          background: `linear-gradient(90deg, ${theme.palette.primary.main || '#8d0638'} 0%, ${theme.palette.secondary?.main || '#b81652'} 100%)`,
+          background: `linear-gradient(90deg, ${theme.palette.primary.main || '#f37021'} 0%, ${theme.palette.secondary?.main || '#b81652'} 100%)`,
           color: 'common.white',
         }}
       >

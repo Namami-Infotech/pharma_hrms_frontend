@@ -181,7 +181,7 @@ const EmployeeCard = ({
             <Tooltip title="Edit Employee">
               <IconButton
                 size="small"
-                sx={{ color: "#8d0638ff" }}
+                sx={{ color: "#f37021" }}
                 onClick={() => onEdit(employee)}
               >
                 <Edit fontSize="small" />
@@ -463,7 +463,7 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
     >
       <DialogTitle
         sx={{
-          bgcolor: "#8d0638ff",
+          bgcolor: "#f37021",
           color: "white",
           display: "flex",
           justifyContent: "space-between",
@@ -667,7 +667,7 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
               <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
                 <Button
                   variant="contained"
-                  sx={{ bgcolor: "#8d0638ff", color: "white" }}
+                  sx={{ bgcolor: "#f37021", color: "white" }}
                   onClick={handleAddSalary}
                   disabled={addingSalary || !salaryData.basic_salary}
                   startIcon={
@@ -690,7 +690,7 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
         <Button
           onClick={onClose}
           variant="contained"
-          sx={{ bgcolor: "#8d0638ff", color: "white" }}
+          sx={{ bgcolor: "#f37021", color: "white" }}
         >
           Close
         </Button>
@@ -1225,7 +1225,7 @@ function EmployeeList() {
             <Typography
               variant="h4"
               fontWeight="bold"
-              color="#8d0638ff"
+              color="#f37021"
               sx={{ flexGrow: 1 }}
             >
               Employee Management
@@ -1237,7 +1237,7 @@ function EmployeeList() {
                   onClick={fetchEmployees}
                   sx={{
                     bgcolor: "#fff",
-                    color: "#8d0638ff",
+                    color: "#f37021",
                     "&:hover": { bgcolor: "#f2e6eb" },
                   }}
                 >
@@ -1249,9 +1249,9 @@ function EmployeeList() {
                 startIcon={<PersonAdd />}
                 onClick={() => handleOpenForm("add")}
                 sx={{
-                  bgcolor: "#8d0638ff",
+                  bgcolor: "#f37021",
                   color: "white",
-                  "&:hover": { bgcolor: "#6b042d" },
+                  "&:hover": { bgcolor: "#d95300" },
                   borderRadius: 2,
                   textTransform: "none",
                 }}
@@ -1365,7 +1365,7 @@ function EmployeeList() {
                       All registered
                     </Typography>
                   </Box>
-                  <Person sx={{ fontSize: 22, color: "#8d0638ff" }} />
+                  <Person sx={{ fontSize: 22, color: "#f37021" }} />
                 </Box>
               </CardContent>
             </Card>
@@ -1525,7 +1525,7 @@ function EmployeeList() {
             // Desktop Table View
             <TableContainer>
               <Table>
-                <TableHead sx={{ bgcolor: "#8d0638ff" }}>
+                <TableHead sx={{ bgcolor: "#f37021" }}>
                   <TableRow>
                     <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                       <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -1670,7 +1670,7 @@ function EmployeeList() {
                                 </IconButton>
                               </Tooltip>
                               {/* <Tooltip title="Edit Employee">
-                              <IconButton size="small" sx={{ color: "#8d0638ff" }} onClick={() => handleOpenForm("edit", employee)}>
+                              <IconButton size="small" sx={{ color: "#f37021" }} onClick={() => handleOpenForm("edit", employee)}>
                                 <Edit fontSize="small" />
                               </IconButton>
                             </Tooltip> */}
@@ -1738,7 +1738,7 @@ function EmployeeList() {
         >
           <DialogTitle
             sx={{
-              bgcolor: "#8d0638ff",
+              bgcolor: "#f37021",
               color: "white",
               display: "flex",
               justifyContent: "space-between",
@@ -2198,7 +2198,7 @@ function EmployeeList() {
               startIcon={
                 submitting ? <CircularProgress size={20} /> : <CheckCircle />
               }
-              sx={{ bgcolor: "#8d0638ff", color: "white" }}
+              sx={{ bgcolor: "#f37021", color: "white" }}
             >
               {submitting
                 ? "Saving..."

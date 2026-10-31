@@ -22,25 +22,29 @@ import {
 } from "@mui/icons-material"
 import { useAuth } from "./auth/AuthContext"
 import { MODULES_BY_ID, ROLE_PERMISSIONS } from "../config/rolePermissions"
-import logo from "../assets/HRSmileLogo.jpeg"
+import logo from "../assets/aberdure_logo.png"
 
-// Simple logo
-const HRSmileLogo = () => (
+// Aberdure Pharma Logo
+const AberdureLogo = () => (
   <Box
     sx={{
-      width: 45,
-      height: 45,
-      borderRadius: 2,
+      width: 38,
+      height: 38,
+      borderRadius: 1.5,
       overflow: "hidden",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      bgcolor: "#8d0638ff",
+      bgcolor: "#ffffff",
+      border: "1px solid #f1f5f9",
+      p: 0.3,
+      boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+      flexShrink: 0,
     }}
   >
     <img
       src={logo}
-      alt="S-HR Logo"
+      alt="Aberdure Pharma Logo"
       style={{ width: "100%", height: "100%", objectFit: "contain" }}
     />
   </Box>
@@ -60,8 +64,8 @@ const NavItem = ({ route, isActive, isExpanded, hasNotification = false }) => {
           alignItems: "center",
           justifyContent: isExpanded ? "flex-start" : "center",
           flexDirection: isExpanded ? "row" : "column",
-          color: isActive ? "white" : theme.palette.text.primary,
-          bgcolor: isActive ? "#8d0638ff" : "transparent",
+          color: isActive ? "#ffffff !important" : theme.palette.text.primary,
+          bgcolor: isActive ? "#f37021" : "transparent",
           borderRadius: 2,
           mx: 1,
           my: 0.6,
@@ -69,15 +73,15 @@ const NavItem = ({ route, isActive, isExpanded, hasNotification = false }) => {
           py: 1.2,
           transition: "all 0.25s ease",
           "&:hover": {
-            bgcolor: isActive ? "#9a1f4b" : theme.palette.action.hover,
-            boxShadow: isActive ? theme.shadows[2] : theme.shadows[1],
+            bgcolor: isActive ? "#d95300" : "rgba(243, 112, 33, 0.08)",
+            boxShadow: isActive ? "0 4px 12px rgba(243, 112, 33, 0.3)" : theme.shadows[1],
           },
           textDecoration: 'none',
         }}
       >
         <ListItemIcon
           sx={{
-            color: "inherit",
+            color: isActive ? "#ffffff !important" : "inherit",
             minWidth: isExpanded ? 40 : "auto",
             mr: isExpanded ? 1.2 : 0,
             display: "flex",
@@ -106,6 +110,7 @@ const NavItem = ({ route, isActive, isExpanded, hasNotification = false }) => {
             sx={{
               whiteSpace: "nowrap",
               opacity: 0.95,
+              color: isActive ? "#ffffff !important" : "inherit",
             }}
           >
             {route.name}
@@ -118,6 +123,7 @@ const NavItem = ({ route, isActive, isExpanded, hasNotification = false }) => {
               fontSize: "0.65rem",
               textAlign: "center",
               opacity: 0.8,
+              color: isActive ? "#ffffff !important" : "inherit",
             }}
           >
             {route.name}
@@ -208,46 +214,29 @@ function Sidebar({ open, onClose, variant = "permanent" }) { // Add props for mo
       sx={{
         display: "flex",
         alignItems: "center",
-        justifyContent: isExpanded ? "space-between" : "center",
-        p: 2,
-        bgcolor: "white",
-        color: "red",
+        justifyContent: "center",
+        height: 64,
+        px: 2,
+        bgcolor: "#ffffff",
         position: "sticky",
         top: 0,
         zIndex: 10,
         borderBottom: "1px solid",
         borderColor: "divider",
-        // Prevent horizontal scrolling
         width: "100%",
         boxSizing: "border-box",
       }}
     >
-      <Box 
-        sx={{ 
-          display: "flex", 
-          alignItems: "center", 
-          gap: 1,
-          // Ensure content doesn't overflow
-          maxWidth: "100%",
-          overflow: "hidden",
+      <Box
+        component="img"
+        src={logo}
+        alt="Aberdure Pharma"
+        sx={{
+          maxHeight: 48,
+          maxWidth: "92%",
+          objectFit: "contain",
         }}
-      >
-        <HRSmileLogo />
-        <Typography
-          sx={{
-            fontWeight: 700,
-            fontSize: "1rem",
-            letterSpacing: 0.5,
-            fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
-            // Prevent text overflow
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          SAFEGUARD HR
-        </Typography>
-      </Box>
+      />
     </Box>
 
     {/* Navigation - Add overflow control */}
@@ -277,10 +266,10 @@ function Sidebar({ open, onClose, variant = "permanent" }) { // Add props for mo
                 variant="overline"
                 sx={{
                   px: 2,
-                  color: "#8d0638ff",
+                  color: "#f37021",
                   fontWeight: 800,
                   letterSpacing: 0.8,
-                  fontSize: "1rem",
+                  fontSize: "0.85rem",
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
@@ -333,10 +322,10 @@ function Sidebar({ open, onClose, variant = "permanent" }) { // Add props for mo
     <Drawer
       variant="permanent"
       sx={{
-        width: 240,
+        width: 260,
         flexShrink: 0,
         '& .MuiDrawer-paper': {
-          width: 240,
+          width: 260,
           boxSizing: 'border-box',
           borderRight: `1px solid ${theme.palette.divider}`,
         },

@@ -164,7 +164,7 @@ const AddHoliday = ({ open, onClose, onHolidayAdded }) => {
     >
       <DialogTitle
         sx={{
-          bgcolor: "#8d0638ff",
+          bgcolor: "#f37021",
           color: "white",
           display: "flex",
           justifyContent: "space-between",
@@ -265,7 +265,7 @@ const AddHoliday = ({ open, onClose, onHolidayAdded }) => {
                           <Chip
                             label={formatDate(holiday.date)}
                             size="small"
-                            sx={{ color: "#8d0638ff" }}
+                            sx={{ color: "#f37021" }}
                             variant="outlined"
                             icon={<CalendarToday />}
                           />
@@ -346,7 +346,7 @@ const AddHoliday = ({ open, onClose, onHolidayAdded }) => {
             disabled={loading || holidays.some((h) => !h.date || !h.title)}
             startIcon={loading ? <CircularProgress size={20} /> : <Save />}
             sx={{
-              bgcolor: "#8d0638ff",
+              bgcolor: "#f37021",
               "&:hover": {
                 bgcolor: "#0f1f3d",
               },

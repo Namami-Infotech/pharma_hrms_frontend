@@ -275,11 +275,11 @@ function ViewHoliday() {
       >
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
           <Box>
-            <Typography variant="h5" fontWeight="700" color="#8d0638ff" gutterBottom>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }} gutterBottom>
               Holiday Calendar
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Manage and view company holidays
+            <Typography variant="body2" sx={{ color: "#64748b", fontSize: "0.85rem" }}>
+              Manage and view company holidays and official calendar
             </Typography>
           </Box>
           <Box sx={{ display: "flex", gap: 1 }}>
@@ -369,9 +369,9 @@ function ViewHoliday() {
                 sx={{ 
                   borderRadius: 2, 
                   py: 1,
-                  bgcolor: "#8d0638ff",
+                  bgcolor: "#f37021",
                   "&:hover": {
-                    bgcolor: "#6d0430ff",
+                    bgcolor: "#d95300",
                   }
                 }}
               >
@@ -472,7 +472,7 @@ function ViewHoliday() {
                       fontFamily: 'inherit',
                     },
                     "& .rbc-event": {
-                      backgroundColor: "#8d0638ff",
+                      backgroundColor: "#f37021",
                       borderRadius: "4px",
                       border: "none",
                       color: "white",
@@ -481,10 +481,10 @@ function ViewHoliday() {
                       padding: '2px 4px',
                     },
                     "& .rbc-today": {
-                      backgroundColor: `${alpha("#8d0638ff", 0.08)}`,
+                      backgroundColor: `${alpha("#f37021", 0.08)}`,
                     },
                     "& .rbc-header": {
-                      backgroundColor: alpha("#8d0638ff", 0.9),
+                      backgroundColor: alpha("#f37021", 0.9),
                       color: "white",
                       fontWeight: "600",
                       padding: "6px",
@@ -513,7 +513,7 @@ function ViewHoliday() {
                     popup
                     eventPropGetter={(event) => ({
                       style: {
-                        backgroundColor: "#8d0638ff",
+                        backgroundColor: "#f37021",
                         borderRadius: "4px",
                         border: "none",
                         color: "white",
@@ -578,7 +578,7 @@ function ViewHoliday() {
                     <Typography variant="caption" color="text.secondary" fontWeight="500">
                       Holidays This Month
                     </Typography>
-                    <Typography variant="body2" fontWeight="600" color="#8d0638ff">
+                    <Typography variant="body2" fontWeight="600" color="#f37021">
                       {thisMonthHolidays}
                     </Typography>
                   </Box>
@@ -674,7 +674,7 @@ function ViewHoliday() {
                       sx={{
                         width: 12,
                         height: 12,
-                        bgcolor: "#8d0638ff",
+                        bgcolor: "#f37021",
                         borderRadius: 1,
                         mr: 1.5,
                       }}
@@ -686,8 +686,8 @@ function ViewHoliday() {
                       sx={{
                         width: 12,
                         height: 12,
-                        bgcolor: alpha("#8d0638ff", 0.1),
-                        border: `1px solid ${alpha("#8d0638ff", 0.3)}`,
+                        bgcolor: alpha("#f37021", 0.1),
+                        border: `1px solid ${alpha("#f37021", 0.3)}`,
                         borderRadius: 1,
                         mr: 1.5,
                       }}

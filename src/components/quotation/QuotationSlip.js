@@ -144,12 +144,12 @@ function QuotationSlip({ quotation, onBack, onEdit }) {
               variant="outlined"
               onClick={() => onEdit(quotation)}
               sx={{
-                borderColor: "#8d0638",
-                color: "#8d0638",
+                borderColor: "#f37021",
+                color: "#f37021",
                 textTransform: "none",
                 fontWeight: 600,
                 borderRadius: 2,
-                "&:hover": { borderColor: "#6b042d", bgcolor: "rgba(141,6,56,0.04)" },
+                "&:hover": { borderColor: "#d95300", bgcolor: "rgba(243, 112, 33,0.04)" },
               }}
             >
               Edit
@@ -161,12 +161,12 @@ function QuotationSlip({ quotation, onBack, onEdit }) {
             variant="outlined"
             onClick={handlePrint}
             sx={{
-              borderColor: "#8d0638",
-              color: "#8d0638",
+              borderColor: "#f37021",
+              color: "#f37021",
               textTransform: "none",
               fontWeight: 600,
               borderRadius: 2,
-              "&:hover": { borderColor: "#6b042d", bgcolor: "rgba(141,6,56,0.04)" },
+              "&:hover": { borderColor: "#d95300", bgcolor: "rgba(243, 112, 33,0.04)" },
             }}
           >
             Print
@@ -180,8 +180,8 @@ function QuotationSlip({ quotation, onBack, onEdit }) {
             onClick={handleDownloadPDF}
             disabled={downloading}
             sx={{
-              bgcolor: "#8d0638",
-              "&:hover": { bgcolor: "#6b042d" },
+              bgcolor: "#f37021",
+              "&:hover": { bgcolor: "#d95300" },
               textTransform: "none",
               fontWeight: 600,
               borderRadius: 2,
@@ -212,7 +212,7 @@ function QuotationSlip({ quotation, onBack, onEdit }) {
               fontSize: { xs: "20px", sm: "24px" },
               fontWeight: 900,
               letterSpacing: 1.5,
-              color: "#8d0638",
+              color: "#f37021",
               lineHeight: 1.2,
             }}
           >
@@ -297,7 +297,7 @@ function QuotationSlip({ quotation, onBack, onEdit }) {
               sx={{
                 fontSize: "10.5px",
                 fontWeight: 800,
-                color: "#8d0638",
+                color: "#f37021",
                 textTransform: "uppercase",
                 mb: 0.5,
                 borderBottom: "1px dashed #d1d5db",
@@ -339,7 +339,7 @@ function QuotationSlip({ quotation, onBack, onEdit }) {
               sx={{
                 fontSize: "10.5px",
                 fontWeight: 800,
-                color: "#8d0638",
+                color: "#f37021",
                 textTransform: "uppercase",
                 mb: 0.5,
                 borderBottom: "1px dashed #d1d5db",
@@ -351,7 +351,7 @@ function QuotationSlip({ quotation, onBack, onEdit }) {
             <Box sx={{ fontSize: "11px", display: "flex", flexDirection: "column", gap: 0.4 }}>
               <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                 <span style={{ fontWeight: 600 }}>Quotation No:</span>
-                <span style={{ fontWeight: 800, color: "#8d0638" }}>
+                <span style={{ fontWeight: 800, color: "#f37021" }}>
                   {quotation.quotation_no}
                 </span>
               </Box>
@@ -497,7 +497,7 @@ function QuotationSlip({ quotation, onBack, onEdit }) {
             }}
           >
             <Box>
-              <Typography sx={{ fontSize: "10px", fontWeight: 800, color: "#8d0638", mb: 0.3 }}>
+              <Typography sx={{ fontSize: "10px", fontWeight: 800, color: "#f37021", mb: 0.3 }}>
                 BANK ACCOUNT DETAILS FOR REMITTANCE:
               </Typography>
               <Box sx={{ fontSize: "9.5px", lineHeight: 1.5, color: "#374151" }}>
@@ -600,7 +600,7 @@ function QuotationSlip({ quotation, onBack, onEdit }) {
                   justifyContent: "space-between",
                   fontSize: "14px",
                   fontWeight: 900,
-                  color: "#8d0638",
+                  color: "#f37021",
                 }}
               >
                 <span>GRAND TOTAL:</span>
@@ -632,7 +632,7 @@ function QuotationSlip({ quotation, onBack, onEdit }) {
               p: 1.2,
             }}
           >
-            <Typography sx={{ fontSize: "10px", fontWeight: 800, color: "#8d0638", mb: 0.3 }}>
+            <Typography sx={{ fontSize: "10px", fontWeight: 800, color: "#f37021", mb: 0.3 }}>
               TERMS & CONDITIONS:
             </Typography>
             <Typography

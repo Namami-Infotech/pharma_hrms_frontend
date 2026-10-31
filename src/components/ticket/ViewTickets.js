@@ -138,9 +138,9 @@ function ViewTickets() {
         <Box>
             <Button
                 variant="contained"
-                color="#8d0638ff"
+                color="#f37021"
                 onClick={exportToCsv}
-                style={{ marginBottom: '16px', backgroundColor: "#8d0638ff", float: "right" }}
+                style={{ marginBottom: '16px', backgroundColor: "#f37021", float: "right" }}
             >
                 Export CSV
             </Button>
@@ -150,7 +150,7 @@ function ViewTickets() {
                 <>
                     <TableContainer component={Paper}>
                         <Table>
-                            <TableHead style={{ backgroundColor: "#8d0638ff" }}>
+                            <TableHead style={{ backgroundColor: "#f37021" }}>
                                 <TableRow>
                                     <TableCell style={{ color: "white" }}>Employee Name</TableCell>
                                     <TableCell style={{ color: "white" }}>Category</TableCell>
@@ -174,7 +174,7 @@ function ViewTickets() {
                                             <TableCell>
                                                 {ticket.Status === 'Pending' && (
                                                     <>
-                                                        <IconButton onClick={() => handleStatusChange(ticket.id, 'Approved')} color="#8d0638ff">
+                                                        <IconButton onClick={() => handleStatusChange(ticket.id, 'Approved')} color="#f37021">
                                                             <CheckIcon />
                                                         </IconButton>
                                                         <IconButton onClick={() => handleStatusChange(ticket.id, 'Rejected')} color="secondary">

@@ -509,9 +509,9 @@ const AddCheckpointForm = () => {
                             ))}
                             <Button
                                 variant="contained"
-                                color="#8d0638ff"
+                                color="#f37021"
                                 onClick={addOptionField}
-                                style={{ backgroundColor: '#8d0638ff', color: '#fff' }}
+                                style={{ backgroundColor: '#f37021', color: '#fff' }}
                             >
                                 <AddIcon/> Add More Option
                             </Button>
@@ -584,9 +584,9 @@ const AddCheckpointForm = () => {
                             ))}
                             <Button
                                 variant="contained"
-                                color="#8d0638ff"
+                                color="#f37021"
                                 onClick={addOptionField}
-                                style={{ backgroundColor: '#8d0638ff', color: '#fff' }}
+                                style={{ backgroundColor: '#f37021', color: '#fff' }}
                             >
                                 <AddIcon/> Add More Option
                             </Button>
@@ -749,9 +749,9 @@ const AddCheckpointForm = () => {
                             ))}
                             <Button
                                 variant="contained"
-                                color="#8d0638ff"
+                                color="#f37021"
                                 onClick={addOptionField}
-                                style={{ backgroundColor: '#8d0638ff', color: '#fff' }}
+                                style={{ backgroundColor: '#f37021', color: '#fff' }}
                             >
                                 <AddIcon/> Add More Option
                             </Button>
@@ -916,7 +916,7 @@ const AddCheckpointForm = () => {
     type="submit"
     variant="contained"
     disabled={isSubmitting}
-    style={{ backgroundColor: '#8d0638ff', color: '#fff' }}
+    style={{ backgroundColor: '#f37021', color: '#fff' }}
   >
     {isSubmitting ? 'Adding...' : 'Add Checkpoint'}
   </Button>

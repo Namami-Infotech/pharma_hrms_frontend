@@ -136,10 +136,10 @@ const PolicyCard = ({ policy, onView, onToggle, isHR }) => {
                 sx={{ 
                   borderRadius: 2,
                   fontSize: '0.75rem',
-                  bgcolor: alpha("#8d0638ff", 0.1),
-                  color: "#8d0638ff",
+                  bgcolor: alpha("#f37021", 0.1),
+                  color: "#f37021",
                   "&:hover": {
-                    bgcolor: alpha("#8d0638ff", 0.2),
+                    bgcolor: alpha("#f37021", 0.2),
                   }
                 }}
               >
@@ -296,11 +296,11 @@ function PolicyList() {
       >
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
           <Box>
-            <Typography variant="h5" fontWeight="700" color="#8d0638ff" gutterBottom>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }} gutterBottom>
               Company Policies
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Manage and view company policies and documents
+            <Typography variant="body2" sx={{ color: "#64748b", fontSize: "0.85rem" }}>
+              Manage, view, and organize official company policies and documents
             </Typography>
           </Box>
           {isAdmin && (
@@ -311,9 +311,9 @@ function PolicyList() {
               size="small"
               sx={{ 
                 borderRadius: 2,
-                bgcolor: "#8d0638ff",
+                bgcolor: "#f37021",
                 "&:hover": {
-                  bgcolor: "#6d0430ff",
+                  bgcolor: "#d95300",
                 }
               }}
             >
@@ -412,7 +412,7 @@ function PolicyList() {
           // Table View for Desktop
           <TableContainer>
             <Table sx={{ minWidth: 650 }} size="small">
-              <TableHead sx={{ bgcolor: "#8d0638ff" }}>
+              <TableHead sx={{ bgcolor: "#f37021" }}>
                 <TableRow>
                   <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>
                     <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -495,10 +495,10 @@ function PolicyList() {
                               onClick={() => handleViewPDF(policy.PolicyPDF)}
                               size="small"
                               sx={{
-                                color: "#8d0638ff",
-                                bgcolor: alpha("#8d0638ff", 0.1),
+                                color: "#f37021",
+                                bgcolor: alpha("#f37021", 0.1),
                                 "&:hover": {
-                                  bgcolor: alpha("#8d0638ff", 0.2),
+                                  bgcolor: alpha("#f37021", 0.2),
                                 }
                               }}
                             >

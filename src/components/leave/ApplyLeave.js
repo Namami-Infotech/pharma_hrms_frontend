@@ -23,6 +23,7 @@ import {
   InputAdornment,
   Stack,
   Fade,
+  MenuItem,
 } from "@mui/material";
 import {
   Close,
@@ -81,8 +82,8 @@ const LeaveBalanceCard = ({ category, balance, isSelected, onClick, value }) => 
       onClick={onClick}
       sx={{
         cursor: "pointer",
-        border: isSelected ? "2px solid #8d0638ff" : `1px solid ${theme.palette.divider}`,
-        bgcolor: isSelected ? "rgba(141, 6, 56, 0.05)" : "background.paper",
+        border: isSelected ? "2px solid #f37021" : `1px solid ${theme.palette.divider}`,
+        bgcolor: isSelected ? "rgba(243, 112, 33, 0.05)" : "background.paper",
         borderRadius: 2,
         opacity: !isSpecial && balance === 0 ? 0.7 : 1,
         transition: "all 0.2s ease",
@@ -94,7 +95,7 @@ const LeaveBalanceCard = ({ category, balance, isSelected, onClick, value }) => 
       <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <Box>
-            <Typography variant="body2" fontWeight="700" sx={{ color: isSelected ? "#8d0638ff" : "text.primary" }}>
+            <Typography variant="body2" fontWeight="700" sx={{ color: isSelected ? "#f37021" : "text.primary" }}>
               {category}
             </Typography>
             <Typography variant="caption" color={getBalanceColor()} fontWeight="bold">
@@ -119,7 +120,7 @@ const LeavePreview = ({ leaveDetails, categories, totalDays }) => {
     <Card sx={{ border: `1px solid ${theme.palette.divider}`, borderRadius: 2 }}>
       <Box
         sx={{
-          bgcolor: "#8d0638ff",
+          bgcolor: "#f37021",
           color: "white",
           p: 2,
           display: "flex",
@@ -417,7 +418,7 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
     >
       <DialogTitle
         sx={{
-          bgcolor: "#8d0638ff",
+          bgcolor: "#f37021",
           color: "white",
           display: "flex",
           justifyContent: "space-between",
@@ -436,7 +437,7 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 3 }}>
+      <DialogContent sx={{ p: 3, pt: "24px !important" }}>
         {error && (
           <Alert severity="error" sx={{ mb: 2.5 }} onClose={() => setError("")}>
             {error}
@@ -454,6 +455,7 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
                 size="small"
                 fullWidth
                 disabled
+                sx={{ mt: 1 }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -463,37 +465,57 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
                 }}
               />
 
-              {/* Leave Balance Cards Grid */}
-              <Box>
-                <Typography variant="subtitle2" fontWeight="700" color="text.secondary" gutterBottom sx={{ display: "flex", alignItems: "center" }}>
-                  <Category sx={{ mr: 0.8, fontSize: "1.1rem", color: "#8d0638ff" }} />
-                  Select Leave Category & View Balance:
-                </Typography>
-                {loadingCategories ? (
-                  <Box sx={{ display: "flex", justifyContent: "center", p: 2 }}>
-                    <CircularProgress size={28} />
-                  </Box>
-                ) : (
-                  <Grid container spacing={1.5}>
-                    {categories.map((category) => (
-                      <Grid item xs={6} sm={4} md={3} key={category.value}>
-                        <LeaveBalanceCard
-                          category={category.label}
-                          balance={category.balance}
-                          value={category.value}
-                          isSelected={leaveDetails.category === category.value}
-                          onClick={() => handleChange("category", category.value)}
-                        />
-                      </Grid>
-                    ))}
-                  </Grid>
-                )}
-                {validationErrors.category && (
-                  <Typography variant="caption" color="error" sx={{ mt: 0.5, display: "block", fontWeight: 600 }}>
-                    {validationErrors.category}
-                  </Typography>
-                )}
-              </Box>
+              {/* Leave Type Dropdown */}
+              <TextField
+                select
+                label="Leave Type"
+                value={leaveDetails.category}
+                onChange={(e) => handleChange("category", e.target.value)}
+                variant="outlined"
+                size="small"
+                fullWidth
+                error={!!validationErrors.category}
+                helperText={validationErrors.category}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Category sx={{ color: "#f37021", fontSize: 20 }} />
+                    </InputAdornment>
+                  ),
+                }}
+                SelectProps={{
+                  displayEmpty: true,
+                  MenuProps: {
+                    PaperProps: {
+                      sx: { maxHeight: 280 },
+                    },
+                  },
+                }}
+              >
+                <MenuItem value="" disabled>
+                  <em>Select Leave Type</em>
+                </MenuItem>
+                {categories.map((category) => {
+                  const isSpecial = category.value === "HalfDay" || category.value === "LWP";
+                  return (
+                    <MenuItem key={category.value} value={category.value}>
+                      <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
+                        <Typography variant="body2">{category.label}</Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: isSpecial ? "info.main" : category.balance === 0 ? "error.main" : "success.main",
+                            fontWeight: 600,
+                            ml: 2,
+                          }}
+                        >
+                          {isSpecial ? "Always Available" : `Balance: ${category.balance} day${category.balance !== 1 ? "s" : ""}`}
+                        </Typography>
+                      </Box>
+                    </MenuItem>
+                  );
+                })}
+              </TextField>
 
               {/* Date Pickers (Native, reliable) */}
               <Grid container spacing={2}>
@@ -526,8 +548,8 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
               </Grid>
 
               {totalDays > 0 && (
-                <Box sx={{ p: 1.5, bgcolor: "rgba(141, 6, 56, 0.08)", borderRadius: 1.5 }}>
-                  <Typography variant="body2" color="#8d0638ff" fontWeight="600" sx={{ display: "flex", alignItems: "center" }}>
+                <Box sx={{ p: 1.5, bgcolor: "rgba(243, 112, 33, 0.08)", borderRadius: 1.5 }}>
+                  <Typography variant="body2" color="#f37021" fontWeight="600" sx={{ display: "flex", alignItems: "center" }}>
                     <AccessTime sx={{ mr: 1, fontSize: "1.1rem" }} />
                     Total leave duration: {totalDays} day{totalDays !== 1 ? "s" : ""}
                   </Typography>
@@ -602,17 +624,17 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
             disabled={submitting}
             startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : <Send />}
             sx={{
-              bgcolor: "#8d0638ff",
+              bgcolor: "#f37021",
               color: "white",
               fontWeight: 600,
               textTransform: "none",
               px: 2.5,
               "&:hover": {
-                bgcolor: "#6d0430ff",
+                bgcolor: "#d95300",
               },
             }}
           >
-            {submitting ? "Submitting..." : "Submit Application"}
+            {submitting ? "Submitting..." : "Submit"}
           </Button>
         </Box>
       </DialogActions>

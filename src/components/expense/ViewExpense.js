@@ -325,17 +325,22 @@ function EnhancedViewExpense() {
   }
 
   return (
-    <Box sx={{ p: 3, background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh' }}>
+    <Box sx={{ p: 3, bgcolor: '#f8fafc', minHeight: '100vh' }}>
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Typography variant="h4" fontWeight="bold" sx={{ color: "#8d0638ff" }}>
-            💰 Expense Management
-          </Typography>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} flexWrap="wrap" gap={2}>
+          <Box>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}>
+              Expense Management
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: "0.85rem" }}>
+              Submit, review, and track employee business expenses and claims
+            </Typography>
+          </Box>
           <Box display="flex" gap={2}>
             <Button
               variant="contained"
@@ -343,32 +348,36 @@ function EnhancedViewExpense() {
               onClick={() => setCreateExpenseOpen(true)}
               sx={{
                 borderRadius: 2,
-                bgcolor: '#8d0638ff',
+                bgcolor: '#f37021',
                 color: '#fff',
                 fontWeight: 'bold',
                 textTransform: 'none',
                 px: 2,
-                boxShadow: '0 3px 10px rgba(141, 6, 56, 0.3)',
+                boxShadow: '0 3px 10px rgba(243, 112, 33, 0.3)',
                 '&:hover': {
-                  bgcolor: '#6d0430ff',
+                  bgcolor: '#d95300',
                 }
               }}
             >
               Add Expense
             </Button>
-            <Tooltip title="Export to CSV">
-              <Button
-                variant="contained"
-                startIcon={<GetApp />}
-                onClick={exportToCsv}
-                sx={{
-                  borderRadius: 3,
-                  background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
-                }}
-              >
-                Export
-              </Button>
-            </Tooltip>
+            <Button
+              variant="outlined"
+              startIcon={<GetApp />}
+              onClick={exportToCsv}
+              sx={{
+                borderRadius: 2,
+                borderColor: "#e2e8f0",
+                color: "#475569",
+                bgcolor: "#ffffff",
+                textTransform: "none",
+                fontWeight: 600,
+                px: 2,
+                "&:hover": { bgcolor: "#f8fafc", borderColor: "#cbd5e1" },
+              }}
+            >
+              Export
+            </Button>
           </Box>
         </Box>
       </motion.div>
@@ -379,25 +388,29 @@ function EnhancedViewExpense() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, delay: 0.1 }}
       >
-        <Grid container spacing={3} mb={3}>
+        <Grid container spacing={2.5} mb={3}>
           <Grid item xs={12} sm={6} md={3}>
             <Card
-              elevation={4}
+              elevation={0}
               sx={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: 'white',
-                borderRadius: 3
+                bgcolor: '#ffffff',
+                border: '1px solid #e2e8f0',
+                borderRadius: 2.5,
+                boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                p: 0.5,
               }}
             >
               <CardContent>
                 <Box display="flex" alignItems="center" justifyContent="space-between">
                   <Box>
-                    <Typography variant="h6">Total Amount</Typography>
-                    <Typography variant="h4" fontWeight="bold">
+                    <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 600, mb: 0.5 }}>Total Amount</Typography>
+                    <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a" }}>
                       {formatCurrency(stats.total)}
                     </Typography>
                   </Box>
-                  <AttachMoney sx={{ fontSize: 40, opacity: 0.8 }} />
+                  <Avatar sx={{ bgcolor: "rgba(243, 112, 33, 0.1)", color: "#f37021", width: 48, height: 48 }}>
+                    <AttachMoney sx={{ fontSize: 28 }} />
+                  </Avatar>
                 </Box>
               </CardContent>
             </Card>
@@ -405,22 +418,26 @@ function EnhancedViewExpense() {
 
           <Grid item xs={12} sm={6} md={3}>
             <Card
-              elevation={4}
+              elevation={0}
               sx={{
-                background: 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)',
-                color: 'white',
-                borderRadius: 3
+                bgcolor: '#ffffff',
+                border: '1px solid #e2e8f0',
+                borderRadius: 2.5,
+                boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                p: 0.5,
               }}
             >
               <CardContent>
                 <Box display="flex" alignItems="center" justifyContent="space-between">
                   <Box>
-                    <Typography variant="h6">Approved</Typography>
-                    <Typography variant="h4" fontWeight="bold">
+                    <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 600, mb: 0.5 }}>Approved</Typography>
+                    <Typography variant="h5" sx={{ fontWeight: 700, color: "#10b981" }}>
                       {stats.approved}
                     </Typography>
                   </Box>
-                  <CheckCircle sx={{ fontSize: 40, opacity: 0.8 }} />
+                  <Avatar sx={{ bgcolor: "rgba(16, 185, 129, 0.1)", color: "#10b981", width: 48, height: 48 }}>
+                    <CheckCircle sx={{ fontSize: 28 }} />
+                  </Avatar>
                 </Box>
               </CardContent>
             </Card>
@@ -428,22 +445,26 @@ function EnhancedViewExpense() {
 
           <Grid item xs={12} sm={6} md={3}>
             <Card
-              elevation={4}
+              elevation={0}
               sx={{
-                background: 'linear-gradient(135deg, #FF9800 0%, #F57C00 100%)',
-                color: 'white',
-                borderRadius: 3
+                bgcolor: '#ffffff',
+                border: '1px solid #e2e8f0',
+                borderRadius: 2.5,
+                boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                p: 0.5,
               }}
             >
               <CardContent>
                 <Box display="flex" alignItems="center" justifyContent="space-between">
                   <Box>
-                    <Typography variant="h6">Pending</Typography>
-                    <Typography variant="h4" fontWeight="bold">
+                    <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 600, mb: 0.5 }}>Pending</Typography>
+                    <Typography variant="h5" sx={{ fontWeight: 700, color: "#f59e0b" }}>
                       {stats.pending}
                     </Typography>
                   </Box>
-                  <Pending sx={{ fontSize: 40, opacity: 0.8 }} />
+                  <Avatar sx={{ bgcolor: "rgba(245, 158, 11, 0.1)", color: "#f59e0b", width: 48, height: 48 }}>
+                    <Pending sx={{ fontSize: 28 }} />
+                  </Avatar>
                 </Box>
               </CardContent>
             </Card>
@@ -451,22 +472,26 @@ function EnhancedViewExpense() {
 
           <Grid item xs={12} sm={6} md={3}>
             <Card
-              elevation={4}
+              elevation={0}
               sx={{
-                background: 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)',
-                color: 'white',
-                borderRadius: 3
+                bgcolor: '#ffffff',
+                border: '1px solid #e2e8f0',
+                borderRadius: 2.5,
+                boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                p: 0.5,
               }}
             >
               <CardContent>
                 <Box display="flex" alignItems="center" justifyContent="space-between">
                   <Box>
-                    <Typography variant="h6">Rejected</Typography>
-                    <Typography variant="h4" fontWeight="bold">
+                    <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 600, mb: 0.5 }}>Rejected</Typography>
+                    <Typography variant="h5" sx={{ fontWeight: 700, color: "#ef4444" }}>
                       {stats.rejected}
                     </Typography>
                   </Box>
-                  <ErrorIcon sx={{ fontSize: 40, opacity: 0.8 }} />
+                  <Avatar sx={{ bgcolor: "rgba(239, 68, 68, 0.1)", color: "#ef4444", width: 48, height: 48 }}>
+                    <ErrorIcon sx={{ fontSize: 28 }} />
+                  </Avatar>
                 </Box>
               </CardContent>
             </Card>
@@ -539,15 +564,15 @@ function EnhancedViewExpense() {
           <TableContainer component={Paper} elevation={4} sx={{ borderRadius: 3 }}>
             <Table>
               <TableHead>
-                <TableRow sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Employee</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Date</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Category</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Amount</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Receipt</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Status</TableCell>
+                <TableRow sx={{ bgcolor: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
+                  <TableCell sx={{ color: '#475569', fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Employee</TableCell>
+                  <TableCell sx={{ color: '#475569', fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Date</TableCell>
+                  <TableCell sx={{ color: '#475569', fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Category</TableCell>
+                  <TableCell sx={{ color: '#475569', fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Amount</TableCell>
+                  <TableCell sx={{ color: '#475569', fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Receipt</TableCell>
+                  <TableCell sx={{ color: '#475569', fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Status</TableCell>
                   {canApproveOrReject && (
-                    <TableCell sx={{ color: 'white', fontWeight: 'bold', textAlign: 'center' }}>Action</TableCell>
+                    <TableCell sx={{ color: '#475569', fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px", textAlign: 'center' }}>Action</TableCell>
                   )}
                 </TableRow>
               </TableHead>
@@ -582,7 +607,7 @@ function EnhancedViewExpense() {
                           />
                         </TableCell>
                         <TableCell>
-                          <Typography fontWeight="bold" sx={{ color: "#8d0638ff" }}>
+                          <Typography fontWeight="bold" sx={{ color: "#f37021" }}>
                             {formatCurrency(expense.expenseAmount)}
                           </Typography>
                         </TableCell>
@@ -731,7 +756,7 @@ function EnhancedViewExpense() {
                             <Typography variant="body2" color="textSecondary" gutterBottom>
                               Amount
                             </Typography>
-                            <Typography variant="h5" fontWeight="bold" sx={{ color: "#8d0638ff" }}>
+                            <Typography variant="h5" fontWeight="bold" sx={{ color: "#f37021" }}>
                               {formatCurrency(expense.expenseAmount)}
                             </Typography>
                           </Box>
@@ -827,10 +852,10 @@ function EnhancedViewExpense() {
             bottom: 24,
             right: 24,
             zIndex: theme.zIndex.speedDial,
-            bgcolor: '#8d0638ff',
+            bgcolor: '#f37021',
             color: 'white',
             '&:hover': {
-              bgcolor: '#6d0430ff',
+              bgcolor: '#d95300',
             }
           }}
           size="medium"

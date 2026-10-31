@@ -146,7 +146,7 @@ function QuotationList() {
     try {
       const res = await axios.get(`${BASE_URL}/quotation/settings.php`);
       if (res.data && res.data.success && res.data.data) {
-        const val = res.data.data.quotation_approval_threshold || 35000;
+        const val = res.data.data.quotation_approval_threshold !== undefined ? res.data.data.quotation_approval_threshold : 35;
         setThreshold(val);
         setNewThresholdInput(val.toString());
       }
@@ -157,8 +157,8 @@ function QuotationList() {
 
   const handleSaveThreshold = async () => {
     const num = parseFloat(newThresholdInput);
-    if (isNaN(num) || num < 0) {
-      setError("Please enter a valid amount.");
+    if (isNaN(num) || num < 0 || num > 100) {
+      setError("Please enter a valid discount percentage (0 - 100%).");
       return;
     }
     setSavingThreshold(true);
@@ -169,7 +169,7 @@ function QuotationList() {
       if (res.data && res.data.success) {
         setThreshold(num);
         setThresholdDialogOpen(false);
-        setSuccessMsg(`Approval threshold updated to ₹${num.toLocaleString("en-IN")}.`);
+        setSuccessMsg(`Approval discount threshold updated to ${num}%.`);
       } else {
         setError(res.data?.message || "Failed to update threshold.");
       }
@@ -379,7 +379,7 @@ function QuotationList() {
   }
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{ p: { xs: 2, sm: 3 }, width: "100%", boxSizing: "border-box" }}>
       {/* Notifications */}
       {successMsg && (
         <Alert
@@ -400,13 +400,23 @@ function QuotationList() {
         </Alert>
       )}
 
+      {/* Page Title Block */}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}>
+          Quotations Management
+        </Typography>
+        <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: "0.85rem" }}>
+          Create, track, and manage client pharmaceutical price quotations and approvals
+        </Typography>
+      </Box>
+
       {/* 1. Header Summary Stats Cards */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title="Total Quotations"
             value={stats.totalQuotations || 0}
-            color="#8d0638"
+            color="#f37021"
             icon={<RequestQuote />}
             subtitle={`Total Value: ₹${(stats.totalValue || 0).toLocaleString("en-IN")}`}
           />
@@ -491,14 +501,14 @@ function QuotationList() {
                 label="Rule: Disc > 35% → RM Approval"
                 size="small"
                 sx={{
-                  bgcolor: "rgba(141,6,56,0.08)",
-                  color: "#8d0638",
+                  bgcolor: "rgba(243, 112, 33,0.08)",
+                  color: "#f37021",
                   fontWeight: 700,
                   fontSize: "12px",
                   py: 1.8,
                   px: 0.5,
                   borderRadius: 2,
-                  border: "1px solid rgba(141,6,56,0.2)",
+                  border: "1px solid rgba(243, 112, 33,0.2)",
                 }}
               />
             </Tooltip>
@@ -512,8 +522,8 @@ function QuotationList() {
               startIcon={<Add />}
               onClick={handleOpenCreate}
               sx={{
-                bgcolor: "#8d0638",
-                "&:hover": { bgcolor: "#6b042d" },
+                bgcolor: "#f37021",
+                "&:hover": { bgcolor: "#d95300" },
                 borderRadius: 2,
                 textTransform: "none",
                 fontWeight: 600,
@@ -530,7 +540,7 @@ function QuotationList() {
       <TableContainer component={Paper} elevation={1} sx={{ borderRadius: 2 }}>
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
-            <CircularProgress sx={{ color: "#8d0638" }} />
+            <CircularProgress sx={{ color: "#f37021" }} />
           </Box>
         ) : quotations.length === 0 ? (
           <Box sx={{ p: 6, textAlign: "center" }}>
@@ -543,8 +553,8 @@ function QuotationList() {
               onClick={handleOpenCreate}
               sx={{
                 mt: 2,
-                borderColor: "#8d0638",
-                color: "#8d0638",
+                borderColor: "#f37021",
+                color: "#f37021",
                 textTransform: "none",
               }}
             >
@@ -575,7 +585,7 @@ function QuotationList() {
                       hover
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
-                      <TableCell sx={{ fontWeight: 700, color: "#8d0638" }}>
+                      <TableCell sx={{ fontWeight: 700, color: "#f37021" }}>
                         {row.quotation_no}
                       </TableCell>
                       <TableCell>
@@ -668,7 +678,7 @@ function QuotationList() {
                           <Tooltip title="View / Print Quotation Slip">
                             <IconButton
                               size="small"
-                              sx={{ color: "#8d0638" }}
+                              sx={{ color: "#f37021" }}
                               onClick={() => handleViewSlip(row)}
                             >
                               <Visibility fontSize="small" />
@@ -743,22 +753,22 @@ function QuotationList() {
         maxWidth="xs"
         fullWidth
       >
-        <DialogTitle sx={{ fontWeight: "bold", bgcolor: "#8d0638", color: "#ffffff", py: 1.5 }}>
-          Approval Limit Configuration
+        <DialogTitle sx={{ fontWeight: "bold", bgcolor: "#f37021", color: "#ffffff", py: 1.5 }}>
+          Discount Approval Threshold Configuration
         </DialogTitle>
         <DialogContent sx={{ pt: 3, mt: 1 }}>
           <DialogContentText sx={{ mb: 2.5, fontSize: "13px" }}>
-            If a quotation amount is <strong>greater than this value</strong>, it requires approval first before sending. Quotations at or below this value are automatically emailed to the client upon creation.
+            If any product discount in a quotation is <strong>greater than this percentage (default 35%)</strong>, it requires RM approval first before sending. Quotations with discounts at or below this limit are automatically emailed directly to the client with CC to RM.
           </DialogContentText>
           <TextField
             fullWidth
             size="small"
-            label="Threshold Amount (₹)"
+            label="Discount Threshold (%)"
             type="number"
             value={newThresholdInput}
             onChange={(e) => setNewThresholdInput(e.target.value)}
             InputProps={{
-              startAdornment: <Typography sx={{ mr: 1, fontWeight: 700, color: "#8d0638" }}>₹</Typography>
+              endAdornment: <Typography sx={{ ml: 1, fontWeight: 700, color: "#f37021" }}>%</Typography>
             }}
           />
         </DialogContent>
@@ -771,8 +781,8 @@ function QuotationList() {
             variant="contained"
             disabled={savingThreshold}
             sx={{
-              bgcolor: "#8d0638",
-              "&:hover": { bgcolor: "#6b042d" },
+              bgcolor: "#f37021",
+              "&:hover": { bgcolor: "#d95300" },
               fontWeight: 700,
               px: 2.5,
             }}

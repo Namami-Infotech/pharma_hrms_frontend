@@ -3,54 +3,54 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
     palette: {
         primary: {
-            main: '#8d0638',
-            light: '#b02a5b',
-            dark: '#620023',
+            main: '#f37021',
+            light: '#ff8833',
+            dark: '#d95300',
             contrastText: '#ffffff',
         },
         secondary: {
-            main: '#f50057',
+            main: '#1e293b',
         },
         text: {
-            primary: '#2d3748',
+            primary: '#1e293b',
             secondary: '#64748b',
         },
     },
     typography: {
         fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", sans-serif',
-        // All main heading tags unified to 1.5rem (24px) in brand color #8d0638
+        // All main heading tags unified to 1.5rem (24px) in brand color #f37021
         h1: {
             fontSize: '1.5rem',
             fontWeight: 700,
-            color: '#8d0638',
+            color: '#f37021',
             lineHeight: 1.3,
             letterSpacing: '-0.01em',
         },
         h2: {
             fontSize: '1.5rem',
             fontWeight: 700,
-            color: '#8d0638',
+            color: '#f37021',
             lineHeight: 1.3,
             letterSpacing: '-0.01em',
         },
         h3: {
             fontSize: '1.5rem',
             fontWeight: 700,
-            color: '#8d0638',
+            color: '#f37021',
             lineHeight: 1.3,
             letterSpacing: '-0.01em',
         },
         h4: {
             fontSize: '1.5rem',
             fontWeight: 700,
-            color: '#8d0638',
+            color: '#f37021',
             lineHeight: 1.3,
             letterSpacing: '-0.01em',
         },
         h5: {
             fontSize: '1.5rem',
             fontWeight: 700,
-            color: '#8d0638',
+            color: '#f37021',
             lineHeight: 1.3,
             letterSpacing: '-0.01em',
         },
@@ -61,20 +61,20 @@ const theme = createTheme({
             color: '#1a202c',
             lineHeight: 1.4,
         },
-        // All body text unified to 0.875rem (14px) and color #2d3748
+        // All body text unified to 0.875rem (14px) and color #1e293b
         body1: {
             fontSize: '0.875rem',
-            color: '#2d3748',
+            color: '#1e293b',
             lineHeight: 1.5,
         },
         body2: {
             fontSize: '0.875rem',
-            color: '#2d3748',
+            color: '#1e293b',
             lineHeight: 1.5,
         },
         subtitle1: {
             fontSize: '0.875rem',
-            color: '#4a5568',
+            color: '#475569',
         },
         subtitle2: {
             fontSize: '0.8125rem',
@@ -92,27 +92,27 @@ const theme = createTheme({
                 h1: {
                     fontSize: '1.5rem',
                     fontWeight: 700,
-                    color: '#8d0638',
+                    color: '#f37021',
                 },
                 h2: {
                     fontSize: '1.5rem',
                     fontWeight: 700,
-                    color: '#8d0638',
+                    color: '#f37021',
                 },
                 h3: {
                     fontSize: '1.5rem',
                     fontWeight: 700,
-                    color: '#8d0638',
+                    color: '#f37021',
                 },
                 h4: {
                     fontSize: '1.5rem',
                     fontWeight: 700,
-                    color: '#8d0638',
+                    color: '#f37021',
                 },
                 h5: {
                     fontSize: '1.5rem',
                     fontWeight: 700,
-                    color: '#8d0638',
+                    color: '#f37021',
                 },
                 h6: {
                     fontSize: '1.125rem',
@@ -120,11 +120,11 @@ const theme = createTheme({
                 },
                 body1: {
                     fontSize: '0.875rem',
-                    color: '#2d3748',
+                    color: '#1e293b',
                 },
                 body2: {
                     fontSize: '0.875rem',
-                    color: '#2d3748',
+                    color: '#1e293b',
                 },
             },
         },

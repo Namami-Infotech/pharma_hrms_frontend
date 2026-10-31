@@ -34,24 +34,21 @@ function Travel() {
   return (
     <PageWrapper title="Travel Management">
       {/* Header Section */}
-      <Box sx={{ mb: 4 }}>
+      <Box sx={{ mb: 3 }}>
         <Typography
-          variant="h4"
+          variant="h5"
           component="h1"
-          gutterBottom
           sx={{
-            fontWeight: 600,
-            color: "primary.main",
-            mb: 1,
-            display: 'flex',
-            alignItems: 'center'
+            fontWeight: 700,
+            color: "#0f172a",
+            letterSpacing: -0.3,
+            mb: 0.4,
           }}
         >
-          <FlightTakeoff sx={{ mr: 2, verticalAlign: "middle" }} />
           Travel Management
         </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Manage travel requests and track expense applications
+        <Typography variant="body2" sx={{ color: "#64748b", fontSize: "0.85rem" }}>
+          Manage employee travel requests, itineraries, and expense claims
         </Typography>
       </Box>
 
@@ -77,7 +74,7 @@ function Travel() {
               onClick={handleOpenApplyExpenseDialog}
               startIcon={<Add />}
               sx={{
-                bgcolor: "#8d0638ff",
+                bgcolor: "#f37021",
                 "&:hover": { bgcolor: "#6d052cff" },
                 minWidth: 200,
                 height: 48,
@@ -107,7 +104,7 @@ function Travel() {
             bottom: 16,
             right: 16,
             zIndex: 1000,
-            bgcolor: "#8d0638ff",
+            bgcolor: "#f37021",
             "&:hover": { bgcolor: "#6d052cff" }
           }}
           aria-label="add travel request"

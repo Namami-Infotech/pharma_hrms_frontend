@@ -156,7 +156,7 @@ const OfficeCard = ({ office, onEdit, onDelete, theme }) => {
             <Tooltip title="Edit Office">
               <IconButton
                 size="small"
-                sx={{ color: "#8d0638ff" }}
+                sx={{ color: "#f37021" }}
                 onClick={() => onEdit(office)}
               >
                 <Edit fontSize="small" />
@@ -468,14 +468,17 @@ function OfficeManagement() {
               flexWrap: "wrap",
             }}
           >
-            <Typography
-              variant="h4"
-              fontWeight="bold"
-              color="#8d0638ff"
-              sx={{ flexGrow: 1 }}
-            >
-              Office Management
-            </Typography>
+            <Box sx={{ flexGrow: 1 }}>
+              <Typography
+                variant="h5"
+                sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}
+              >
+                Office Management
+              </Typography>
+              <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: "0.85rem" }}>
+                Configure branch locations, geographic boundaries, and office parameters
+              </Typography>
+            </Box>
 
             <Box sx={{ display: "flex", gap: 1, mt: { xs: 2, md: 0 } }}>
               <Tooltip title="Refresh Data">
@@ -483,7 +486,7 @@ function OfficeManagement() {
                   onClick={fetchOffices}
                   sx={{
                     bgcolor: "#fff",
-                    color: "#8d0638ff",
+                    color: "#f37021",
                     "&:hover": { bgcolor: "#f2e6eb" },
                   }}
                 >
@@ -495,9 +498,9 @@ function OfficeManagement() {
                 startIcon={<Add />}
                 onClick={() => handleOpenForm("add")}
                 sx={{
-                  bgcolor: "#8d0638ff",
+                  bgcolor: "#f37021",
                   color: "white",
-                  "&:hover": { bgcolor: "#6b042d" },
+                  "&:hover": { bgcolor: "#d95300" },
                   borderRadius: 2,
                   textTransform: "none",
                 }}
@@ -546,11 +549,11 @@ function OfficeManagement() {
                 }}
                 sx={{
                   borderRadius: 2,
-                  borderColor: alpha("#8d0638ff", 0.5),
-                  color: "#8d0638ff",
+                  borderColor: alpha("#f37021", 0.5),
+                  color: "#f37021",
                   "&:hover": {
-                    borderColor: "#8d0638ff",
-                    bgcolor: alpha("#8d0638ff", 0.04),
+                    borderColor: "#f37021",
+                    bgcolor: alpha("#f37021", 0.04),
                   },
                 }}
               >
@@ -591,7 +594,7 @@ function OfficeManagement() {
             // Desktop Table View
             <TableContainer>
               <Table>
-                <TableHead sx={{ bgcolor: "#8d0638ff" }}>
+                <TableHead sx={{ bgcolor: "#f37021" }}>
                   <TableRow>
                     <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                       <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -686,7 +689,7 @@ function OfficeManagement() {
                               <Tooltip title="Edit Office">
                                 <IconButton
                                   size="small"
-                                  sx={{ color: "#8d0638ff" }}
+                                  sx={{ color: "#f37021" }}
                                   onClick={() => handleOpenForm("edit", office)}
                                 >
                                   <Edit fontSize="small" />
@@ -737,7 +740,7 @@ function OfficeManagement() {
         >
           <DialogTitle
             sx={{
-              bgcolor: "#8d0638ff",
+              bgcolor: "#f37021",
               color: "white",
               display: "flex",
               justifyContent: "space-between",
@@ -828,7 +831,7 @@ function OfficeManagement() {
               startIcon={
                 submitting ? <CircularProgress size={20} /> : <CheckCircle />
               }
-              sx={{ bgcolor: "#8d0638ff", color: "white" }}
+              sx={{ bgcolor: "#f37021", color: "white" }}
             >
               {submitting
                 ? "Saving..."
@@ -849,9 +852,9 @@ function OfficeManagement() {
               bottom: 16,
               right: 16,
               zIndex: theme.zIndex.speedDial,
-              bgcolor: '#8d0638ff',
+              bgcolor: '#f37021',
               '&:hover': {
-                bgcolor: '#6d0430ff',
+                bgcolor: '#d95300',
               }
             }}
             size="medium"

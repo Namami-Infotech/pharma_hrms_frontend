@@ -24,7 +24,7 @@ import axios from 'axios';
 import { useAuth } from '../auth/AuthContext';
 import { useGeolocated } from 'react-geolocated';
 
-const BRAND_COLOR = '#8d0638ff';
+const BRAND_COLOR = '#f37021';
 
 function AddDealers({ open, onClose, onDealerAdded }) {
     const { user } = useAuth();

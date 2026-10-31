@@ -551,11 +551,16 @@ const [expanded, setExpanded] = useState(false);
   return (
     <Box sx={{ p: { xs: 1, md: 2 }, bgcolor: "#f8fafc", minHeight: "100vh" }}>
       {/* Header */}
-      <Paper elevation={1} sx={{ p: 2, mb: 2, borderRadius: 2, background: 'white' }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-          <Typography variant="h5" fontWeight="bold" color="#8d0638ff">
-            Leave Management
-          </Typography>
+      <Paper elevation={0} sx={{ p: 2.5, mb: 2, borderRadius: 2.5, background: 'white', border: '1px solid #f1f5f9' }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, flexWrap: "wrap", gap: 2 }}>
+          <Box>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}>
+              Leave Management
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: "0.85rem" }}>
+              Track employee leave requests, balances, and approval records
+            </Typography>
+          </Box>
           <Box sx={{ display: "flex", gap: 1, alignItems: "center", flexWrap: "wrap" }}>
             <Button
               variant="contained"
@@ -564,14 +569,14 @@ const [expanded, setExpanded] = useState(false);
               size="small"
               sx={{
                 borderRadius: 2,
-                bgcolor: "#8d0638ff",
+                bgcolor: "#f37021",
                 color: "white",
                 fontWeight: 600,
                 textTransform: "none",
                 px: 2,
                 py: 0.75,
                 "&:hover": {
-                  bgcolor: "#6d0430ff",
+                  bgcolor: "#d95300",
                 },
               }}
             >
@@ -730,7 +735,7 @@ const [expanded, setExpanded] = useState(false);
           // Table View
           <TableContainer>
   <Table sx={{ minWidth: 650 }} size="small">
-    <TableHead sx={{ bgcolor: "#8d0638ff" }}>
+    <TableHead sx={{ bgcolor: "#f37021" }}>
       <TableRow>
         <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -971,10 +976,10 @@ const [expanded, setExpanded] = useState(false);
               bottom: 24,
               right: 24,
               zIndex: theme.zIndex.speedDial,
-              bgcolor: '#8d0638ff',
+              bgcolor: '#f37021',
               color: 'white',
               '&:hover': {
-                bgcolor: '#6d0430ff',
+                bgcolor: '#d95300',
               }
             }}
             size="medium"

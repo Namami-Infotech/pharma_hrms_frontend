@@ -171,7 +171,7 @@ function ProductModal({ open, onClose, product, onSuccess }) {
     >
       <DialogTitle
         sx={{
-          bgcolor: "#8d0638",
+          bgcolor: "#f37021",
           color: "#ffffff",
           display: "flex",
           justifyContent: "space-between",
@@ -263,7 +263,7 @@ function ProductModal({ open, onClose, product, onSuccess }) {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Typography fontWeight="bold" color="#8d0638" sx={{ fontSize: 18 }}>₹</Typography>
+                      <Typography fontWeight="bold" color="#f37021" sx={{ fontSize: 18 }}>₹</Typography>
                     </InputAdornment>
                   ),
                 }}
@@ -326,13 +326,13 @@ function ProductModal({ open, onClose, product, onSuccess }) {
             startIcon={loading ? <CircularProgress size={18} color="inherit" /> : <Save />}
             disabled={loading}
             sx={{
-              bgcolor: "#8d0638",
-              "&:hover": { bgcolor: "#6b042d" },
+              bgcolor: "#f37021",
+              "&:hover": { bgcolor: "#d95300" },
               fontWeight: 700,
               px: 4,
               py: 1,
               textTransform: "none",
-              boxShadow: "0 4px 14px rgba(141,6,56,0.3)",
+              boxShadow: "0 4px 14px rgba(243, 112, 33,0.3)",
             }}
           >
             {loading ? "Saving..." : product ? "Update Product" : "Save Product"}

@@ -19,9 +19,8 @@ const PageWrapper = ({
 
       {/* Content Section */}
       <Box sx={{ 
-        height: header ? "calc(100% - 120px)" : "100%", 
+        height: "100%", 
         p: 0,
-        pt: header ? 1 : 3
       }}>
         <AnimatePresence>
           <motion.div

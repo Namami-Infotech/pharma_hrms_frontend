@@ -379,31 +379,35 @@ const ManualAttendancePage = () => {
   return (
     <Box sx={{ p: 3, backgroundColor: "#f8f9fa", minHeight: "100vh" }}>
       {/* Header */}
-      <Paper
-        sx={{
-          p: 3,
-          mb: 3,
-          borderRadius: 2,
-          bgcolor: "#8d0638ff",
-          color: "white",
-        }}
-      >
+      <Box sx={{ mb: 3 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
           <Box>
-            <Typography variant="h4" fontWeight={700} gutterBottom>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}>
               Manual Attendance
             </Typography>
-            <Typography variant="body1">
-              Mark or edit attendance for employees manually
+            <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: "0.85rem" }}>
+              Mark or edit attendance records for employees manually
             </Typography>
           </Box>
           <Tooltip title="Refresh Data">
-            <IconButton onClick={refreshData} sx={{ color: "white", bgcolor: "rgba(255,255,255,0.15)", "&:hover": { bgcolor: "rgba(255,255,255,0.25)" } }}>
-              <Refresh />
+            <IconButton
+              onClick={refreshData}
+              sx={{
+                bgcolor: "#ffffff",
+                border: "1px solid #e2e8f0",
+                color: "#64748b",
+                width: 40,
+                height: 40,
+                borderRadius: 2,
+                boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+                "&:hover": { bgcolor: "#f8fafc", color: "#0f172a", borderColor: "#cbd5e1" },
+              }}
+            >
+              <Refresh sx={{ fontSize: 20 }} />
             </IconButton>
           </Tooltip>
         </Box>
-      </Paper>
+      </Box>
 
       {/* Search and Filters */}
       <Paper sx={{ p: 2.5, mb: 3, borderRadius: 2 }}>
@@ -468,7 +472,7 @@ const ManualAttendancePage = () => {
           </FormControl>
 
           {(searchTerm || statusFilter !== "all" || selectedDate !== format(new Date(), "yyyy-MM-dd")) && (
-            <Button size="small" onClick={clearFilters} startIcon={<Clear />} sx={{ color: "#8d0638ff" }}>
+            <Button size="small" onClick={clearFilters} startIcon={<Clear />} sx={{ color: "#f37021" }}>
               Reset Filters
             </Button>
           )}
@@ -527,14 +531,14 @@ const ManualAttendancePage = () => {
           <Paper sx={{ borderRadius: 2, overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
             <TableContainer>
               <Table>
-                <TableHead sx={{ bgcolor: "#8d0638ff" }}>
+                <TableHead sx={{ bgcolor: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
                   <TableRow>
-                    <TableCell sx={{ color: "white", fontWeight: 600 }}>Employee ID</TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: 600 }}>Employee</TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: 600 }}>Designation</TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: 600 }}>Department</TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: 600 }}>Status</TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: 600 }} align="center">
+                    <TableCell sx={{ color: "#475569", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Employee ID</TableCell>
+                    <TableCell sx={{ color: "#475569", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Employee</TableCell>
+                    <TableCell sx={{ color: "#475569", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Designation</TableCell>
+                    <TableCell sx={{ color: "#475569", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Department</TableCell>
+                    <TableCell sx={{ color: "#475569", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Status</TableCell>
+                    <TableCell sx={{ color: "#475569", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }} align="center">
                       Action
                     </TableCell>
                   </TableRow>
@@ -545,7 +549,7 @@ const ManualAttendancePage = () => {
                     const isMarked = Boolean(attRecord);
 
                     return (
-                      <TableRow key={employee.EmpId} hover sx={{ "&:hover": { bgcolor: "rgba(141,6,56,0.02)" } }}>
+                      <TableRow key={employee.EmpId} hover sx={{ "&:hover": { bgcolor: "rgba(243, 112, 33,0.02)" } }}>
                         <TableCell>
                           <Typography variant="body2" fontWeight={600} sx={{ fontFamily: "monospace" }}>
                             {employee.EmpId}
@@ -553,7 +557,7 @@ const ManualAttendancePage = () => {
                         </TableCell>
                         <TableCell>
                           <Box display="flex" alignItems="center" gap={1.5}>
-                            <Avatar sx={{ bgcolor: isMarked ? "#8d0638ff" : "grey.500", width: 36, height: 36, fontSize: "0.9rem" }}>
+                            <Avatar sx={{ bgcolor: isMarked ? "#f37021" : "grey.500", width: 36, height: 36, fontSize: "0.9rem" }}>
                               {employee.Name?.charAt(0) || employee.EmpId.charAt(0)}
                             </Avatar>
                             <Box>
@@ -591,14 +595,14 @@ const ManualAttendancePage = () => {
                               startIcon={<Edit />}
                               onClick={() => handleEditAttendance(employee)}
                               sx={{
-                                color: "#8d0638ff",
-                                borderColor: "#8d0638ff",
+                                color: "#f37021",
+                                borderColor: "#f37021",
                                 textTransform: "none",
                                 fontWeight: 600,
                                 px: 2,
                                 "&:hover": {
                                   borderColor: "#6d042aff",
-                                  bgcolor: alpha("#8d0638ff", 0.08),
+                                  bgcolor: alpha("#f37021", 0.08),
                                 },
                               }}
                             >
@@ -611,7 +615,7 @@ const ManualAttendancePage = () => {
                               startIcon={<HowToReg />}
                               onClick={() => handleMarkAttendance(employee)}
                               sx={{
-                                bgcolor: "#8d0638ff",
+                                bgcolor: "#f37021",
                                 textTransform: "none",
                                 fontWeight: 600,
                                 px: 2,
@@ -666,7 +670,7 @@ const ManualAttendancePage = () => {
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle sx={{ bgcolor: "#8d0638ff", color: "white" }}>
+        <DialogTitle sx={{ bgcolor: "#f37021", color: "white" }}>
           <Box display="flex" alignItems="center" gap={1}>
             {formMode === "edit" ? <Edit /> : <HowToReg />}
             <Typography variant="h6" fontWeight={600}>
@@ -680,7 +684,7 @@ const ManualAttendancePage = () => {
               {/* Employee Info */}
               <Box p={2} sx={{ bgcolor: "grey.100", borderRadius: 1.5 }}>
                 <Box display="flex" alignItems="center" gap={2}>
-                  <Avatar sx={{ bgcolor: "#8d0638ff", width: 50, height: 50 }}>
+                  <Avatar sx={{ bgcolor: "#f37021", width: 50, height: 50 }}>
                     {selectedEmployee.Name?.charAt(0) || selectedEmployee.EmpId.charAt(0)}
                   </Avatar>
                   <Box>
@@ -764,7 +768,7 @@ const ManualAttendancePage = () => {
                   border: "1px solid #f2d5df",
                 }}
               >
-                <Typography variant="body2" fontWeight={600} color="#8d0638ff" gutterBottom>
+                <Typography variant="body2" fontWeight={600} color="#f37021" gutterBottom>
                   Summary:
                 </Typography>
                 <Box display="flex" justifyContent="space-between" flexWrap="wrap" gap={1}>
@@ -792,7 +796,7 @@ const ManualAttendancePage = () => {
             disabled={submitting}
             startIcon={formMode === "edit" ? <Edit /> : <HowToReg />}
             sx={{
-              bgcolor: "#8d0638ff",
+              bgcolor: "#f37021",
               "&:hover": { bgcolor: "#6d042aff" },
               px: 3,
             }}

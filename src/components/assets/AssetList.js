@@ -21,7 +21,8 @@ import {
     InputLabel,
     FormControl,
     TablePagination,
-    TableFooter, IconButton, Menu
+    TableFooter, IconButton, Menu,
+    Box, Typography
 } from '@mui/material';
 import axios from 'axios';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -259,28 +260,39 @@ const AssetList = () => {
     };
 
     return (
-        <div>
-            {isAdmin && (
-                <Button
-                    variant="contained"
-                    color="#8d0638ff"
-                    onClick={handleIssueAssetClick}
-                    style={{ backgroundColor: "#8d0638ff", color: "white", marginBottom: "20px" }}
-                >
-                    Issue Asset
-                </Button>
-            )}
-            <TableContainer component={Paper}>
+        <Box sx={{ p: { xs: 2, md: 3 }, bgcolor: "#f8fafc", minHeight: "100vh" }}>
+            {/* Header */}
+            <Box sx={{ mb: 3, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
+                <Box>
+                    <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}>
+                        Asset Management
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: "0.85rem" }}>
+                        Manage company equipment, issue devices, and track asset distribution
+                    </Typography>
+                </Box>
+                {isAdmin && (
+                    <Button
+                        variant="contained"
+                        onClick={handleIssueAssetClick}
+                        sx={{ backgroundColor: "#f37021", color: "white", textTransform: "none", fontWeight: 600, "&:hover": { backgroundColor: "#d95300" } }}
+                    >
+                        Issue Asset
+                    </Button>
+                )}
+            </Box>
+
+            <TableContainer component={Paper} sx={{ borderRadius: 2, border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
                 <Table>
-                    <TableHead style={{ backgroundColor: "#8d0638ff" }}>
+                    <TableHead sx={{ bgcolor: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
                         <TableRow>
-                            <TableCell style={{ color: "white" }}>EmpId</TableCell>
-                            <TableCell style={{ color: "white" }}>Asset Name</TableCell>
-                            <TableCell style={{ color: "white" }}>Serial Number</TableCell>
-                            <TableCell style={{ color: "white" }}>Status</TableCell>
-                            <TableCell style={{ color: "white" }}>Remark</TableCell>
-                            <TableCell style={{ color: "white" }}>Issue Date</TableCell>
-                            <TableCell style={{ color: "white" }}>Actions</TableCell>
+                            <TableCell sx={{ color: "#475569", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase" }}>EmpId</TableCell>
+                            <TableCell sx={{ color: "#475569", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase" }}>Asset Name</TableCell>
+                            <TableCell sx={{ color: "#475569", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase" }}>Serial Number</TableCell>
+                            <TableCell sx={{ color: "#475569", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase" }}>Status</TableCell>
+                            <TableCell sx={{ color: "#475569", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase" }}>Remark</TableCell>
+                            <TableCell sx={{ color: "#475569", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase" }}>Issue Date</TableCell>
+                            <TableCell sx={{ color: "#475569", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase" }}>Actions</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -404,7 +416,7 @@ const AssetList = () => {
                     />
                     <Button
                         variant="contained"
-                        color="#8d0638ff"
+                        color="#f37021"
                         onClick={handleAddNewAsset}
                         style={{ marginTop: '20px' }}
                     >
@@ -412,10 +424,10 @@ const AssetList = () => {
                     </Button>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleDialogClose} color="#8d0638ff">
+                    <Button onClick={handleDialogClose} color="#f37021">
                         Cancel
                     </Button>
-                    <Button onClick={handleIssueAssetSubmit} color="#8d0638ff" disabled={loading}>
+                    <Button onClick={handleIssueAssetSubmit} color="#f37021" disabled={loading}>
                         {loading ? <CircularProgress size={24} /> : 'Issue'}
                     </Button>
                 </DialogActions>
@@ -427,7 +439,7 @@ const AssetList = () => {
                 onClose={() => setOpenSnackbar(false)}
                 message={snackbarMessage}
             />
-        </div>
+        </Box>
     );
 };
 

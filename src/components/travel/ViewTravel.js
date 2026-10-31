@@ -247,7 +247,7 @@ function ViewTravel({ EmpId }) {
       >
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
           <Box>
-            <Typography variant="h5" fontWeight="700" color="#8d0638ff" gutterBottom>
+            <Typography variant="h5" fontWeight="700" color="#f37021" gutterBottom>
               Travel Requests
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -335,7 +335,7 @@ function ViewTravel({ EmpId }) {
         ) : (
           <TableContainer>
             <Table sx={{ minWidth: 650 }} size="small">
-              <TableHead sx={{ bgcolor: "#8d0638ff" }}>
+              <TableHead sx={{ bgcolor: "#f37021" }}>
                 <TableRow>
                   <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>
                     <Box sx={{ display: "flex", alignItems: "center" }}>

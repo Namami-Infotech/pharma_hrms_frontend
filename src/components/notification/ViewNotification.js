@@ -265,7 +265,7 @@ const NotificationDetailModal = ({ open, onClose, notification }) => {
       }}
     >
       <DialogTitle sx={{ 
-        bgcolor: "#8d0638ff", 
+        bgcolor: "#f37021", 
         color: "white",
         display: "flex",
         justifyContent: "space-between",
@@ -398,8 +398,8 @@ const NotificationDetailModal = ({ open, onClose, notification }) => {
             startIcon={<Launch />}
             sx={{ 
               borderRadius: 2,
-              bgcolor: "#8d0638ff",
-              "&:hover": { bgcolor: "#6d0430ff" }
+              bgcolor: "#f37021",
+              "&:hover": { bgcolor: "#d95300" }
             }}
           >
             Open Link
@@ -526,11 +526,11 @@ function ViewNotifications() {
       >
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
           <Box>
-            <Typography variant="h5" fontWeight="700" color="#8d0638ff" gutterBottom>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }} gutterBottom>
               Notification Center
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Manage and track all your notifications
+            <Typography variant="body2" sx={{ color: "#64748b", fontSize: "0.85rem" }}>
+              Manage alerts, broadcast announcements, and system notifications
             </Typography>
           </Box>
           <Box sx={{ display: "flex", gap: 1 }}>
@@ -608,9 +608,9 @@ function ViewNotifications() {
                   size="small"
                   sx={{ 
                     borderRadius: 2,
-                    bgcolor: "#8d0638ff",
+                    bgcolor: "#f37021",
                     "&:hover": {
-                      bgcolor: "#6d0430ff",
+                      bgcolor: "#d95300",
                     }
                   }}
                 >
@@ -717,7 +717,7 @@ function ViewNotifications() {
           // Table View
           <TableContainer>
             <Table sx={{ minWidth: 650 }} size="small">
-              <TableHead sx={{ bgcolor: "#8d0638ff" }}>
+              <TableHead sx={{ bgcolor: "#f37021" }}>
                 <TableRow>
                   <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>
                     <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -848,7 +848,7 @@ function ViewNotifications() {
                         </TableCell>
                         <TableCell sx={{ py: 1 }}>
                           <Tooltip title="View Details">
-                            <IconButton size="small" sx={{color:"#8d0638ff"}} onClick={() => handleView(notification)}>
+                            <IconButton size="small" sx={{color:"#f37021"}} onClick={() => handleView(notification)}>
                               <Visibility fontSize="small" />
                             </IconButton>
                           </Tooltip>
@@ -886,9 +886,9 @@ function ViewNotifications() {
               bottom: 16,
               right: 16,
               zIndex: theme.zIndex.speedDial,
-              bgcolor: "#8d0638ff",
+              bgcolor: "#f37021",
               '&:hover': {
-                bgcolor: "#6d0430ff",
+                bgcolor: "#d95300",
               }
             }}
             size="medium"

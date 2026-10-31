@@ -30,7 +30,8 @@ import {
   Grid,
   Paper,
   Badge,
-  Zoom
+  Zoom,
+  InputAdornment,
 } from '@mui/material';
 import {
   AddCircleOutline,
@@ -44,7 +45,8 @@ import {
   Preview,
   CheckCircle,
   Error as ErrorIcon,
-  Info
+  Info,
+  Close,
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDropzone } from 'react-dropzone';
@@ -222,271 +224,215 @@ function ApplyExpense({ open, onClose, onExpenseApplied }) {
     <>
       <Dialog 
         open={open} 
-        onClose={onClose}
-        maxWidth="md"
+        onClose={loading ? undefined : onClose}
+        maxWidth="sm"
         fullWidth
         PaperProps={{
           sx: {
-            borderRadius: 3,
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            borderRadius: 2.5,
+            overflow: 'hidden',
           }
         }}
       >
         <DialogTitle sx={{ 
-          background: 'rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(20px)',
-          color: 'white',
-          textAlign: 'center',
-          py: 3
+          bgcolor: '#f37021',
+          color: '#ffffff',
+          py: 2,
+          px: 3,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
         }}>
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
+            <Receipt sx={{ fontSize: 24 }} />
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              Apply Expense
+            </Typography>
+          </Box>
+          <IconButton 
+            onClick={onClose} 
+            disabled={loading}
+            sx={{ color: '#ffffff', p: 0.5, '&:hover': { bgcolor: 'rgba(255,255,255,0.15)' } }}
           >
-            <Receipt sx={{ fontSize: 40, mb: 1 }} />
-            <Typography variant="h4" fontWeight="bold">
-              Submit Expenses
-            </Typography>
-            <Typography variant="body2" sx={{ opacity: 0.8, mt: 1 }}>
-              Add your business expenses with receipts
-            </Typography>
-          </motion.div>
+            <Close />
+          </IconButton>
         </DialogTitle>
 
-        <DialogContent sx={{ 
-          background: 'rgba(255, 255, 255, 0.95)',
-          backdropFilter: 'blur(20px)',
-          p: 3
-        }}>
+        <DialogContent sx={{ p: 3, bgcolor: '#ffffff' }}>
           {loading && <LinearProgress sx={{ mb: 2 }} />}
-          
-          {/* Summary Card */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Paper
-              elevation={3}
-              sx={{
-                p: 2,
-                mb: 3,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: 'white',
-                borderRadius: 2
-              }}
-            >
-              <Grid container spacing={2} alignItems="center">
-                <Grid item xs={6}>
-                  <Typography variant="h6">Total Entries</Typography>
-                  <Typography variant="h4" fontWeight="bold">
-                    {expenseEntries.length}
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="h6">Total Amount</Typography>
-                  <Typography variant="h4" fontWeight="bold">
-                    ₹{getTotalAmount().toFixed(2)}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Paper>
-          </motion.div>
 
           <AnimatePresence>
             {expenseEntries.map((entry, index) => (
-              <motion.div
+              <Box
                 key={index}
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 50 }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
+                sx={{
+                  mb: index < expenseEntries.length - 1 ? 2.5 : 1,
+                  p: 2.5,
+                  borderRadius: 2,
+                  bgcolor: '#fafafa',
+                  border: '1px solid #e5e7eb',
+                }}
               >
-                <Card
-                  elevation={4}
-                  sx={{
-                    mb: 3,
-                    borderRadius: 3,
-                    background: 'rgba(255, 255, 255, 0.9)',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    position: 'relative',
-                    overflow: 'visible'
-                  }}
-                >
-                  <CardContent sx={{ p: 3 }}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                      <Chip
-                        icon={<Receipt />}
-                        label={`Expense ${index + 1}`}
-                        sx={{ color: "#8d0638ff" }}
-                        variant="outlined"
-                      />
-                      {expenseEntries.length > 1 && (
-                        <Tooltip title="Remove Entry">
-                          <IconButton
-                            onClick={() => handleRemoveEntry(index)}
-                            color="error"
-                            size="small"
-                          >
-                            <Delete />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </Box>
-
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          label="Expense Date"
-                          type="date"
-                          value={entry.expenseDate}
-                          onChange={(e) => handleChange(index, 'expenseDate', e.target.value)}
-                          InputLabelProps={{ shrink: true }}
-                          variant="outlined"
-                          fullWidth
-                          error={!!errors[`${index}-expenseDate`]}
-                          helperText={errors[`${index}-expenseDate`]}
-                          InputProps={{
-                            startAdornment: <CalendarToday sx={{ mr: 1, color: 'action.active' }} />
-                          }}
-                        />
-                      </Grid>
-
-                      <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth error={!!errors[`${index}-expenseType`]}>
-                          <InputLabel>Category</InputLabel>
-                          <Select
-                            value={entry.expenseType}
-                            onChange={(e) => handleChange(index, 'expenseType', e.target.value)}
-                            label="Category"
-                            startAdornment={<Category sx={{ mr: 1, color: 'action.active' }} />}
-                          >
-                            {expenseCategories.map((category) => (
-                              <MenuItem key={category.value} value={category.value}>
-                                <Box display="flex" alignItems="center">
-                                  <span style={{ marginRight: 8, fontSize: '1.2em' }}>
-                                    {category.icon}
-                                  </span>
-                                  {category.label}
-                                </Box>
-                              </MenuItem>
-                            ))}
-                          </Select>
-                          {errors[`${index}-expenseType`] && (
-                            <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1 }}>
-                              {errors[`${index}-expenseType`]}
-                            </Typography>
-                          )}
-                        </FormControl>
-                      </Grid>
-
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          label="Amount"
-                          type="number"
-                          value={entry.expenseAmount}
-                          onChange={(e) => handleChange(index, 'expenseAmount', e.target.value)}
-                          variant="outlined"
-                          fullWidth
-                          error={!!errors[`${index}-expenseAmount`]}
-                          helperText={errors[`${index}-expenseAmount`]}
-                          InputProps={{
-                            startAdornment: <AttachMoney sx={{ color: 'action.active' }} />
-                          }}
-                        />
-                      </Grid>
-
-                      <Grid item xs={12} sm={6}>
-                        <ReceiptUpload
-                          entry={entry}
-                          index={index}
-                          onDrop={(files) => onDrop(files, index)}
-                        />
-                      </Grid>
-                    </Grid>
-
-                    {entry.imagePreview && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.3 }}
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                  <Chip
+                    icon={<Receipt sx={{ fontSize: 16 }} />}
+                    label={`Expense #${index + 1}`}
+                    size="small"
+                    sx={{ color: "#f37021", borderColor: "rgba(243, 112, 33,0.3)", fontWeight: 600 }}
+                    variant="outlined"
+                  />
+                  {expenseEntries.length > 1 && (
+                    <Tooltip title="Remove Entry">
+                      <IconButton
+                        onClick={() => handleRemoveEntry(index)}
+                        color="error"
+                        size="small"
                       >
-                        <Box mt={2}>
-                          <Typography variant="subtitle2" gutterBottom>
-                            Receipt Preview:
-                          </Typography>
-                          <img
-                            src={entry.imagePreview || "/placeholder.svg"}
-                            alt="Receipt preview"
-                            style={{
-                              maxWidth: '200px',
-                              maxHeight: '150px',
-                              borderRadius: '8px',
-                              border: '2px solid #e0e0e0'
-                            }}
-                          />
-                        </Box>
-                      </motion.div>
-                    )}
-                  </CardContent>
-                </Card>
-              </motion.div>
+                        <Delete fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </Box>
+
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      label="Expense Date"
+                      type="date"
+                      value={entry.expenseDate}
+                      onChange={(e) => handleChange(index, 'expenseDate', e.target.value)}
+                      InputLabelProps={{ shrink: true }}
+                      variant="outlined"
+                      size="small"
+                      fullWidth
+                      error={!!errors[`${index}-expenseDate`]}
+                      helperText={errors[`${index}-expenseDate`]}
+                      InputProps={{
+                        startAdornment: <CalendarToday sx={{ mr: 1, fontSize: 18, color: 'action.active' }} />
+                      }}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth size="small" error={!!errors[`${index}-expenseType`]}>
+                      <InputLabel>Category</InputLabel>
+                      <Select
+                        value={entry.expenseType}
+                        onChange={(e) => handleChange(index, 'expenseType', e.target.value)}
+                        label="Category"
+                        startAdornment={<Category sx={{ mr: 1, fontSize: 18, color: 'action.active' }} />}
+                        MenuProps={{ PaperProps: { sx: { maxHeight: 260 } } }}
+                      >
+                        {expenseCategories.map((category) => (
+                          <MenuItem key={category.value} value={category.value}>
+                            <Box display="flex" alignItems="center">
+                              <span style={{ marginRight: 8, fontSize: '1.1em' }}>
+                                {category.icon}
+                              </span>
+                              {category.label}
+                            </Box>
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      {errors[`${index}-expenseType`] && (
+                        <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1 }}>
+                          {errors[`${index}-expenseType`]}
+                        </Typography>
+                      )}
+                    </FormControl>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      label="Amount (₹)"
+                      type="number"
+                      placeholder="0.00"
+                      value={entry.expenseAmount}
+                      onChange={(e) => handleChange(index, 'expenseAmount', e.target.value)}
+                      variant="outlined"
+                      size="small"
+                      fullWidth
+                      error={!!errors[`${index}-expenseAmount`]}
+                      helperText={errors[`${index}-expenseAmount`]}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Typography sx={{ fontWeight: 'bold', color: '#f37021' }}>₹</Typography>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <ReceiptUpload
+                      entry={entry}
+                      index={index}
+                      onDrop={(files) => onDrop(files, index)}
+                    />
+                  </Grid>
+                </Grid>
+
+                {entry.imagePreview && (
+                  <Box mt={2}>
+                    <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary', display: 'block', mb: 0.5 }}>
+                      Receipt Preview:
+                    </Typography>
+                    <img
+                      src={entry.imagePreview || "/placeholder.svg"}
+                      alt="Receipt preview"
+                      style={{
+                        maxWidth: '160px',
+                        maxHeight: '120px',
+                        borderRadius: '6px',
+                        border: '1px solid #e5e7eb'
+                      }}
+                    />
+                  </Box>
+                )}
+              </Box>
             ))}
           </AnimatePresence>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-          >
-            <Box display="flex" justifyContent="center" mt={2}>
-              <Tooltip title="Add Another Expense">
-                <Button
-                  onClick={handleAddEntry}
-                  variant="outlined"
-                  startIcon={<AddCircleOutline />}
-                  sx={{
-                    borderRadius: 3,
-                    px: 3,
-                    py: 1.5,
-                    borderColor: '#667eea',
-                    color: '#667eea',
-                    '&:hover': {
-                      borderColor: '#764ba2',
-                      backgroundColor: 'rgba(102, 126, 234, 0.1)'
-                    }
-                  }}
-                >
-                  Add Another Expense
-                </Button>
-              </Tooltip>
-            </Box>
-          </motion.div>
+          <Box display="flex" justifyContent="center" mt={2}>
+            <Button
+              onClick={handleAddEntry}
+              variant="outlined"
+              size="small"
+              startIcon={<AddCircleOutline />}
+              sx={{
+                borderColor: '#f37021',
+                color: '#f37021',
+                textTransform: 'none',
+                fontWeight: 600,
+                borderRadius: 1.5,
+                '&:hover': {
+                  borderColor: '#d95300',
+                  backgroundColor: 'rgba(243, 112, 33, 0.04)'
+                }
+              }}
+            >
+              Add Another Expense
+            </Button>
+          </Box>
         </DialogContent>
 
         <DialogActions sx={{ 
-          background: 'rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(20px)',
-          p: 3,
-          gap: 2
+          px: 3, 
+          py: 2, 
+          borderTop: '1px solid #e5e7eb', 
+          bgcolor: '#f9fafb',
+          display: 'flex',
+          justifyContent: 'flex-end',
+          gap: 1.5,
         }}>
           <Button
             onClick={onClose}
-            variant="outlined"
+            disabled={loading}
             sx={{
-              borderRadius: 3,
-              px: 4,
-              py: 1.5,
-              borderColor: 'rgba(255, 255, 255, 0.5)',
-              color: 'white',
-              '&:hover': {
-                borderColor: 'white',
-                backgroundColor: 'rgba(255, 255, 255, 0.1)'
-              }
+              color: '#6b7280',
+              fontWeight: 600,
+              textTransform: 'none',
             }}
           >
             Cancel
@@ -496,16 +442,16 @@ function ApplyExpense({ open, onClose, onExpenseApplied }) {
             variant="contained"
             disabled={loading}
             sx={{
-              borderRadius: 3,
-              px: 4,
-              py: 1.5,
-              background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-              '&:hover': {
-                background: 'linear-gradient(45deg, #FE6B8B 60%, #FF8E53 100%)',
-              }
+              bgcolor: '#f37021',
+              '&:hover': { bgcolor: '#d95300' },
+              fontWeight: 600,
+              textTransform: 'none',
+              px: 3,
+              py: 0.8,
+              borderRadius: 1.5,
             }}
           >
-            {loading ? 'Submitting...' : `Submit ${expenseEntries.length} Expense${expenseEntries.length > 1 ? 's' : ''}`}
+            {loading ? 'Submitting...' : 'Submit'}
           </Button>
         </DialogActions>
       </Dialog>

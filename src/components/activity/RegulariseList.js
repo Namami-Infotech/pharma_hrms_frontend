@@ -156,8 +156,10 @@ const RegulariseCard = ({ regularise, employee, onStatusChange, isHR, index }) =
     setAnchorEl(null);
   };
 
+  const effectiveId = regularise.RegID || regularise.id || regularise.Id || regularise.InActivityId;
+
   const handleStatusChange = (status) => {
-    onStatusChange(regularise.RegID, status);
+    onStatusChange(effectiveId, status);
     handleMenuClose();
   };
 
@@ -401,7 +403,16 @@ const RegulariseList = () => {
       const response = await axios.get(`${BASE_URL}/attendance/get_regularise.php`, { params });
       
       if (response.data.success) {
-        const filteredRegularisations = response.data.data.filter((reg) =>
+        const rawList = Array.isArray(response.data.data) ? response.data.data : [];
+        const normalized = rawList.map((reg) => {
+          const effectiveId = reg.RegID || reg.id || reg.Id || reg.reg_id || reg.InActivityId;
+          return {
+            ...reg,
+            RegID: effectiveId,
+            id: effectiveId,
+          };
+        });
+        const filteredRegularisations = normalized.filter((reg) =>
           employees.some((emp) => emp.EmpId === reg.EmpId),
         );
         setRegularisations(filteredRegularisations);
@@ -433,31 +444,39 @@ const RegulariseList = () => {
 
   const handleStatusChange = async (regId, newStatus) => {
     try {
-      const selectedReg = regularisations.find(reg => reg.RegID === regId);
+      const selectedReg = regularisations.find(
+        (reg) => reg.RegID === regId || reg.id === regId || (reg.RegID || reg.id) == regId
+      );
       if (!selectedReg) return;
 
+      const effectiveRegId = selectedReg.RegID || selectedReg.id || selectedReg.Id || selectedReg.InActivityId || regId;
       const updateDate = new Date().toISOString().split('T')[0];
-      const updatedBy = user.emp_id;
+      const updatedBy = user?.emp_id || user?.EmpId || 'ADMIN001';
 
       const response = await axios.post(`${BASE_URL}/attendance/update_regularise.php`, {
-        RegID: selectedReg.RegID,
+        RegID: effectiveRegId,
+        id: effectiveRegId,
         Status: newStatus,
         UpdateDate: updateDate,
         UpdatedBy: updatedBy,
-        InActivityId: selectedReg.InActivityId,
-        OutActivityId: selectedReg.OutActivityId,
-        InTime: selectedReg.InTime,
-        OutTime: selectedReg.OutTime,
-        Date: selectedReg.Date
+        InActivityId: selectedReg.InActivityId || "N/A",
+        OutActivityId: selectedReg.OutActivityId || selectedReg.InActivityId || "N/A",
+        InTime: selectedReg.InTime || "09:00:00",
+        OutTime: selectedReg.OutTime || "18:00:00",
+        Date: selectedReg.Date || updateDate
       });
 
-      if (response.data.success) {
-        setSnackbarMessage('Status updated successfully.');
-        setRegularisations(regularisations.map((reg) => 
-          reg.RegID === regId ? { ...reg, Status: newStatus } : reg
-        ));
+      if (response.data && (response.data.success || response.data.status === true)) {
+        setSnackbarMessage(`Status updated to ${newStatus} successfully.`);
+        setRegularisations((prev) =>
+          prev.map((reg) =>
+            (reg.RegID === effectiveRegId || reg.id === effectiveRegId)
+              ? { ...reg, Status: newStatus }
+              : reg
+          )
+        );
       } else {
-        setSnackbarMessage(response.data.message);
+        setSnackbarMessage(response.data?.message || 'Failed to update status.');
       }
     } catch (error) {
       setSnackbarMessage('Error updating status.');
@@ -531,11 +550,16 @@ const RegulariseList = () => {
   return (
     <Box sx={{ p: { xs: 1, md: 2 }, bgcolor: "#f8fafc", minHeight: "100vh" }}>
       {/* Header */}
-      <Paper elevation={1} sx={{ p: 2, mb: 2, borderRadius: 2, background: 'white' }}>
+      <Paper elevation={0} sx={{ p: 2.5, mb: 2, borderRadius: 2, background: 'white', border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-          <Typography variant="h5" fontWeight="bold" color="#8d0638ff">
-            Regularisation Requests
-          </Typography>
+          <Box>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}>
+              Regularisation Requests
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: "0.85rem" }}>
+              Review, approve, and track employee attendance regularisation applications
+            </Typography>
+          </Box>
           <Box sx={{ display: "flex", gap: 1 }}>
             <Tooltip title="Refresh">
               <IconButton onClick={handleRefresh} disabled={refreshing} size="small">
@@ -666,7 +690,7 @@ const RegulariseList = () => {
                 const employee = employees.find((emp) => emp.EmpId === regularise.EmpId);
                 return (
                   <RegulariseCard
-                    key={regularise.RegID}
+                    key={regularise.RegID || regularise.id || index}
                     regularise={regularise}
                     employee={employee}
                     onStatusChange={handleStatusChange}
@@ -688,7 +712,7 @@ const RegulariseList = () => {
           // Table View
           <TableContainer>
             <Table sx={{ minWidth: 650 }} size="small">
-              <TableHead sx={{ bgcolor: "#8d0638ff" }}>
+              <TableHead sx={{ bgcolor: "#f37021" }}>
                 <TableRow>
                   <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>
                     <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -734,7 +758,7 @@ const RegulariseList = () => {
 
                       return (
                         <motion.tr
-                          key={regularise.RegID}
+                          key={regularise.RegID || regularise.id || index}
                           component={TableRow}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -811,7 +835,7 @@ const RegulariseList = () => {
                                   <IconButton
                                     size="small"
                                     color="success"
-                                    onClick={() => handleStatusChange(regularise.RegID, "Approved")}
+                                    onClick={() => handleStatusChange(regularise.RegID || regularise.id || regularise.InActivityId, "Approved")}
                                     disabled={regularise.Status === "Approved" || regularise.Status === "Rejected"}
                                     sx={{ fontSize: '0.8rem' }}
                                   >
@@ -822,7 +846,7 @@ const RegulariseList = () => {
                                   <IconButton
                                     size="small"
                                     color="error"
-                                    onClick={() => handleStatusChange(regularise.RegID, "Rejected")}
+                                    onClick={() => handleStatusChange(regularise.RegID || regularise.id || regularise.InActivityId, "Rejected")}
                                     disabled={regularise.Status === "Approved" || regularise.Status === "Rejected"}
                                     sx={{ fontSize: '0.8rem' }}
                                   >

@@ -169,7 +169,7 @@ const DashboardData = ({ EmpId }) => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
         >
-            <Typography variant="h5" gutterBottom style={{ color: "#8d0638ff" }}>
+            <Typography variant="h5" gutterBottom style={{ color: "#f37021" }}>
                 {employeeData?.Name || 'N/A'}'s Details
             </Typography>
             <Divider sx={{ marginY: 2 }} />
@@ -195,7 +195,7 @@ const DashboardData = ({ EmpId }) => {
             <Tabs
                 value={activeTab}
                 onChange={handleTabChange}
-                indicatorcolor="#8d0638ff"
+                indicatorcolor="#f37021"
                 textColor="inherit"
                 variant="fullWidth"
                 sx={{ marginBottom: 3 }}
@@ -259,7 +259,7 @@ const DashboardData = ({ EmpId }) => {
 
             <Box sx={{ mt: 2 }}>
                 <Typography variant="body1">SL: {leaveDetails?.SL || 0}</Typography>
-                <LinearProgress variant="determinate" value={(leaveDetails?.SL / 12) * 100} sx={{ backgroundColor: "#8d0638ff" }} />
+                <LinearProgress variant="determinate" value={(leaveDetails?.SL / 12) * 100} sx={{ backgroundColor: "#f37021" }} />
             </Box>
 
         </motion.div>
@@ -302,7 +302,7 @@ const DashboardData = ({ EmpId }) => {
 {
     activeTab === 3 && (
         <>
-            <Button onClick={handleDialogOpen} variant="contained" color="#8d0638ff">
+            <Button onClick={handleDialogOpen} variant="contained" color="#f37021">
                 Add Salary
             </Button>
             <Table>
@@ -361,7 +361,7 @@ const DashboardData = ({ EmpId }) => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleDialogClose}>Cancel</Button>
-                    <Button onClick={handleAddSalary} color="#8d0638ff">
+                    <Button onClick={handleAddSalary} color="#f37021">
                         Add
                     </Button>
                 </DialogActions>
@@ -379,7 +379,7 @@ const DashboardData = ({ EmpId }) => {
             transition={{ duration: 0.5, delay: 0.3 }}
         >
             <Table>
-                <TableHead style={{ backgroundColor: "#8d0638ff" }}>
+                <TableHead style={{ backgroundColor: "#f37021" }}>
                     <TableRow>
                         <TableCell style={{ color: "white" }}>Asset</TableCell>
                         <TableCell style={{ color: "white" }}> Make</TableCell>

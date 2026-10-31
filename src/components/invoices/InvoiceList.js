@@ -175,9 +175,9 @@ const UTRUpdateDialog = ({ open, onClose, invoice, onUpdateUTR }) => {
           variant="contained"
           disabled={!utrNumber.trim()}
           sx={{
-            bgcolor: "#8d0638ff",
+            bgcolor: "#f37021",
             "&:hover": {
-              bgcolor: "#6d0430ff",
+              bgcolor: "#d95300",
             }
           }}
         >
@@ -335,10 +335,10 @@ const InvoiceCard = ({ invoice, onView, onUpdateUTR, isAdmin }) => {
                   sx={{ 
                     borderRadius: 2,
                     fontSize: '0.75rem',
-                    bgcolor: alpha("#8d0638ff", 0.1),
-                    color: "#8d0638ff",
+                    bgcolor: alpha("#f37021", 0.1),
+                    color: "#f37021",
                     "&:hover": {
-                      bgcolor: alpha("#8d0638ff", 0.2),
+                      bgcolor: alpha("#f37021", 0.2),
                     }
                   }}
                 >
@@ -518,10 +518,10 @@ const InvoiceTableRow = ({ invoice, onView, onUpdateUTR, isAdmin, index }) => {
                 onClick={() => onView(invoice.invoice_copy)}
                 size="small"
                 sx={{
-                  color: "#8d0638ff",
-                  bgcolor: alpha("#8d0638ff", 0.1),
+                  color: "#f37021",
+                  bgcolor: alpha("#f37021", 0.1),
                   "&:hover": {
-                    bgcolor: alpha("#8d0638ff", 0.2),
+                    bgcolor: alpha("#f37021", 0.2),
                   }
                 }}
               >
@@ -691,11 +691,11 @@ function InvoiceList() {
       >
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
           <Box>
-            <Typography variant="h5" fontWeight="700" color="#8d0638ff" gutterBottom>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }} gutterBottom>
               Invoice Management
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              View and manage your subscription invoices
+            <Typography variant="body2" sx={{ color: "#64748b", fontSize: "0.85rem" }}>
+              View billing records, manage invoices, and verify payment transactions
             </Typography>
           </Box>
           <Alert 
@@ -824,7 +824,7 @@ function InvoiceList() {
           // Table View for Desktop
           <TableContainer>
             <Table sx={{ minWidth: 650 }} size="small">
-              <TableHead sx={{ bgcolor: "#8d0638ff" }}>
+              <TableHead sx={{ bgcolor: "#f37021" }}>
                 <TableRow>
                   <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>
                     <Box sx={{ display: "flex", alignItems: "center" }}>

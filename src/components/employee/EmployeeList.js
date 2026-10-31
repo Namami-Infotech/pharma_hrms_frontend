@@ -195,7 +195,7 @@ const EmployeeCard = ({
             <Tooltip title="Edit Employee">
               <IconButton
                 size="small"
-                sx={{ color: "#8d0638ff" }}
+                sx={{ color: "#f37021" }}
                 onClick={() => onEdit(employee)}
               >
                 <Edit fontSize="small" />
@@ -417,7 +417,7 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
     >
       <DialogTitle
         sx={{
-          bgcolor: "#8d0638ff",
+          bgcolor: "#f37021",
           color: "white",
           display: "flex",
           justifyContent: "space-between",
@@ -586,7 +586,7 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
 
             {loadingSalary ? (
               <Box sx={{ display: "flex", alignItems: "center", py: 3, justifyContent: "center" }}>
-                <CircularProgress size={28} sx={{ mr: 1.5, color: "#8d0638ff" }} />
+                <CircularProgress size={28} sx={{ mr: 1.5, color: "#f37021" }} />
                 <Typography variant="body1" color="text.secondary">Loading salary structure...</Typography>
               </Box>
             ) : employeeSalary ? (
@@ -666,7 +666,7 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
                     title="Net Take Home"
                     amount={employeeSalary.net_take_home || employeeSalary.gross_salary}
                     annualAmount={(parseFloat(employeeSalary.net_take_home || employeeSalary.gross_salary || 0)) * 12}
-                    color="#8d0638"
+                    color="#f37021"
                     icon={<AccountBalanceWallet />}
                     isHighlighted={true}
                   />
@@ -685,7 +685,7 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
         <Button
           onClick={onClose}
           variant="contained"
-          sx={{ bgcolor: "#8d0638ff", color: "white", "&:hover": { bgcolor: "#6b042d" } }}
+          sx={{ bgcolor: "#f37021", color: "white", "&:hover": { bgcolor: "#d95300" } }}
         >
           Close
         </Button>
@@ -1545,14 +1545,17 @@ const exportToExcel = () => {
               flexWrap: "wrap",
             }}
           >
-            <Typography
-              variant="h4"
-              fontWeight="bold"
-              color="#8d0638ff"
-              sx={{ flexGrow: 1 }}
-            >
-              Employee Management
-            </Typography>
+            <Box sx={{ flexGrow: 1 }}>
+              <Typography
+                variant="h5"
+                sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}
+              >
+                Employee Management
+              </Typography>
+              <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: "0.85rem" }}>
+                Manage company staff, designations, departments, and employee directory
+              </Typography>
+            </Box>
 
             <Box sx={{ display: "flex", gap: 1, mt: { xs: 2, md: 0 } }}>
               <Tooltip title="Refresh Data">
@@ -1560,7 +1563,7 @@ const exportToExcel = () => {
                   onClick={fetchEmployees}
                   sx={{
                     bgcolor: "#fff",
-                    color: "#8d0638ff",
+                    color: "#f37021",
                     "&:hover": { bgcolor: "#f2e6eb" },
                   }}
                 >
@@ -1575,10 +1578,10 @@ const exportToExcel = () => {
                 onClick={exportToExcel}
                 disabled={exporting || filteredEmployees.length === 0}
                 sx={{
-                  borderColor: "#8d0638ff",
-                  color: "#8d0638ff",
+                  borderColor: "#f37021",
+                  color: "#f37021",
                   "&:hover": {
-                    borderColor: "#6b042d",
+                    borderColor: "#d95300",
                     bgcolor: "#f8f0f4",
                   },
                   borderRadius: 2,
@@ -1595,9 +1598,9 @@ const exportToExcel = () => {
                   startIcon={<PersonAdd />}
                   onClick={() => handleOpenForm("add")}
                   sx={{
-                    bgcolor: "#8d0638ff",
+                    bgcolor: "#f37021",
                     color: "white",
-                    "&:hover": { bgcolor: "#6b042d" },
+                    "&:hover": { bgcolor: "#d95300" },
                     borderRadius: 2,
                     textTransform: "none",
                   }}
@@ -1709,7 +1712,7 @@ const exportToExcel = () => {
             // Desktop Table View
             <TableContainer>
               <Table>
-                <TableHead sx={{ bgcolor: "#8d0638ff" }}>
+                <TableHead sx={{ bgcolor: "#f37021" }}>
                   <TableRow>
                     <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                       <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -1851,7 +1854,7 @@ const exportToExcel = () => {
                               <Tooltip title="Edit Employee">
                                 <IconButton
                                   size="small"
-                                  sx={{ color: "#8d0638ff" }}
+                                  sx={{ color: "#f37021" }}
                                   onClick={() =>
                                     handleOpenForm("edit", employee)
                                   }
@@ -1907,7 +1910,7 @@ const exportToExcel = () => {
         >
           <DialogTitle
             sx={{
-              bgcolor: "#8d0638ff",
+              bgcolor: "#f37021",
               color: "white",
               display: "flex",
               justifyContent: "space-between",
@@ -1971,7 +1974,7 @@ const exportToExcel = () => {
               variant="contained"
               color="error"
               disabled={!disableReason || !disableDate}
-              sx={{ bgcolor: "#8d0638ff", color: "white" }}
+              sx={{ bgcolor: "#f37021", color: "white" }}
             >
               Confirm Disable
             </Button>
@@ -2000,7 +2003,7 @@ const exportToExcel = () => {
         >
           <DialogTitle
             sx={{
-              bgcolor: "#8d0638ff",
+              bgcolor: "#f37021",
               color: "white",
               display: "flex",
               justifyContent: "space-between",
@@ -2633,7 +2636,7 @@ const exportToExcel = () => {
               startIcon={
                 submitting ? <CircularProgress size={20} /> : <CheckCircle />
               }
-              sx={{ bgcolor: "#8d0638ff", color: "white" }}
+              sx={{ bgcolor: "#f37021", color: "white" }}
             >
               {submitting
                 ? "Saving..."

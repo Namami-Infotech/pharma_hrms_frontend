@@ -148,7 +148,7 @@ const ApplyAdvanceModal = ({ open, onClose, onSuccess }) => {
       {/* Dialog Header */}
       <DialogTitle
         sx={{
-          bgcolor: "#8d0638",
+          bgcolor: "#f37021",
           color: "#ffffff",
           py: 2,
           px: 3,
@@ -200,7 +200,7 @@ const ApplyAdvanceModal = ({ open, onClose, onSuccess }) => {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Typography sx={{ fontWeight: "bold", color: "#8d0638" }}>₹</Typography>
+                      <Typography sx={{ fontWeight: "bold", color: "#f37021" }}>₹</Typography>
                     </InputAdornment>
                   ),
                 }}
@@ -225,7 +225,7 @@ const ApplyAdvanceModal = ({ open, onClose, onSuccess }) => {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <CalendarMonth sx={{ fontSize: 20, color: "#8d0638" }} />
+                      <CalendarMonth sx={{ fontSize: 20, color: "#f37021" }} />
                     </InputAdornment>
                   ),
                 }}
@@ -269,8 +269,8 @@ const ApplyAdvanceModal = ({ open, onClose, onSuccess }) => {
             disabled={loading}
             startIcon={loading ? <CircularProgress size={18} color="inherit" /> : <Send />}
             sx={{
-              bgcolor: "#8d0638",
-              "&:hover": { bgcolor: "#6b042d" },
+              bgcolor: "#f37021",
+              "&:hover": { bgcolor: "#d95300" },
               fontWeight: 600,
               textTransform: "none",
               px: 3,

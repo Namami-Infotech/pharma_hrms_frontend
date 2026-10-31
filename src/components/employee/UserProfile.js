@@ -209,7 +209,7 @@ const UserProfile = () => {
                         <IconButton
                           size="small"
                           sx={{
-                            bgcolor: "#8d0638",
+                            bgcolor: "#f37021",
                             color: "white",
                             "&:hover": { bgcolor: "#6d052c" },
                           }}
@@ -225,7 +225,7 @@ const UserProfile = () => {
                           margin: "auto",
                           border: "4px solid white",
                           boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
-                          background: "linear-gradient(45deg, #8d0638, #c2185b)",
+                          background: "linear-gradient(45deg, #f37021, #c2185b)",
                         }}
                         src={user?.image}
                         alt={user?.username}
@@ -241,7 +241,7 @@ const UserProfile = () => {
                       mt: 3,
                       mb: 1,
                       fontWeight: "bold",
-                      background: "linear-gradient(45deg, #8d0638, #c2185b)",
+                      background: "linear-gradient(45deg, #f37021, #c2185b)",
                       backgroundClip: "text",
                       WebkitBackgroundClip: "text",
                       WebkitTextFillColor: "transparent",
@@ -257,8 +257,8 @@ const UserProfile = () => {
                     variant="outlined" 
                     sx={{ 
                       mb: 3,
-                      borderColor: "#8d0638",
-                      color: "#8d0638",
+                      borderColor: "#f37021",
+                      color: "#f37021",
                       '& .MuiChip-label': {
                         fontWeight: 600
                       }
@@ -271,17 +271,17 @@ const UserProfile = () => {
                       startIcon={<LockIcon />}
                       onClick={handleOpen}
                       sx={{
-                        background: "linear-gradient(45deg, #8d0638, #c2185b)",
+                        background: "linear-gradient(45deg, #f37021, #c2185b)",
                         borderRadius: 3,
                         px: 4,
                         py: 1.5,
                         textTransform: "none",
                         fontSize: "1rem",
                         fontWeight: 600,
-                        boxShadow: "0 4px 15px rgba(141, 6, 56, 0.4)",
+                        boxShadow: "0 4px 15px rgba(243, 112, 33, 0.4)",
                         "&:hover": {
                           background: "linear-gradient(45deg, #6d052c, #a0154b)",
-                          boxShadow: "0 6px 20px rgba(141, 6, 56, 0.6)",
+                          boxShadow: "0 6px 20px rgba(243, 112, 33, 0.6)",
                         },
                       }}
                     >
@@ -307,7 +307,7 @@ const UserProfile = () => {
               >
                 <CardContent sx={{ p: 4 }}>
                   <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-                    <InfoIcon sx={{ mr: 2, color: "#8d0638" }} />
+                    <InfoIcon sx={{ mr: 2, color: "#f37021" }} />
                     <Typography variant="h5" sx={{ fontWeight: "bold" }}>
                       Profile Information
                     </Typography>
@@ -325,19 +325,19 @@ const UserProfile = () => {
                             sx={{
                               p: 3,
                               borderRadius: 3,
-                              background: "linear-gradient(135deg, rgba(141, 6, 56, 0.1), rgba(194, 24, 91, 0.1))",
-                              border: "1px solid rgba(141, 6, 56, 0.2)",
+                              background: "linear-gradient(135deg, rgba(243, 112, 33, 0.1), rgba(194, 24, 91, 0.1))",
+                              border: "1px solid rgba(243, 112, 33, 0.2)",
                               transition: "all 0.3s ease",
                               "&:hover": {
                                 transform: "translateY(-2px)",
-                                boxShadow: "0 8px 25px rgba(141, 6, 56, 0.15)",
+                                boxShadow: "0 8px 25px rgba(243, 112, 33, 0.15)",
                               },
                             }}
                           >
                             <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                               <Box
                                 sx={{
-                                  color: "#8d0638",
+                                  color: "#f37021",
                                   mr: 2,
                                   display: "flex",
                                   alignItems: "center",
@@ -376,7 +376,7 @@ const UserProfile = () => {
                   <Box sx={{ mt: 4 }}>
                     <Divider sx={{ mb: 3 }} />
                     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                      <SecurityIcon sx={{ mr: 2, color: "#8d0638" }} />
+                      <SecurityIcon sx={{ mr: 2, color: "#f37021" }} />
                       <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                         Security Settings
                       </Typography>
@@ -416,7 +416,7 @@ const UserProfile = () => {
           sx={{
             textAlign: "center",
             pb: 1,
-            background: "linear-gradient(45deg, #8d0638, #c2185b)",
+            background: "linear-gradient(45deg, #f37021, #c2185b)",
             backgroundClip: "text",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
@@ -424,7 +424,7 @@ const UserProfile = () => {
             fontSize: "1.5rem",
           }}
         >
-          <LockIcon sx={{ mr: 1, verticalAlign: "middle", color: "#8d0638" }} />
+          <LockIcon sx={{ mr: 1, verticalAlign: "middle", color: "#f37021" }} />
           Change Password
         </DialogTitle>
 
@@ -550,7 +550,7 @@ const UserProfile = () => {
               loading || !currentPassword || !newPassword || !confirmPassword || newPassword !== confirmPassword
             }
             sx={{
-              background: "linear-gradient(45deg, #8d0638, #c2185b)",
+              background: "linear-gradient(45deg, #f37021, #c2185b)",
               borderRadius: 2,
               px: 3,
               "&:hover": {

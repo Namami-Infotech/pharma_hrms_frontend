@@ -198,7 +198,7 @@ const AttendanceCard = ({ activity, isMobile }) => {
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} sm={3}>
             <Box display="flex" alignItems="center" gap={1}>
-              <CalendarToday fontSize="small" sx={{ color: "#8d0638ff" }} />
+              <CalendarToday fontSize="small" sx={{ color: "#f37021" }} />
               <Typography variant="body2" fontWeight="medium">
                 {activity.start ? format(activity.start, "dd/MM/yyyy") : "N/A"}
               </Typography>
@@ -1420,330 +1420,222 @@ const AttendanceList = () => {
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Box
         sx={{
-          px: { xs: 1, md: 2 },
-          py: { xs: 1, md: 1 },
-          backgroundColor: "#f5f5f5",
+          p: { xs: 2, sm: 3 },
+          bgcolor: "#f8fafc",
           minHeight: "100vh",
-          display: "flex",
-          justifyContent: "center",
+          boxSizing: "border-box",
         }}
       >
-        <Box sx={{ width: "100%", maxWidth: 1800 }}>
-          <Paper
-            sx={{ p: { xs: 1.5, md: 2 }, mb: 3, borderRadius: 2, boxShadow: 2 }}
-          >
-            <Box display="flex" flexDirection="column" gap={2}>
-              {/* Title Row */}
-              <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
+        <Box sx={{ width: "100%" }}>
+          {/* Header Row */}
+          <Box sx={{ mb: 3, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
+            <Box>
+              <Typography
+                variant="h5"
+                sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}
               >
-                <Typography
-                  variant="h5"
-                  fontWeight="bold"
-                  sx={{ color: "#8d0638ff" }}
+                Attendance Management
+              </Typography>
+              <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: "0.85rem" }}>
+                Track daily attendance, check-in logs, and activity reports
+              </Typography>
+            </Box>
+
+            {/* Action Buttons Row */}
+            <Stack direction="row" spacing={1} alignItems="center">
+              {(isAdmin || isRM) && (
+                <Tooltip title="Regularise">
+                  <IconButton
+                    onClick={regularise}
+                    size="small"
+                    sx={{
+                      bgcolor: "#ffffff",
+                      border: "1px solid #e2e8f0",
+                      color: "#64748b",
+                      width: 38,
+                      height: 38,
+                      borderRadius: 2,
+                      "&:hover": { bgcolor: "#f8fafc", color: "#0f172a" },
+                    }}
+                  >
+                    <Settings fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              )}
+
+              <Tooltip
+                title={
+                  activeTab === 0
+                    ? "Export to CSV"
+                    : "Export Today's Data"
+                }
+              >
+                <Button
+                  variant="contained"
+                  onClick={
+                    activeTab === 0 ? exportToCsv : exportTodayToCsv
+                  }
+                  disabled={
+                    activeTab === 0
+                      ? filteredActivities.length === 0
+                      : filteredTodayAttendance.length === 0
+                  }
+                  size="small"
+                  startIcon={<Download />}
+                  sx={{
+                    bgcolor: "#f37021",
+                    color: "#ffffff",
+                    borderRadius: 2,
+                    textTransform: "none",
+                    fontWeight: 600,
+                    height: 38,
+                    px: 2,
+                    boxShadow: "0 1px 3px rgba(243, 112, 33, 0.25)",
+                    "&:hover": { bgcolor: "#d95300" },
+                  }}
                 >
-                  Attendance Management
-                </Typography>
+                  Export
+                </Button>
+              </Tooltip>
 
-                {/* Mobile-only refresh button */}
-                <Box sx={{ display: { xs: "block", md: "none" } }}>
-                  <Tooltip title="Refresh Data">
-                    <IconButton
-                      onClick={refreshData}
-                      disabled={loading || todayLoading}
-                      size="small"
-                      sx={{ ml: 1 }}
-                    >
-                      {loading || todayLoading ? (
-                        <CircularProgress size={18} />
-                      ) : (
-                        <Refresh fontSize="small" />
-                      )}
-                    </IconButton>
-                  </Tooltip>
-                </Box>
-              </Box>
+              <Tooltip title="Refresh Data">
+                <IconButton
+                  onClick={refreshData}
+                  disabled={loading || todayLoading}
+                  size="small"
+                  sx={{
+                    bgcolor: "#ffffff",
+                    border: "1px solid #e2e8f0",
+                    color: "#64748b",
+                    width: 38,
+                    height: 38,
+                    borderRadius: 2,
+                    "&:hover": { bgcolor: "#f8fafc", color: "#0f172a" },
+                  }}
+                >
+                  {loading || todayLoading ? (
+                    <CircularProgress size={18} />
+                  ) : (
+                    <Refresh fontSize="small" />
+                  )}
+                </IconButton>
+              </Tooltip>
+            </Stack>
+          </Box>
 
-              {/* Main Controls - Stack vertically on mobile, row on desktop */}
+          {/* History Filters - Rendered only when Attendance History tab is active */}
+          {activeTab === 0 && (
+            <Paper
+              sx={{ p: 2, mb: 3, borderRadius: 2, border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}
+            >
               <Box
                 display="flex"
                 flexDirection={{ xs: "column", md: "row" }}
+                alignItems="center"
+                justifyContent="space-between"
                 gap={2}
               >
-                {/* Left Side - Filters (Full width on mobile) */}
                 <Box
-                  flex={{ md: 1 }}
                   display="flex"
                   flexDirection={{ xs: "column", sm: "row" }}
                   gap={1.5}
+                  flex={1}
                   sx={{ width: { xs: "100%", md: "auto" } }}
                 >
-                  {/* Select Employee field: Only shown in Attendance History tab (activeTab === 0), hidden in Today's Attendance tab so all employees are shown */}
-                  {canSelectEmployee && activeTab === 0 && (
-                    <>
-                      <Box flex={{ xs: 1, sm: 1 }}>
-                        <Autocomplete
-                          options={filteredEmployees}
-                          getOptionLabel={(option) =>
-                            `${option.Name} (${option.EmpId})`
-                          }
-                          value={
-                            employees.find(
-                              (emp) => emp.EmpId === selectedEmpId,
-                            ) || null
-                          }
-                          onChange={(e, newValue) => {
-                            setSelectedEmpId(newValue ? newValue.EmpId : "");
-                            setSelectedEmployee(newValue);
-                          }}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="Select Employee"
-                              variant="outlined"
-                              size="small"
-                              fullWidth
-                            />
-                          )}
-                          loading={loading}
-                        />
-                      </Box>
-
-                      {/* Employee Filter */}
-                      <Box flex={{ xs: 1, sm: 1 }} minWidth={{ sm: 140 }}>
-                        <FormControl fullWidth size="small">
-                          <InputLabel>Employee Status</InputLabel>
-                          <Select
-                            value={employeeFilter}
-                            label="Employee Status"
-                            onChange={(e) =>
-                              handleEmployeeFilterChange(e.target.value)
-                            }
-                          >
-                            <MenuItem value="active">Active Only</MenuItem>
-                            <MenuItem value="inactive">Inactive Only</MenuItem>
-                            <MenuItem value="all">All Employees</MenuItem>
-                          </Select>
-                        </FormControl>
-                      </Box>
-                    </>
-                  )}
-
-                  {/* Month/Year Selector - Only show in History tab */}
-                  {activeTab === 0 && (
+                  {canSelectEmployee && (
                     <Box flex={{ xs: 1, sm: 1 }}>
-                      <LocalizationProvider dateAdapter={AdapterDateFns}>
-                        <DatePicker
-                          views={["year", "month"]}
-                          label="Select Month & Year"
-                          value={selectedDate}
-                          onChange={(newValue) => setSelectedDate(newValue)}
-                          renderInput={(params) => (
-                            <TextField {...params} size="small" fullWidth />
-                          )}
-                        />
-                      </LocalizationProvider>
+                      <Autocomplete
+                        options={filteredEmployees}
+                        getOptionLabel={(option) => `${option.Name} (${option.EmpId})`}
+                        value={employees.find((emp) => emp.EmpId === selectedEmpId) || null}
+                        onChange={(event, newValue) => {
+                          setSelectedEmpId(newValue ? newValue.EmpId : "");
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Select Employee"
+                            variant="outlined"
+                            fullWidth
+                            size="small"
+                            InputProps={{
+                              ...params.InputProps,
+                              startAdornment: <Person sx={{ mr: 1, color: "action.active" }} />,
+                            }}
+                          />
+                        )}
+                      />
                     </Box>
                   )}
+
+                  {isAdmin && (
+                    <Box sx={{ minWidth: 150 }}>
+                      <FormControl fullWidth size="small">
+                        <InputLabel>Employee Status</InputLabel>
+                        <Select
+                          value={employeeFilter}
+                          label="Employee Status"
+                          onChange={(e) => handleEmployeeFilterChange(e.target.value)}
+                        >
+                          <MenuItem value="active">Active Only</MenuItem>
+                          <MenuItem value="inactive">Inactive Only</MenuItem>
+                          <MenuItem value="all">All Employees</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  )}
+
+                  <Box flex={{ xs: 1, sm: 1 }}>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                      <DatePicker
+                        views={["year", "month"]}
+                        label="Select Month & Year"
+                        value={selectedDate}
+                        onChange={(newValue) => setSelectedDate(newValue)}
+                        renderInput={(params) => <TextField {...params} size="small" fullWidth />}
+                      />
+                    </LocalizationProvider>
+                  </Box>
                 </Box>
 
-                {/* Right Side - Action Buttons */}
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent={{ xs: "space-between", md: "flex-end" }}
-                  gap={1}
-                  sx={{
-                    width: { xs: "100%", md: "auto" },
-                    mt: { xs: 1, md: 0 },
-                  }}
-                >
-                  {/* View Mode Toggle - Mobile/Tablet (only in History tab) */}
-                  {activeTab === 0 && (
-                    <Box sx={{ display: { xs: "flex", md: "none" }, gap: 0.5 }}>
-                      <Tooltip title="Calendar View">
-                        <Button
-                          variant={
-                            viewMode === "calendar" ? "contained" : "outlined"
-                          }
-                          onClick={() => setViewMode("calendar")}
-                          size="small"
-                          sx={{ minWidth: 40, px: 1 }}
-                        >
-                          <CalendarToday fontSize="small" />
-                        </Button>
-                      </Tooltip>
-                      <Tooltip title="List View">
-                        <Button
-                          variant={
-                            viewMode === "list" ? "contained" : "outlined"
-                          }
-                          onClick={() => setViewMode("list")}
-                          size="small"
-                          sx={{ minWidth: 40, px: 1 }}
-                        >
-                          <FilterList fontSize="small" />
-                        </Button>
-                      </Tooltip>
-                    </Box>
-                  )}
-
-                  {/* View Mode Toggle - Desktop (only in History tab) */}
-                  {activeTab === 0 && (
-                    <Box
-                      sx={{
-                        display: { xs: "none", md: "flex" },
-                        gap: 0.5,
-                        mr: 1,
-                      }}
-                    >
-                      <Tooltip title="Calendar View">
-                        <Button
-                          variant={
-                            viewMode === "calendar" ? "contained" : "outlined"
-                          }
-                          onClick={() => setViewMode("calendar")}
-                          size="small"
-                          startIcon={<CalendarToday />}
-                          sx={{ px: 2 }}
-                        >
-                          Calendar
-                        </Button>
-                      </Tooltip>
-                      <Tooltip title="List View">
-                        <Button
-                          variant={
-                            viewMode === "list" ? "contained" : "outlined"
-                          }
-                          onClick={() => setViewMode("list")}
-                          size="small"
-                          startIcon={<FilterList />}
-                          sx={{ px: 2 }}
-                        >
-                          List
-                        </Button>
-                      </Tooltip>
-                    </Box>
-                  )}
-
-                  {/* Action Buttons */}
-                  <Stack direction="row" spacing={0.5} alignItems="center">
-                    {(isAdmin || isRM) && (
-                      <Tooltip title="Regularise">
-                        <IconButton
-                          onClick={regularise}
-                          size="small"
-                          sx={{
-                            border: `1px solid ${theme.palette.primary.main}`,
-                            borderRadius: 1,
-                            width: 36,
-                            height: 36,
-                          }}
-                        >
-                          <Settings fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-
-                    {/* Export Button - Mobile */}
-                    <Tooltip
-                      title={
-                        activeTab === 0
-                          ? "Export to CSV"
-                          : "Export Today's Data"
-                      }
-                    >
-                      <IconButton
-                        onClick={
-                          activeTab === 0 ? exportToCsv : exportTodayToCsv
-                        }
-                        disabled={
-                          activeTab === 0
-                            ? filteredActivities.length === 0
-                            : filteredTodayAttendance.length === 0
-                        }
-                        size="small"
-                        sx={{
-                          border: `1px solid ${theme.palette.primary.main}`,
-                          borderRadius: 1,
-                          width: 36,
-                          height: 36,
-                          backgroundColor: theme.palette.primary.main,
-                          color: "#fff",
-                          "&:hover": {
-                            backgroundColor: theme.palette.primary.dark,
-                          },
-                          "&:disabled": {
-                            backgroundColor: theme.palette.action.disabled,
-                            borderColor: theme.palette.action.disabled,
-                          },
-                          display: { xs: "flex", md: "none" },
-                        }}
-                      >
-                        <Download fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-
-                    {/* Export Button - Desktop */}
-                    <Tooltip
-                      title={
-                        activeTab === 0
-                          ? "Export to CSV"
-                          : "Export Today's Data"
-                      }
-                    >
-                      <Button
-                        variant="contained"
-                        onClick={
-                          activeTab === 0 ? exportToCsv : exportTodayToCsv
-                        }
-                        disabled={
-                          activeTab === 0
-                            ? filteredActivities.length === 0
-                            : filteredTodayAttendance.length === 0
-                        }
-                        size="small"
-                        startIcon={<Download />}
-                        sx={{
-                          height: 36,
-                          display: { xs: "none", md: "flex" },
-                          px: 2,
-                        }}
-                      >
-                        Export
-                      </Button>
-                    </Tooltip>
-
-                    {/* Refresh Button - Desktop only (mobile is in title row) */}
-                    <Box sx={{ display: { xs: "none", md: "block" } }}>
-                      <Tooltip title="Refresh Data">
-                        <IconButton
-                          onClick={refreshData}
-                          disabled={loading || todayLoading}
-                          size="small"
-                          sx={{
-                            border: `1px solid ${theme.palette.primary.main}`,
-                            borderRadius: 1,
-                            width: 36,
-                            height: 36,
-                            ml: 0.5,
-                          }}
-                        >
-                          {loading || todayLoading ? (
-                            <CircularProgress size={18} />
-                          ) : (
-                            <Refresh fontSize="small" />
-                          )}
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
-                  </Stack>
+                {/* View Mode Toggle */}
+                <Box sx={{ display: "flex", gap: 0.5 }}>
+                  <Button
+                    variant={viewMode === "calendar" ? "contained" : "outlined"}
+                    onClick={() => setViewMode("calendar")}
+                    size="small"
+                    startIcon={<CalendarToday />}
+                    sx={{
+                      borderRadius: 2,
+                      textTransform: "none",
+                      px: 2,
+                      bgcolor: viewMode === "calendar" ? "#f37021" : "transparent",
+                      color: viewMode === "calendar" ? "#fff" : "inherit",
+                      "&:hover": { bgcolor: viewMode === "calendar" ? "#d95300" : "rgba(0,0,0,0.04)" },
+                    }}
+                  >
+                    Calendar
+                  </Button>
+                  <Button
+                    variant={viewMode === "list" ? "contained" : "outlined"}
+                    onClick={() => setViewMode("list")}
+                    size="small"
+                    startIcon={<FilterList />}
+                    sx={{
+                      borderRadius: 2,
+                      textTransform: "none",
+                      px: 2,
+                      bgcolor: viewMode === "list" ? "#f37021" : "transparent",
+                      color: viewMode === "list" ? "#fff" : "inherit",
+                      "&:hover": { bgcolor: viewMode === "list" ? "#d95300" : "rgba(0,0,0,0.04)" },
+                    }}
+                  >
+                    List
+                  </Button>
                 </Box>
               </Box>
-            </Box>
-          </Paper>
+            </Paper>
+          )}
 
           {/* Error Alert */}
           {error && (
@@ -1831,7 +1723,7 @@ const AttendanceList = () => {
                           </Typography>
                         </Box>
                         <CalendarToday
-                          sx={{ fontSize: 18, color: "#8d0638ff" }}
+                          sx={{ fontSize: 18, color: "#f37021" }}
                         />
                       </Box>
                     </CardContent>
@@ -2110,7 +2002,7 @@ const AttendanceList = () => {
                                     >
                                       <CalendarToday
                                         fontSize="small"
-                                        sx={{ color: "#8d0638ff" }}
+                                        sx={{ color: "#f37021" }}
                                       />
                                       {activity.start
                                         ? format(activity.start, "dd/MM/yyyy")

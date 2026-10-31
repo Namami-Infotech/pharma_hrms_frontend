@@ -1,93 +1,30 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box,
-  Tabs,
-  Tab,
-  Paper,
+  Typography,
 } from '@mui/material';
-import {
-  Receipt,
-  FormatListBulleted,
-} from '@mui/icons-material';
 import PageWrapper from '../components/layout/PageWrapper';
 import SalarySlip from '../components/employee/SalarySlip';
-import SalaryList from '../components/employee/SalaryList';
 
 function Salary() {
-  const [activeTab, setActiveTab] = useState(0);
-
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
-  };
-
   return (
     <PageWrapper title="Salary Management">
-      <Box sx={{ width: '100%', mb: 2 }}>
-        {/* Navigation Tabs Header */}
-        <Paper
-          elevation={1}
-          sx={{
-            mb: 2,
-            borderRadius: 2,
-            bgcolor: '#ffffff',
-            borderBottom: 1,
-            borderColor: 'divider',
-          }}
-        >
-          <Tabs
-            value={activeTab}
-            onChange={handleTabChange}
-            indicatorColor="primary"
-            textColor="primary"
-            sx={{
-              '& .MuiTab-root': {
-                textTransform: 'none',
-                fontWeight: 600,
-                fontSize: '0.95rem',
-                minHeight: 48,
-              },
-              '& .Mui-selected': {
-                color: '#8d0638 !important',
-              },
-              '& .MuiTabs-indicator': {
-                backgroundColor: '#8d0638',
-                height: 3,
-                borderRadius: '3px 3px 0 0',
-              },
-            }}
-          >
-            <Tab
-              icon={<Receipt sx={{ fontSize: 20 }} />}
-              iconPosition="start"
-              label="Salary Slip"
-            />
-            <Tab
-              icon={<FormatListBulleted sx={{ fontSize: 20 }} />}
-              iconPosition="start"
-              label="Salary Records"
-            />
-          </Tabs>
-        </Paper>
+      <Box sx={{ p: { xs: 2, sm: 3 }, width: '100%', boxSizing: 'border-box' }}>
+        {/* Page Title Block */}
+        <Box sx={{ mb: 2.5 }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}>
+            Salary & Payroll Management
+          </Typography>
+          <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: "0.85rem" }}>
+            Generate salary slips, manage deductions, and track monthly payroll disbursements
+          </Typography>
+        </Box>
 
-        {/* Tab 0: Salary Slip */}
-        {activeTab === 0 && (
-          <Box>
-            <SalarySlip />
-          </Box>
-        )}
-
-        {/* Tab 1: Salary Records */}
-        {activeTab === 1 && (
-          <Box>
-            <SalaryList />
-          </Box>
-        )}
+        {/* Salary Slip */}
+        <SalarySlip />
       </Box>
     </PageWrapper>
   );
 }
 
 export default Salary;
-
-
-

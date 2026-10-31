@@ -47,6 +47,10 @@ import {
   Paid,
   ThumbUp,
   ThumbDown,
+  Check,
+  Close,
+  FilterList,
+  TrendingUp,
 } from "@mui/icons-material";
 import { ADVANCE_API } from "../../api/endpoints";
 import { useAuth } from "../auth/AuthContext";
@@ -313,23 +317,30 @@ const AdvanceList = () => {
         }}
       >
         <Box>
-          <Typography variant="h5" sx={{ fontWeight: 700, color: "#111827" }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}>
             Advance Payment Management
+          </Typography>
+          <Typography variant="body2" sx={{ color: "#64748b", mt: 0.4, fontSize: "0.875rem" }}>
+            Manage employee advance requests, approval workflows, and deductions
           </Typography>
         </Box>
 
-        <Box sx={{ display: "flex", gap: 1.5 }}>
+        <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
           <Tooltip title="Refresh list">
             <IconButton
               onClick={fetchAdvances}
               disabled={loading}
               sx={{
                 bgcolor: "#ffffff",
-                border: "1px solid #e5e7eb",
-                "&:hover": { bgcolor: "#f9fafb" },
+                border: "1px solid #e2e8f0",
+                color: "#64748b",
+                width: 40,
+                height: 40,
+                borderRadius: 2,
+                "&:hover": { bgcolor: "#f8fafc", color: "#0f172a" },
               }}
             >
-              <Refresh />
+              <Refresh sx={{ fontSize: 20 }} />
             </IconButton>
           </Tooltip>
 
@@ -338,19 +349,19 @@ const AdvanceList = () => {
             startIcon={<Add sx={{ fontSize: "20px !important" }} />}
             onClick={() => setOpenApplyModal(true)}
             sx={{
-              bgcolor: "#8d0638",
+              bgcolor: "#f37021",
               color: "#ffffff",
               "&:hover": {
-                bgcolor: "#6b042d",
-                boxShadow: "0 4px 14px rgba(141,6,56,0.35)",
+                bgcolor: "#d95300",
+                boxShadow: "0 4px 14px rgba(243, 112, 33, 0.35)",
               },
               fontWeight: 600,
-              fontSize: "0.9rem",
+              fontSize: "0.875rem",
               textTransform: "none",
               borderRadius: 2,
               px: 2.5,
-              py: 0.9,
-              boxShadow: "0 2px 8px rgba(141,6,56,0.25)",
+              py: 1,
+              boxShadow: "0 2px 8px rgba(243, 112, 33, 0.25)",
               transition: "all 0.2s ease-in-out",
             }}
           >
@@ -359,167 +370,169 @@ const AdvanceList = () => {
         </Box>
       </Box>
 
-      {/* Stats Cards */}
+      {/* Stats Cards - Clean Minimal Style */}
       <Grid container spacing={2.5} sx={{ mb: 3 }}>
+        {/* Card 1: My Advance Requests */}
         <Grid item xs={12} sm={4}>
           <Card
             sx={{
-              borderRadius: 2.5,
-              boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
-              border: "1px solid #f3f4f6",
+              borderRadius: 3,
+              boxShadow: "0 1px 3px rgba(0,0,0,0.02), 0 2px 8px rgba(0,0,0,0.03)",
+              border: "1px solid #eef2f6",
               bgcolor: "#ffffff",
+              p: 2.5,
+              transition: "transform 0.2s, box-shadow 0.2s",
+              "&:hover": {
+                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
+              },
             }}
           >
-            <CardContent sx={{ p: 2.5, display: "flex", alignItems: "center", gap: 2 }}>
-              <Box
-                sx={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 2,
-                  bgcolor: "rgba(141, 6, 56, 0.1)",
-                  color: "#8d0638",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <AccountBalanceWallet sx={{ fontSize: 26 }} />
-              </Box>
-              <Box>
-                <Typography variant="caption" sx={{ color: "#6b7280", fontWeight: 600, textTransform: "uppercase" }}>
-                  My Advance Requests
-                </Typography>
-                <Typography variant="h5" sx={{ fontWeight: 700, color: "#111827", mt: 0.3 }}>
-                  {totalMyCount}
-                </Typography>
-              </Box>
-            </CardContent>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "#64748b" }}>
+              <AccountBalanceWallet sx={{ fontSize: 18, color: "#f37021" }} />
+              <Typography sx={{ fontSize: "0.85rem", fontWeight: 600, color: "#64748b" }}>
+                My Advance Requests
+              </Typography>
+            </Box>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: "#0f172a", mt: 1.5, mb: 0.8, fontSize: "1.85rem" }}>
+              {totalMyCount}
+            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.6, fontSize: "0.78rem", fontWeight: 600, color: "#10b981" }}>
+              <TrendingUp sx={{ fontSize: 15 }} />
+              <span>Active requests in system</span>
+            </Box>
           </Card>
         </Grid>
 
+        {/* Card 2: Pending RM Approvals */}
         <Grid item xs={12} sm={4}>
           <Card
             sx={{
-              borderRadius: 2.5,
-              boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
-              border: "1px solid #f3f4f6",
+              borderRadius: 3,
+              boxShadow: "0 1px 3px rgba(0,0,0,0.02), 0 2px 8px rgba(0,0,0,0.03)",
+              border: "1px solid #eef2f6",
               bgcolor: "#ffffff",
+              p: 2.5,
+              transition: "transform 0.2s, box-shadow 0.2s",
+              "&:hover": {
+                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
+              },
             }}
           >
-            <CardContent sx={{ p: 2.5, display: "flex", alignItems: "center", gap: 2 }}>
-              <Box
-                sx={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 2,
-                  bgcolor: "rgba(245, 158, 11, 0.1)",
-                  color: "#d97706",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <AssignmentTurnedIn sx={{ fontSize: 26 }} />
-              </Box>
-              <Box>
-                <Typography variant="caption" sx={{ color: "#6b7280", fontWeight: 600, textTransform: "uppercase" }}>
-                  Pending RM Approvals
-                </Typography>
-                <Typography variant="h5" sx={{ fontWeight: 700, color: "#d97706", mt: 0.3 }}>
-                  {pendingApprovalsCount}
-                </Typography>
-              </Box>
-            </CardContent>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "#64748b" }}>
+              <AssignmentTurnedIn sx={{ fontSize: 18, color: "#d97706" }} />
+              <Typography sx={{ fontSize: "0.85rem", fontWeight: 600, color: "#64748b" }}>
+                Pending RM Approvals
+              </Typography>
+            </Box>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: "#0f172a", mt: 1.5, mb: 0.8, fontSize: "1.85rem" }}>
+              {pendingApprovalsCount}
+            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.6, fontSize: "0.78rem", fontWeight: 600, color: pendingApprovalsCount > 0 ? "#f59e0b" : "#10b981" }}>
+              {pendingApprovalsCount > 0 ? (
+                <>
+                  <InfoOutlined sx={{ fontSize: 15 }} />
+                  <span>Requires your attention</span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle sx={{ fontSize: 15 }} />
+                  <span>All caught up</span>
+                </>
+              )}
+            </Box>
           </Card>
         </Grid>
 
+        {/* Card 3: Total Approved Amount */}
         <Grid item xs={12} sm={4}>
           <Card
             sx={{
-              borderRadius: 2.5,
-              boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
-              border: "1px solid #f3f4f6",
+              borderRadius: 3,
+              boxShadow: "0 1px 3px rgba(0,0,0,0.02), 0 2px 8px rgba(0,0,0,0.03)",
+              border: "1px solid #eef2f6",
               bgcolor: "#ffffff",
+              p: 2.5,
+              transition: "transform 0.2s, box-shadow 0.2s",
+              "&:hover": {
+                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
+              },
             }}
           >
-            <CardContent sx={{ p: 2.5, display: "flex", alignItems: "center", gap: 2 }}>
-              <Box
-                sx={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 2,
-                  bgcolor: "rgba(16, 185, 129, 0.1)",
-                  color: "#10b981",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Paid sx={{ fontSize: 26 }} />
-              </Box>
-              <Box>
-                <Typography variant="caption" sx={{ color: "#6b7280", fontWeight: 600, textTransform: "uppercase" }}>
-                  Total Approved Amount
-                </Typography>
-                <Typography variant="h5" sx={{ fontWeight: 700, color: "#10b981", mt: 0.3 }}>
-                  ₹{approvedAdvancesTotal.toLocaleString("en-IN")}
-                </Typography>
-              </Box>
-            </CardContent>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "#64748b" }}>
+              <Paid sx={{ fontSize: 18, color: "#10b981" }} />
+              <Typography sx={{ fontSize: "0.85rem", fontWeight: 600, color: "#64748b" }}>
+                Total Approved Amount
+              </Typography>
+            </Box>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: "#0f172a", mt: 1.5, mb: 0.8, fontSize: "1.85rem" }}>
+              ₹{approvedAdvancesTotal.toLocaleString("en-IN")}
+            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.6, fontSize: "0.78rem", fontWeight: 600, color: "#0ea5e9" }}>
+              <TrendingUp sx={{ fontSize: 15 }} />
+              <span>Deducted via salary slip</span>
+            </Box>
           </Card>
         </Grid>
       </Grid>
 
-      {/* Main Content Card with Navigation Tabs */}
+      {/* Main Content Card */}
       <Card
         sx={{
           borderRadius: 3,
-          boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
-          border: "1px solid #e5e7eb",
+          boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+          border: "1px solid #eef2f6",
           overflow: "hidden",
+          bgcolor: "#ffffff",
         }}
       >
-        {/* Navigation Tabs Header */}
-        <Paper
-          elevation={0}
+        {/* Clean Unified Toolbar with Tabs and Inline Search/Filter */}
+        <Box
           sx={{
-            borderBottom: "1px solid #e5e7eb",
-            bgcolor: "#fafafa",
-            px: 2,
+            px: { xs: 2, sm: 2.5 },
+            py: 1.2,
+            borderBottom: "1px solid #f1f5f9",
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 2,
           }}
         >
+          {/* Tabs */}
           <Tabs
             value={activeTab}
             onChange={(e, val) => setActiveTab(val)}
             indicatorColor="primary"
             textColor="primary"
             sx={{
+              minHeight: 44,
               "& .MuiTab-root": {
                 textTransform: "none",
                 fontWeight: 600,
-                fontSize: "0.95rem",
-                minHeight: 52,
-                px: 2.5,
+                fontSize: "0.9rem",
+                minHeight: 44,
+                px: 2,
+                color: "#64748b",
               },
               "& .Mui-selected": {
-                color: "#8d0638 !important",
+                color: "#f37021 !important",
               },
               "& .MuiTabs-indicator": {
-                backgroundColor: "#8d0638",
-                height: 3,
-                borderRadius: "3px 3px 0 0",
+                backgroundColor: "#f37021",
+                height: 2.5,
+                borderRadius: "2px 2px 0 0",
               },
             }}
           >
             <Tab
-              icon={<Person sx={{ fontSize: 20 }} />}
+              icon={<Person sx={{ fontSize: 18 }} />}
               iconPosition="start"
               label={`My Requests (${myRequests.length})`}
             />
 
             {canViewApprovals && (
               <Tab
-                icon={<AssignmentTurnedIn sx={{ fontSize: 20 }} />}
+                icon={<AssignmentTurnedIn sx={{ fontSize: 18 }} />}
                 iconPosition="start"
                 label={
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -529,10 +542,10 @@ const AdvanceList = () => {
                         label={pendingApprovalsCount}
                         size="small"
                         sx={{
-                          height: 20,
+                          height: 19,
                           fontSize: "11px",
                           fontWeight: 700,
-                          bgcolor: "#d97706",
+                          bgcolor: "#f59e0b",
                           color: "#ffffff",
                         }}
                       />
@@ -542,49 +555,93 @@ const AdvanceList = () => {
               />
             )}
           </Tabs>
-        </Paper>
 
-        {/* Filter & Search Bar */}
-        <Box
-          sx={{
-            p: 2.5,
-            borderBottom: "1px solid #f3f4f6",
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 2,
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <TextField
-            size="small"
-            placeholder="Search by Employee, Amount, Reason..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search sx={{ color: "#9ca3af" }} />
-                </InputAdornment>
-              ),
+          {/* Clean Search and Filter Controls */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              flexWrap: "wrap",
             }}
-            sx={{ minWidth: { xs: "100%", sm: 300 } }}
-          />
+          >
+            {/* Search Input */}
+            <TextField
+              size="small"
+              placeholder="Search by name, amount, reason..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search sx={{ color: "#94a3b8", fontSize: 19 }} />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                width: { xs: "100%", sm: 260 },
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2,
+                  bgcolor: "#f8fafc",
+                  fontSize: "0.85rem",
+                  height: 38,
+                  transition: "all 0.2s",
+                  border: "1px solid #e2e8f0",
+                  "&:hover": {
+                    bgcolor: "#ffffff",
+                    borderColor: "#cbd5e1",
+                  },
+                  "&.Mui-focused": {
+                    bgcolor: "#ffffff",
+                    borderColor: "#f37021",
+                  },
+                },
+                "& fieldset": {
+                  border: "none",
+                },
+              }}
+            />
 
-          <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-            <FormControl size="small" sx={{ minWidth: 150 }}>
-              <InputLabel>Status</InputLabel>
+            {/* Clean Status Filter */}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                bgcolor: "#f8fafc",
+                border: "1px solid #e2e8f0",
+                borderRadius: 2,
+                px: 1.2,
+                height: 38,
+                transition: "all 0.2s",
+                "&:hover": {
+                  bgcolor: "#ffffff",
+                  borderColor: "#cbd5e1",
+                },
+              }}
+            >
+              <FilterList sx={{ color: "#94a3b8", fontSize: 18, mr: 0.8 }} />
               <Select
                 value={statusFilter}
-                label="Status"
                 onChange={(e) => setStatusFilter(e.target.value)}
+                variant="standard"
+                disableUnderline
+                sx={{
+                  fontSize: "0.85rem",
+                  fontWeight: 500,
+                  color: "#334155",
+                  minWidth: 105,
+                  "& .MuiSelect-select": {
+                    py: 0,
+                    pr: "24px !important",
+                  },
+                }}
               >
                 <MenuItem value="All">All Statuses</MenuItem>
                 <MenuItem value="Pending">Pending</MenuItem>
                 <MenuItem value="Approved">Approved</MenuItem>
                 <MenuItem value="Rejected">Rejected</MenuItem>
               </Select>
-            </FormControl>
+            </Box>
           </Box>
         </Box>
 
@@ -618,7 +675,7 @@ const AdvanceList = () => {
               {loading ? (
                 <TableRow>
                   <TableCell colSpan={activeTab === 1 ? 8 : 7} align="center" sx={{ py: 6 }}>
-                    <CircularProgress size={36} sx={{ color: "#8d0638", mb: 1 }} />
+                    <CircularProgress size={36} sx={{ color: "#f37021", mb: 1 }} />
                     <Typography variant="body2" sx={{ color: "#6b7280" }}>
                       Loading advance requests...
                     </Typography>
@@ -670,7 +727,7 @@ const AdvanceList = () => {
 
                       {/* Amount */}
                       <TableCell>
-                        <Typography variant="body2" sx={{ fontWeight: 700, color: "#8d0638" }}>
+                        <Typography variant="body2" sx={{ fontWeight: 700, color: "#f37021" }}>
                           ₹{parseFloat(row.amount || 0).toLocaleString("en-IN")}
                         </Typography>
                       </TableCell>
@@ -682,9 +739,9 @@ const AdvanceList = () => {
                           size="small"
                           sx={{
                             fontWeight: 600,
-                            bgcolor: "rgba(141,6,56,0.06)",
-                            color: "#8d0638",
-                            border: "1px solid rgba(141,6,56,0.2)",
+                            bgcolor: "rgba(243, 112, 33,0.06)",
+                            color: "#f37021",
+                            border: "1px solid rgba(243, 112, 33,0.2)",
                           }}
                         />
                       </TableCell>
@@ -715,43 +772,54 @@ const AdvanceList = () => {
                       <TableCell>
                         {activeTab === 1 ? (
                           isPending ? (
-                            <Box sx={{ display: "flex", gap: 1 }}>
-                              <Button
-                                size="small"
-                                variant="contained"
-                                startIcon={<ThumbUp sx={{ fontSize: 16 }} />}
-                                onClick={() => handleOpenActionDialog(row, "Approved")}
-                                sx={{
-                                  bgcolor: "#10b981",
-                                  "&:hover": { bgcolor: "#059669" },
-                                  textTransform: "none",
-                                  fontWeight: 600,
-                                  fontSize: "12px",
-                                  py: 0.5,
-                                  px: 1.5,
-                                }}
-                              >
-                                Approve
-                              </Button>
+                            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                              <Tooltip title="Approve Request" arrow>
+                                <IconButton
+                                  size="small"
+                                  onClick={() => handleOpenActionDialog(row, "Approved")}
+                                  sx={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: "50%",
+                                    bgcolor: "rgba(16, 185, 129, 0.12)",
+                                    color: "#059669",
+                                    border: "1px solid rgba(16, 185, 129, 0.25)",
+                                    transition: "all 0.2s ease-in-out",
+                                    "&:hover": {
+                                      bgcolor: "#10b981",
+                                      color: "#ffffff",
+                                      boxShadow: "0 2px 8px rgba(16, 185, 129, 0.35)",
+                                      transform: "scale(1.08)",
+                                    },
+                                  }}
+                                >
+                                  <Check sx={{ fontSize: 18 }} />
+                                </IconButton>
+                              </Tooltip>
 
-                              <Button
-                                size="small"
-                                variant="outlined"
-                                startIcon={<ThumbDown sx={{ fontSize: 16 }} />}
-                                onClick={() => handleOpenActionDialog(row, "Rejected")}
-                                sx={{
-                                  borderColor: "#ef4444",
-                                  color: "#ef4444",
-                                  "&:hover": { borderColor: "#dc2626", bgcolor: "#fef2f2" },
-                                  textTransform: "none",
-                                  fontWeight: 600,
-                                  fontSize: "12px",
-                                  py: 0.5,
-                                  px: 1.5,
-                                }}
-                              >
-                                Reject
-                              </Button>
+                              <Tooltip title="Reject Request" arrow>
+                                <IconButton
+                                  size="small"
+                                  onClick={() => handleOpenActionDialog(row, "Rejected")}
+                                  sx={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: "50%",
+                                    bgcolor: "rgba(239, 68, 68, 0.1)",
+                                    color: "#dc2626",
+                                    border: "1px solid rgba(239, 68, 68, 0.25)",
+                                    transition: "all 0.2s ease-in-out",
+                                    "&:hover": {
+                                      bgcolor: "#ef4444",
+                                      color: "#ffffff",
+                                      boxShadow: "0 2px 8px rgba(239, 68, 68, 0.35)",
+                                      transform: "scale(1.08)",
+                                    },
+                                  }}
+                                >
+                                  <Close sx={{ fontSize: 18 }} />
+                                </IconButton>
+                              </Tooltip>
                             </Box>
                           ) : (
                             <Box>

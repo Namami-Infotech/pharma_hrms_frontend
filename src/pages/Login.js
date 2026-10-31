@@ -45,7 +45,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { BASE_URL } from "../api/endpoints"
 
 // Import images - update paths as needed
-import logo from "../assets/HRSmileLogo.jpeg"
+import logo from "../assets/aberdure_logo.png"
 import banner from "../assets/Login.png"
 import playstore from "../assets/playstore.png"
 import appstore from "../assets/appstore.png"
@@ -76,7 +76,7 @@ const GlassCard = ({ children, sx = {}, ...props }) => (
         left: 0,
         right: 0,
         height: '4px',
-        background: 'linear-gradient(90deg, #8d0638 0%, #b81652 100%)',
+        background: 'linear-gradient(90deg, #f37021 0%, #ff8833 100%)',
       },
       ...sx,
     }}
@@ -103,16 +103,16 @@ const StyledTextField = ({ ...props }) => {
           },
           '&.Mui-focused': {
             backgroundColor: theme.palette.background.paper,
-            boxShadow: `0 0 0 2px ${alpha('#8d0638', 0.2)}`,
+            boxShadow: `0 0 0 2px ${alpha('#f37021', 0.2)}`,
           },
           '& fieldset': {
             borderColor: alpha(theme.palette.text.primary, 0.1),
           },
           '&:hover fieldset': {
-            borderColor: alpha('#8d0638', 0.3),
+            borderColor: alpha('#f37021', 0.3),
           },
           '&.Mui-focused fieldset': {
-            borderColor: '#8d0638',
+            borderColor: '#f37021',
           },
         },
         '& .MuiInputLabel-root': {
@@ -138,11 +138,11 @@ const StyledButton = ({ children, loading, ...props }) => (
       textTransform: 'none',
       fontSize: { xs: '0.9rem', sm: '1rem' },
       fontWeight: 600,
-      background: 'linear-gradient(135deg, #8d0638 0%, #b81652 100%)',
-      boxShadow: '0 4px 16px rgba(141, 6, 56, 0.3)',
+      background: 'linear-gradient(135deg, #f37021 0%, #ea580c 100%)',
+      boxShadow: '0 4px 16px rgba(243, 112, 33, 0.35)',
       '&:hover': {
-        background: 'linear-gradient(135deg, #7a0530 0%, #a61448 100%)',
-        boxShadow: '0 6px 20px rgba(141, 6, 56, 0.4)',
+        background: 'linear-gradient(135deg, #d95300 0%, #c2410c 100%)',
+        boxShadow: '0 6px 20px rgba(243, 112, 33, 0.45)',
       },
       '&:disabled': {
         background: theme => theme.palette.action.disabled,
@@ -282,8 +282,8 @@ export default function EnhancedLoginPage() {
           left: 0,
           right: 0,
           bottom: 0,
-          background: `radial-gradient(circle at 20% 80%, ${alpha('#8d0638', 0.05)} 0%, transparent 50%),
-                      radial-gradient(circle at 80% 20%, ${alpha('#b81652', 0.05)} 0%, transparent 50%)`,
+          background: `radial-gradient(circle at 20% 80%, ${alpha('#f37021', 0.05)} 0%, transparent 50%),
+                      radial-gradient(circle at 80% 20%, ${alpha('#ff8833', 0.05)} 0%, transparent 50%)`,
         },
       }}
     >
@@ -298,7 +298,7 @@ export default function EnhancedLoginPage() {
               width: 200,
               height: 200,
               borderRadius: '50%',
-              background: `radial-gradient(circle, ${alpha('#8d0638', 0.1)} 0%, transparent 70%)`,
+              background: `radial-gradient(circle, ${alpha('#f37021', 0.1)} 0%, transparent 70%)`,
               animation: 'float 6s ease-in-out infinite',
               '@keyframes float': {
                 '0%, 100%': { transform: 'translateY(0px) scale(1)' },
@@ -343,7 +343,7 @@ export default function EnhancedLoginPage() {
               justifyContent: 'center',
               alignItems: 'center',
               padding: { xs: 2, md: 3, lg: 4 },
-              background: 'linear-gradient(135deg, #8d0638 0%, #b81652 100%)',
+              background: 'linear-gradient(135deg, #f37021 0%, #ea580c 100%)',
               position: 'relative',
               overflow: 'hidden',
               height: '100%',
@@ -363,7 +363,7 @@ export default function EnhancedLoginPage() {
               <Box
                 component={motion.img}
                 src={logo}
-                alt="HR Smile Logo"
+                alt="Aberdure Pharma Logo"
                 sx={{
                   width: { xs: 60, md: 80, lg: 120 },
                   height: { xs: 60, md: 80, lg: 120 },
@@ -389,7 +389,7 @@ export default function EnhancedLoginPage() {
                   lineHeight: 1.2,
                 }}
               >
-                SAFEGUARD HR
+                ABERDURE PHARMA
               </Typography>
 
               <Typography
@@ -484,7 +484,7 @@ export default function EnhancedLoginPage() {
             padding: { xs: 1, sm: 2, md: 3, lg: 4 },
             height: '100%',
             overflow: 'hidden',
-            background: isSmallMobile ? 'linear-gradient(135deg, #8d0638 0%, #b81652 100%)' : 'transparent',
+            background: isSmallMobile ? 'linear-gradient(135deg, #f37021 0%, #ea580c 100%)' : 'transparent',
           }}
         >
           <Box
@@ -520,7 +520,7 @@ export default function EnhancedLoginPage() {
                   <Box
                     component={motion.img}
                     src={logo}
-                    alt="HR Smile Logo"
+                    alt="Aberdure Pharma Logo"
                     sx={{
                       width: 80,
                       height: 80,
@@ -541,7 +541,7 @@ export default function EnhancedLoginPage() {
                     sx={{ 
                       fontSize: { xs: 32, sm: 40, md: 48 }, 
                       mb: 1,
-                      background: `linear-gradient(135deg, #8d0638, #b81652)`,
+                      background: `linear-gradient(135deg, #f37021, #ea580c)`,
                       backgroundClip: 'text',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
@@ -551,7 +551,7 @@ export default function EnhancedLoginPage() {
                     variant="h4"
                     sx={{
                       fontWeight: 700,
-                      background: `linear-gradient(135deg, #8d0638, #b81652)`,
+                      background: `linear-gradient(135deg, #f37021, #ea580c)`,
                       backgroundClip: 'text',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
@@ -624,7 +624,7 @@ export default function EnhancedLoginPage() {
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
-                            <Person sx={{ color: '#8d0638', fontSize: { xs: '1.1rem', sm: '1.25rem' } }} />
+                            <Person sx={{ color: '#f37021', fontSize: { xs: '1.1rem', sm: '1.25rem' } }} />
                           </InputAdornment>
                         ),
                       }}
@@ -640,7 +640,7 @@ export default function EnhancedLoginPage() {
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
-                            <Lock sx={{ color: '#8d0638', fontSize: { xs: '1.1rem', sm: '1.25rem' } }} />
+                            <Lock sx={{ color: '#f37021', fontSize: { xs: '1.1rem', sm: '1.25rem' } }} />
                           </InputAdornment>
                         ),
                         endAdornment: (
@@ -650,9 +650,9 @@ export default function EnhancedLoginPage() {
                               edge="end"
                               size="small"
                               sx={{ 
-                                color: showPassword ? '#8d0638' : 'text.secondary',
+                                color: showPassword ? '#f37021' : 'text.secondary',
                                 '&:hover': {
-                                  backgroundColor: alpha('#8d0638', 0.1),
+                                  backgroundColor: alpha('#f37021', 0.1),
                                 },
                                 padding: { xs: '4px', sm: '8px' },
                               }}
@@ -676,7 +676,7 @@ export default function EnhancedLoginPage() {
                           color: 'text.secondary',
                           fontSize: { xs: '0.8rem', sm: '0.875rem', md: '1rem' },
                           '&:hover': {
-                            color: '#8d0638',
+                            color: '#f37021',
                             backgroundColor: 'transparent',
                           },
                         }}
@@ -710,7 +710,7 @@ export default function EnhancedLoginPage() {
                             color="text.secondary" 
                             sx={{ mb: 2, opacity: 0.8, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
                           >
-                            Get the HR Smile mobile app
+                            Get the Aberdure Pharma mobile app
                           </Typography>
 
                           <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
@@ -785,7 +785,7 @@ export default function EnhancedLoginPage() {
       >
         <DialogTitle sx={{ pb: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <LockReset sx={{ color: '#8d0638' }} />
+            <LockReset sx={{ color: '#f37021' }} />
             <Typography variant="h6" component="div" sx={{ fontWeight: 600, fontSize: { xs: '1.1rem', sm: '1.25rem' } }}>
               Reset Your Password
             </Typography>
@@ -832,7 +832,7 @@ export default function EnhancedLoginPage() {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <Email sx={{ color: '#8d0638' }} />
+                  <Email sx={{ color: '#f37021' }} />
                 </InputAdornment>
               ),
             }}

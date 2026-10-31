@@ -389,8 +389,8 @@ function SalarySlip() {
               onClick={handleDownloadPDF}
               disabled={downloading || !salarySlip}
               sx={{
-                bgcolor: "#8d0638",
-                "&:hover": { bgcolor: "#6b042d" },
+                bgcolor: "#f37021",
+                "&:hover": { bgcolor: "#d95300" },
                 borderRadius: 2,
                 textTransform: "none",
                 fontWeight: 600,
@@ -408,9 +408,9 @@ function SalarySlip() {
               onClick={handlePrint}
               disabled={!salarySlip}
               sx={{
-                borderColor: "#8d0638",
-                color: "#8d0638",
-                "&:hover": { borderColor: "#6b042d", bgcolor: "rgba(141,6,56,0.04)" },
+                borderColor: "#f37021",
+                color: "#f37021",
+                "&:hover": { borderColor: "#d95300", bgcolor: "rgba(243, 112, 33,0.04)" },
                 borderRadius: 2,
                 textTransform: "none",
                 fontWeight: 600,
@@ -432,7 +432,7 @@ function SalarySlip() {
 
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
-          <CircularProgress sx={{ color: "#8d0638" }} />
+          <CircularProgress sx={{ color: "#f37021" }} />
         </Box>
       ) : (
         /* Aberdure Pharma Salary Slip Container */

@@ -59,7 +59,7 @@ function EditHoliday({ open, onClose, holiday, onHolidayUpdated }) {
                 <Button onClick={onClose} color="secondary">
                     Cancel
                 </Button>
-                <Button onClick={handleSubmit} color="#8d0638ff">
+                <Button onClick={handleSubmit} color="#f37021">
                     Save
                 </Button>
             </DialogActions>

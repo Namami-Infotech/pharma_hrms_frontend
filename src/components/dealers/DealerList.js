@@ -47,7 +47,7 @@ import AddDealers from "./AddDealers"
 
 // Color palette
 const COLORS = {
-  primary: '#8d0638ff',
+  primary: '#f37021',
   secondary: '#667eea',
   background: '#f8fafc',
   surface: '#ffffff',
@@ -215,18 +215,17 @@ function DealerList() {
             </Avatar>
             <Box>
               <Typography
-                variant="h4"
-                component="h1"
-                gutterBottom
+                variant="h5"
                 sx={{
                   fontWeight: 700,
-                  color: COLORS.primary,
-                  mb: 0.5,
+                  color: "#0f172a",
+                  letterSpacing: -0.3,
+                  mb: 0.3,
                 }}
               >
                 Leads & Dealer Management
               </Typography>
-              <Typography variant="body1" color="text.secondary">
+              <Typography variant="body2" sx={{ color: "#64748b", fontSize: "0.85rem" }}>
                 Register, manage and track all leads and dealer records in one place
               </Typography>
             </Box>
@@ -238,13 +237,14 @@ function DealerList() {
             sx={{
               bgcolor: COLORS.primary,
               borderRadius: 2,
-              px: 3,
-              py: 1.5,
+              px: 2.5,
+              py: 1,
               fontWeight: 600,
               color: '#fff',
+              textTransform: 'none',
               boxShadow: `0 4px 14px ${COLORS.primary}40`,
               "&:hover": {
-                bgcolor: '#70042c',
+                bgcolor: '#d95300',
                 transform: 'translateY(-1px)',
                 boxShadow: `0 6px 20px ${COLORS.primary}60`
               },

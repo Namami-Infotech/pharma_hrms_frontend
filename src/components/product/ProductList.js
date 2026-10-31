@@ -259,12 +259,11 @@ function ProductList() {
         }}
       >
         <Box>
-          <Typography variant="h5" fontWeight="bold" sx={{ color: "#8d0638", display: "flex", alignItems: "center", gap: 1 }}>
-            <Medication sx={{ fontSize: 30 }} />
-            Pharmaceutical Products Master
+          <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}>
+            Products Management
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Manage your medicine inventory, pricing, packaging, and units for quotations and billing
+          <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: "0.85rem" }}>
+            Manage medicine catalogue, pricing, packaging, and stock details
           </Typography>
         </Box>
 
@@ -274,11 +273,11 @@ function ProductList() {
             startIcon={<Refresh />}
             onClick={fetchProducts}
             sx={{
-              borderColor: "#8d0638",
-              color: "#8d0638",
+              borderColor: "#f37021",
+              color: "#f37021",
               textTransform: "none",
               fontWeight: 600,
-              "&:hover": { borderColor: "#6b042d", bgcolor: "rgba(141,6,56,0.04)" },
+              "&:hover": { borderColor: "#d95300", bgcolor: "rgba(243, 112, 33,0.04)" },
             }}
           >
             Refresh
@@ -289,13 +288,13 @@ function ProductList() {
             startIcon={<Add />}
             onClick={handleOpenCreate}
             sx={{
-              bgcolor: "#8d0638",
+              bgcolor: "#f37021",
               color: "#ffffff",
               textTransform: "none",
               fontWeight: 700,
               px: 2.5,
-              "&:hover": { bgcolor: "#6b042d" },
-              boxShadow: "0 4px 12px rgba(141,6,56,0.25)",
+              "&:hover": { bgcolor: "#d95300" },
+              boxShadow: "0 4px 12px rgba(243, 112, 33,0.25)",
             }}
           >
             Add Product
@@ -330,7 +329,7 @@ function ProductList() {
           <StatCard
             title="TOTAL PRODUCTS"
             value={stats.totalProducts}
-            color="#8d0638"
+            color="#f37021"
             icon={<LocalPharmacy />}
             subtitle="Cataloged medicines"
           />
@@ -453,8 +452,8 @@ function ProductList() {
                   type="submit"
                   variant="contained"
                   sx={{
-                    bgcolor: "#8d0638",
-                    "&:hover": { bgcolor: "#6b042d" },
+                    bgcolor: "#f37021",
+                    "&:hover": { bgcolor: "#d95300" },
                     textTransform: "none",
                     fontWeight: 600,
                   }}
@@ -487,7 +486,7 @@ function ProductList() {
               {loading ? (
                 <TableRow>
                   <TableCell colSpan={8} sx={{ textAlign: "center", py: 5 }}>
-                    <CircularProgress size={32} sx={{ color: "#8d0638", mb: 1 }} />
+                    <CircularProgress size={32} sx={{ color: "#f37021", mb: 1 }} />
                     <Typography variant="body2" color="text.secondary">
                       Loading products catalog...
                     </Typography>
@@ -508,7 +507,7 @@ function ProductList() {
                       size="small"
                       startIcon={<Add />}
                       onClick={handleOpenCreate}
-                      sx={{ bgcolor: "#8d0638", "&:hover": { bgcolor: "#6b042d" } }}
+                      sx={{ bgcolor: "#f37021", "&:hover": { bgcolor: "#d95300" } }}
                     >
                       Add Product
                     </Button>
@@ -586,8 +585,8 @@ function ProductList() {
                           size="small"
                           label={prd.unit}
                           sx={{
-                            bgcolor: "rgba(141,6,56,0.08)",
-                            color: "#8d0638",
+                            bgcolor: "rgba(243, 112, 33,0.08)",
+                            color: "#f37021",
                             fontWeight: 600,
                             fontSize: "11px",
                           }}
@@ -596,7 +595,7 @@ function ProductList() {
 
                       {/* Price (Rate in ₹) */}
                       <TableCell sx={{ textAlign: "right" }}>
-                        <Typography variant="subtitle2" fontWeight="800" color="#8d0638">
+                        <Typography variant="subtitle2" fontWeight="800" color="#f37021">
                           ₹{parseFloat(prd.price || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                         </Typography>
                       </TableCell>

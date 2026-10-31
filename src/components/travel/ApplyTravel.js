@@ -147,7 +147,7 @@ function ApplyTravel({ open, onClose, onTravelApplied }) {
       {/* Header */}
       <DialogTitle
         sx={{
-          bgcolor: "#8d0638ff",
+          bgcolor: "#f37021",
           color: "white",
           display: "flex",
           alignItems: "center",
@@ -322,11 +322,11 @@ function ApplyTravel({ open, onClose, onTravelApplied }) {
           sx={{ 
             borderRadius: 2,
             minWidth: 100,
-            borderColor: alpha("#8d0638ff", 0.5),
-            color: "#8d0638ff",
+            borderColor: alpha("#f37021", 0.5),
+            color: "#f37021",
             "&:hover": {
-              borderColor: "#8d0638ff",
-              bgcolor: alpha("#8d0638ff", 0.04),
+              borderColor: "#f37021",
+              bgcolor: alpha("#f37021", 0.04),
             }
           }}
         >
@@ -339,7 +339,7 @@ function ApplyTravel({ open, onClose, onTravelApplied }) {
           sx={{ 
             borderRadius: 2,
             minWidth: 140,
-            bgcolor: "#8d0638ff",
+            bgcolor: "#f37021",
             fontWeight: "600",
             fontSize: "1rem",
             "&:hover": {

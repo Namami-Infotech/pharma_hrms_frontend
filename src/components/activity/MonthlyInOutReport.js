@@ -269,7 +269,7 @@ const MonthlyInOutReport = () => {
 
   const headerCellSx = {
     fontWeight: 700,
-    bgcolor: "#8d0638",
+    bgcolor: "#f37021",
     color: "white",
     whiteSpace: "nowrap",
     borderRight: "1px solid rgba(255,255,255,0.2)",
@@ -278,23 +278,26 @@ const MonthlyInOutReport = () => {
   const subHeaderCellSx = {
     fontWeight: 600,
     fontSize: "0.72rem",
-    bgcolor: "#b00548",
+    bgcolor: "#f37021",
     color: "white",
     whiteSpace: "nowrap",
   };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Card sx={{ boxShadow: 3 }}>
+      <Card sx={{ boxShadow: "0 1px 3px rgba(0,0,0,0.05)", border: "1px solid #e2e8f0" }}>
         <CardContent>
-          <Typography
-            variant="h5"
-            component="h2"
-            sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}
-          >
-            <AccessTime sx={{ mr: 1, verticalAlign: "middle" }} />
-            Monthly In/Out Time Report
-          </Typography>
+          <Box sx={{ mb: 3 }}>
+            <Typography
+              variant="h5"
+              sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}
+            >
+              Monthly In/Out Time Report
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: "0.85rem" }}>
+              Detailed monthly timestamps, working hours, and punches per employee
+            </Typography>
+          </Box>
 
           {/* Controls */}
           <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
@@ -437,7 +440,7 @@ const MonthlyInOutReport = () => {
                               ? "#5c0425"
                               : dayOfWeek === "Sat"
                               ? "#6e0530"
-                              : "#8d0638",
+                              : "#f37021",
                         }}
                       >
                         {day} {dayOfWeek}

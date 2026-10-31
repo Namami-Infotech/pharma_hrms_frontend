@@ -42,16 +42,16 @@ function CheckpointList() {
     return (
         <div>
             <div style={{display:"flex", justifyContent:"space-between"}}>
-            <Typography variant="h6" gutterBottom style={{ marginBottom: '20px', color: '#8d0638ff' }}>
+            <Typography variant="h6" gutterBottom style={{ marginBottom: '20px', color: '#f37021' }}>
                 Checkpoints List
             </Typography>
- <Button variant="contained" color="#8d0638ff" onClick={addCheckpoint} sx={{ mb: 2 }} style={{ backgroundColor: "#8d0638ff" }}>
+ <Button variant="contained" color="#f37021" onClick={addCheckpoint} sx={{ mb: 2 }} style={{ backgroundColor: "#f37021" }}>
                 Add Checkpoint
                 </Button> 
                 </div>
             <TableContainer component={Paper}>
                 <Table size="small">
-                    <TableHead style={{ backgroundColor: '#8d0638ff' }}>
+                    <TableHead style={{ backgroundColor: '#f37021' }}>
                         <TableRow>
                             <TableCell style={{ color: 'white' }}>Checkpoint ID</TableCell>
                             <TableCell style={{ color: 'white' }}>Description</TableCell>

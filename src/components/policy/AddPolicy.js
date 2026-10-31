@@ -148,7 +148,7 @@ function AddPolicyDialog({ open, onClose, onPolicyAdded }) {
       {/* Header */}
       <DialogTitle
         sx={{
-          bgcolor: "#8d0638ff",
+          bgcolor: "#f37021",
           color: "white",
           display: "flex",
           alignItems: "center",
@@ -163,7 +163,7 @@ function AddPolicyDialog({ open, onClose, onPolicyAdded }) {
             right: 0,
             width: '100%',
             height: '100%',
-            background: `linear-gradient(45deg, ${alpha("#8d0638ff", 0.9)} 0%, ${alpha("#6d0430ff", 0.9)} 100%)`,
+            background: `linear-gradient(45deg, ${alpha("#f37021", 0.9)} 0%, ${alpha("#d95300", 0.9)} 100%)`,
             zIndex: 1,
           }
         }}
@@ -434,10 +434,10 @@ function AddPolicyDialog({ open, onClose, onPolicyAdded }) {
           sx={{ 
             borderRadius: 2,
             minWidth: 120,
-            bgcolor: "#8d0638ff",
+            bgcolor: "#f37021",
             fontWeight: "600",
             "&:hover": {
-              bgcolor: "#6d0430ff",
+              bgcolor: "#d95300",
             },
             "&:disabled": {
               bgcolor: theme.palette.grey[300],

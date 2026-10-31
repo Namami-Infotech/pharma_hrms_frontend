@@ -218,7 +218,7 @@ function PlanVisit() {
         }}
       >
         <Box sx={{ mb: 1 }}>
-          <Typography variant="h5" fontWeight="700" color="#8d0638ff" gutterBottom>
+          <Typography variant="h5" fontWeight="700" color="#f37021" gutterBottom>
             Planned Visits
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -300,7 +300,7 @@ function PlanVisit() {
               size="small"
               sx={{
                 borderRadius: 2,
-                bgcolor: "#8d0638ff",
+                bgcolor: "#f37021",
                 fontWeight: "600",
                 py: 1,
                 "&:hover": {
@@ -321,12 +321,12 @@ function PlanVisit() {
               size="small"
               sx={{
                 borderRadius: 2,
-                borderColor: alpha("#8d0638ff", 0.5),
-                color: "#8d0638ff",
+                borderColor: alpha("#f37021", 0.5),
+                color: "#f37021",
                 py: 1,
                 "&:hover": {
-                  borderColor: "#8d0638ff",
-                  bgcolor: alpha("#8d0638ff", 0.04),
+                  borderColor: "#f37021",
+                  bgcolor: alpha("#f37021", 0.04),
                 },
               }}
             >
@@ -372,7 +372,7 @@ function PlanVisit() {
           >
             <TableContainer>
               <Table sx={{ minWidth: 650 }} size="small">
-                <TableHead sx={{ bgcolor: "#8d0638ff" }}>
+                <TableHead sx={{ bgcolor: "#f37021" }}>
                   <TableRow>
                     <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>
                       <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -456,7 +456,7 @@ function PlanVisit() {
                                   fontSize: '0.7rem', 
                                   minWidth: 'auto',
                                   p: 0,
-                                  color: "#8d0638ff",
+                                  color: "#f37021",
                                   '&:hover': {
                                     backgroundColor: 'transparent',
                                     color: "#6d052cff",
@@ -488,10 +488,10 @@ function PlanVisit() {
                               onClick={() => handleViewImage(visit.VisitID)}
                               size="small"
                               sx={{
-                                color: "#8d0638ff",
-                                bgcolor: alpha("#8d0638ff", 0.1),
+                                color: "#f37021",
+                                bgcolor: alpha("#f37021", 0.1),
                                 "&:hover": {
-                                  bgcolor: alpha("#8d0638ff", 0.2),
+                                  bgcolor: alpha("#f37021", 0.2),
                                 }
                               }}
                             >
@@ -520,7 +520,7 @@ function PlanVisit() {
       >
         <DialogTitle
           sx={{
-            bgcolor: "#8d0638ff",
+            bgcolor: "#f37021",
             color: "white",
             display: "flex",
             alignItems: "center",
@@ -537,9 +537,9 @@ function PlanVisit() {
         </DialogTitle>
         <DialogContent sx={{ p: 2.5 }}>
           {address && (
-            <Card sx={{ mb: 2, bgcolor: alpha("#8d0638ff", 0.04), border: `1px solid ${alpha("#8d0638ff", 0.1)}`, display: 'flex' }}>
+            <Card sx={{ mb: 2, bgcolor: alpha("#f37021", 0.04), border: `1px solid ${alpha("#f37021", 0.1)}`, display: 'flex' }}>
               <CardContent sx={{ py: 1.5 }}>
-                <Typography variant="subtitle2" color="#8d0638ff" gutterBottom sx={{ fontSize: '0.9rem', display: 'flex', alignItems: 'center' }}>
+                <Typography variant="subtitle2" color="#f37021" gutterBottom sx={{ fontSize: '0.9rem', display: 'flex', alignItems: 'center' }}>
                   <LocationOn sx={{ mr: 1, fontSize: '1rem' }} />
                   Location Details
                 </Typography>
@@ -548,7 +548,7 @@ function PlanVisit() {
                 </Typography>
               </CardContent>
               <CardContent sx={{ py: 1.5 }}>
-                <Typography variant="subtitle2" color="#8d0638ff" gutterBottom sx={{ fontSize: '0.9rem', display: 'flex', alignItems: 'center' }}>
+                <Typography variant="subtitle2" color="#f37021" gutterBottom sx={{ fontSize: '0.9rem', display: 'flex', alignItems: 'center' }}>
                   <Schedule sx={{ mr: 1, fontSize: '1rem' }} />
                   Timestamp
                 </Typography>
@@ -605,7 +605,7 @@ function PlanVisit() {
             size="small"
             sx={{ 
               borderRadius: 2,
-              bgcolor: "#8d0638ff",
+              bgcolor: "#f37021",
               fontWeight: "600",
               "&:hover": {
                 bgcolor: "#6d052cff",
