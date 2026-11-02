@@ -77,18 +77,24 @@ function Navbar({ onMenuClick }) {
           backgroundColor: "#ffffff",
           color: "text.primary",
           boxShadow: "none",
-          borderBottom: "1px solid #f1f5f9",
-          width: { md: `calc(100% - 240px)` },
-          ml: { md: `240px` },
+          borderBottom: "1px solid #e2e8f0",
+          height: 72,
+          boxSizing: "border-box",
+          width: { md: `calc(100% - 260px)` },
+          ml: { md: `260px` },
         }}
       >
         <Toolbar
+          disableGutters
           sx={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            minHeight: { xs: 58, sm: 64 },
+            height: 71,
+            minHeight: "71px !important",
+            maxHeight: 71,
             px: { xs: 2, sm: 3 },
+            boxSizing: "border-box",
           }}
         >
           {/* Left: Search Input & Mobile Drawer Toggle */}
@@ -143,9 +149,9 @@ function Navbar({ onMenuClick }) {
             />
           </Box>
 
-          {/* Right: Notifications & User Profile */}
+          {/* Right: User Profile (Notification Bell commented out for now) */}
           <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1, sm: 2 } }}>
-            {/* Notification Bell */}
+            {/* Notification Bell - Commented out for now
             <IconButton
               onClick={(e) => setNotificationAnchor(e.currentTarget)}
               size="small"
@@ -164,6 +170,7 @@ function Navbar({ onMenuClick }) {
                 <NotificationsOutlined sx={{ fontSize: 20 }} />
               </Badge>
             </IconButton>
+            */}
 
             {/* Profile Pill Button */}
             <ButtonBase
@@ -263,7 +270,7 @@ function Navbar({ onMenuClick }) {
         </MenuItem>
       </Menu>
 
-      {/* Notification Menu */}
+      {/* Notification Menu - Commented out for now
       <Menu
         anchorEl={notificationAnchor}
         open={Boolean(notificationAnchor)}
@@ -297,6 +304,7 @@ function Navbar({ onMenuClick }) {
           ))}
         </Box>
       </Menu>
+      */}
     </>
   )
 }

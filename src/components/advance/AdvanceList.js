@@ -304,7 +304,7 @@ const AdvanceList = () => {
   const canViewApprovals = isAdmin || teamRequests.length > 0;
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{ p: { xs: 2, sm: 3 }, width: "100%", boxSizing: "border-box" }}>
       {/* Top Banner / Actions Bar */}
       <Box
         sx={{

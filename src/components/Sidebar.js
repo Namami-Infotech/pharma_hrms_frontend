@@ -88,7 +88,8 @@ const NavItem = ({ route, isActive, isExpanded, hasNotification = false }) => {
             justifyContent: "center",
           }}
         >
-          <Badge
+          {/* Notification badge commented out for now */}
+          {/* <Badge
             variant="dot"
             color="error"
             invisible={!hasNotification}
@@ -98,9 +99,9 @@ const NavItem = ({ route, isActive, isExpanded, hasNotification = false }) => {
                 top: 2,
               },
             }}
-          >
+          > */}
             {route.icon}
-          </Badge>
+          {/* </Badge> */}
         </ListItemIcon>
 
         {isExpanded ? (
@@ -174,7 +175,14 @@ function Sidebar({ open, onClose, variant = "permanent" }) { // Add props for mo
   const routes = []
   userModules.forEach((id) => {
     const route = MODULES_BY_ID[id]
-    if (route && route.path && !seenPaths[route.path]) {
+    // Filter out notifications for now
+    if (
+      route &&
+      route.path &&
+      route.path !== "/notification" &&
+      route.name?.toLowerCase() !== "notifications" &&
+      !seenPaths[route.path]
+    ) {
       seenPaths[route.path] = true
       routes.push(route)
     }
@@ -215,14 +223,16 @@ function Sidebar({ open, onClose, variant = "permanent" }) { // Add props for mo
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        height: 64,
+        height: 72,
+        minHeight: 72,
+        maxHeight: 72,
         px: 2,
+        py: 1,
         bgcolor: "#ffffff",
         position: "sticky",
         top: 0,
         zIndex: 10,
-        borderBottom: "1px solid",
-        borderColor: "divider",
+        borderBottom: "1px solid #e2e8f0",
         width: "100%",
         boxSizing: "border-box",
       }}
@@ -232,9 +242,11 @@ function Sidebar({ open, onClose, variant = "permanent" }) { // Add props for mo
         src={logo}
         alt="Aberdure Pharma"
         sx={{
-          maxHeight: 48,
-          maxWidth: "92%",
+          height: 50,
+          maxHeight: 52,
+          maxWidth: "90%",
           objectFit: "contain",
+          display: "block",
         }}
       />
     </Box>
@@ -327,7 +339,7 @@ function Sidebar({ open, onClose, variant = "permanent" }) { // Add props for mo
         '& .MuiDrawer-paper': {
           width: 260,
           boxSizing: 'border-box',
-          borderRight: `1px solid ${theme.palette.divider}`,
+          borderRight: "1px solid #e2e8f0",
         },
       }}
     >

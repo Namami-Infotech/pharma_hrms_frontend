@@ -94,7 +94,7 @@ const AttendanceReport = () => {
               `${BASE_URL}/attendance/get_attendance.php`,
             ),
             axios.get(
-              `${BASE_URL}/leave/get_leave.php?role=HR`,
+              `${BASE_URL}/leave/get_leave.php?role=${encodeURIComponent(user?.role || 'Admin')}`,
             ),
             axios.get(
               `${BASE_URL}/salary/get_salary.php`,

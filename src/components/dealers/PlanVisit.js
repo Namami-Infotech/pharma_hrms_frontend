@@ -62,12 +62,29 @@ function PlanVisit() {
   const isRM = user?.is_rm || user?.isRM || Boolean(user?.subordinates && user.subordinates.length > 0);
   const canSelectEmployee = isAdmin || isRM;
 
+  const formatDateToYMD = (date) => {
+    if (!date) return '';
+    const d = date instanceof Date ? date : new Date(date);
+    if (isNaN(d.getTime())) return '';
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [employees, setEmployees] = useState([]);
-  const [selectedEmpId, setSelectedEmpId] = useState(canSelectEmployee ? "" : user.emp_id);
+  const [selectedEmpId, setSelectedEmpId] = useState(canSelectEmployee ? "" : (user?.emp_id || user?.EmpId || ""));
   const [loading, setLoading] = useState(false);
   const [noData, setNoData] = useState(false);
   const [expandedRemark, setExpandedRemark] = useState(null);
+
+  // Sync selectedEmpId if non-admin user loads asynchronously
+  useEffect(() => {
+    if (!canSelectEmployee && (user?.emp_id || user?.EmpId) && !selectedEmpId) {
+      setSelectedEmpId(user.emp_id || user.EmpId);
+    }
+  }, [canSelectEmployee, user?.emp_id, user?.EmpId, selectedEmpId]);
 
   // Popup states for image
   const [openDialog, setOpenDialog] = useState(false);
@@ -109,11 +126,22 @@ function PlanVisit() {
     setLoading(true);
     setNoData(false);
     try {
-      const formattedDate = selectedDate.toISOString().substr(0, 10);
-      const url = `${BASE_URL}/visit/plan.php?role=HR&empId=&date=${formattedDate}`;
+      const formattedDate = formatDateToYMD(selectedDate);
+      const effectiveEmpId = selectedEmpId || (!canSelectEmployee ? (user?.emp_id || user?.EmpId || '') : '');
+      const userRole = user?.role || user?.Role || '';
+
+      let url = `${BASE_URL}/visit/plan.php?date=${encodeURIComponent(formattedDate)}`;
+      if (userRole) {
+        url += `&role=${encodeURIComponent(userRole)}`;
+      }
+      if (effectiveEmpId) {
+        url += `&empId=${encodeURIComponent(effectiveEmpId)}`;
+      } else {
+        url += `&empId=`;
+      }
 
       const response = await axios.get(url);
-      if (response.data.success && response.data.data.length > 0) {
+      if (response.data && response.data.success && Array.isArray(response.data.data) && response.data.data.length > 0) {
         setVisits(response.data.data);
       } else {
         setVisits([]);
@@ -121,13 +149,20 @@ function PlanVisit() {
       }
     } catch (err) {
       console.error("Error fetching visits:", err);
+      setVisits([]);
       setNoData(true);
     }
     setLoading(false);
   };
 
+  useEffect(() => {
+    fetchVisits();
+  }, [selectedEmpId, selectedDate]);
+
   const handleDateChange = (event) => {
-    setSelectedDate(new Date(event.target.value));
+    if (event.target.value) {
+      setSelectedDate(new Date(event.target.value + "T00:00:00"));
+    }
   };
 
   const handleViewImage = async (visitId) => {
@@ -273,7 +308,7 @@ function PlanVisit() {
           <Grid item xs={12} md={canSelectEmployee ? 3 : 4}>
             <TextField
               type="date"
-              value={selectedDate.toISOString().substr(0, 10)}
+              value={formatDateToYMD(selectedDate)}
               onChange={handleDateChange}
               variant="outlined"
               fullWidth
@@ -403,8 +438,13 @@ function PlanVisit() {
                 </TableHead>
                 <TableBody>
                   {visits
-                    .filter((visit) => visit.Plan_Visit === selectedDate.toISOString().substr(0, 10))
-                    .sort((a, b) => new Date(b.Plan_Visit) - new Date(a.Plan_Visit))
+                    .filter((visit) => {
+                      if (!visit.Plan_Visit) return true;
+                      const pDate = String(visit.Plan_Visit).substring(0, 10);
+                      const fDate = formatDateToYMD(selectedDate);
+                      return pDate === fDate;
+                    })
+                    .sort((a, b) => new Date(b.Plan_Visit || b.create_time || 0) - new Date(a.Plan_Visit || a.create_time || 0))
                     .map((visit, index) => (
                       <TableRow
                         key={`${visit.DealerID}-${index}`}
@@ -471,7 +511,7 @@ function PlanVisit() {
 
                         <TableCell sx={{ py: 1 }}>
                           <Chip 
-                            label={visit.EmpId} 
+                            label={visit.EmpName ? `${visit.EmpName} (${visit.EmpId})` : (visit.EmpId || "N/A")} 
                             size="small" 
                             sx={{ 
                               height: 24, 

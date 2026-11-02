@@ -738,13 +738,12 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
             <Table size="small">
               <TableHead sx={{ bgcolor: "#f9fafb" }}>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 800, width: "36%", color: "#1e293b" }}>Product *</TableCell>
-                  <TableCell sx={{ fontWeight: 800, width: "10%", color: "#1e293b", textAlign: "center" }}>HSN</TableCell>
-                  <TableCell sx={{ fontWeight: 800, width: "14%", color: "#1e293b" }}>Packing</TableCell>
-                  <TableCell sx={{ fontWeight: 800, width: "10%", color: "#1e293b", textAlign: "center" }}>Qty</TableCell>
-                  <TableCell sx={{ fontWeight: 800, width: "12%", color: "#1e293b", textAlign: "right" }}>Rate (₹)</TableCell>
+                  <TableCell sx={{ fontWeight: 800, width: "42%", color: "#1e293b" }}>Product *</TableCell>
+                  <TableCell sx={{ fontWeight: 800, width: "12%", color: "#1e293b", textAlign: "center" }}>HSN</TableCell>
+                  <TableCell sx={{ fontWeight: 800, width: "12%", color: "#1e293b", textAlign: "center" }}>Qty</TableCell>
+                  <TableCell sx={{ fontWeight: 800, width: "14%", color: "#1e293b", textAlign: "right" }}>Rate (₹)</TableCell>
                   <TableCell sx={{ fontWeight: 800, width: "10%", color: "#1e293b", textAlign: "center" }}>Disc %</TableCell>
-                  <TableCell sx={{ fontWeight: 800, width: "12%", color: "#1e293b", textAlign: "right" }}>
+                  <TableCell sx={{ fontWeight: 800, width: "14%", color: "#1e293b", textAlign: "right" }}>
                     Total (₹)
                   </TableCell>
                   <TableCell sx={{ width: "4%" }}></TableCell>
@@ -776,7 +775,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
                             <Box sx={{ width: "100%" }}>
                               <Typography variant="body2" fontWeight="600">{option.name}</Typography>
                               <Typography variant="caption" color="text.secondary">
-                                {option.composition ? `${option.composition} • ` : ""}{option.packaging} • {option.unit} • ₹{parseFloat(option.price || 0).toFixed(2)}
+                                {option.composition ? `${option.composition} • ` : ""}{option.unit ? `${option.unit} • ` : ""}₹{parseFloat(option.price || 0).toFixed(2)}
                               </Typography>
                             </Box>
                           </li>
@@ -791,13 +790,6 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
                         label={it.hsn || "3004"}
                         sx={{ bgcolor: "#f1f5f9", fontWeight: 700, fontSize: "11px", color: "#334155" }}
                       />
-                    </TableCell>
-
-                    {/* Packing (Auto from Product, Read-only) */}
-                    <TableCell>
-                      <Typography variant="body2" sx={{ fontWeight: 600, color: "#334155" }}>
-                        {it.pack || "—"}
-                      </Typography>
                     </TableCell>
 
                     {/* Qty (Text field accepting only numbers, visible without spinners) */}
