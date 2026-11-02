@@ -164,73 +164,93 @@ function AddDealers({ open, onClose, onDealerAdded }) {
         }
     };
 
-    // Helper to render individual dynamic input based on TypeId
+    // Helper to render individual dynamic input based on field metadata
     const renderFieldInput = (field) => {
         const isRequired = !!field.Mandatory;
         const hasError = !!formErrors[field.Id];
         const helperText = formErrors[field.Id] || '';
         const value = formData[field.Id] !== undefined ? formData[field.Id] : '';
         const descLower = (field.Description || '').toLowerCase();
+        const validationLower = (field.Validation || '').toLowerCase();
+        const typeNameLower = (field.TypeName || '').toLowerCase();
 
-        // 1. Text field
-        if (field.TypeId === 1) {
-            const isMultiline = descLower.includes('address') || descLower.includes('remark');
+        // 1. Address & Remarks (ALWAYS Text, multiline)
+        if (
+            descLower.includes('address') ||
+            descLower.includes('remark') ||
+            validationLower.includes('long text')
+        ) {
             return (
                 <TextField
                     key={field.Id}
                     fullWidth
                     size="small"
+                    type="text"
                     label={field.Description}
                     required={isRequired}
                     error={hasError}
                     helperText={helperText}
                     value={value}
-                    multiline={isMultiline}
-                    rows={isMultiline ? 2 : 1}
+                    multiline
+                    rows={2}
                     onChange={(e) => handleInputChange(field.Id, e.target.value)}
                 />
             );
         }
 
-        // 2. Number field
-        if (field.TypeId === 2) {
+        // 2. Contact / Phone / Mobile (Tel input, accepts phone numbers without spinners or date picker)
+        if (
+            descLower.includes('contact') ||
+            descLower.includes('phone') ||
+            descLower.includes('mobile') ||
+            descLower.includes('alt contact')
+        ) {
             return (
                 <TextField
                     key={field.Id}
                     fullWidth
                     size="small"
-                    type="number"
+                    type="tel"
                     label={field.Description}
                     required={isRequired}
                     error={hasError}
                     helperText={helperText}
                     value={value}
+                    inputProps={{ maxLength: 15 }}
                     onChange={(e) => handleInputChange(field.Id, e.target.value)}
                 />
             );
         }
 
-        // 3. Date field
-        if (field.TypeId === 3) {
+        // 3. Email / Mail Id
+        if (
+            descLower.includes('mail') ||
+            descLower.includes('email') ||
+            validationLower === 'email' ||
+            field.TypeId === 7
+        ) {
             return (
                 <TextField
                     key={field.Id}
                     fullWidth
                     size="small"
-                    type="date"
+                    type="email"
                     label={field.Description}
                     required={isRequired}
                     error={hasError}
                     helperText={helperText}
                     value={value}
-                    InputLabelProps={{ shrink: true }}
                     onChange={(e) => handleInputChange(field.Id, e.target.value)}
                 />
             );
         }
 
         // 4. Image / File field
-        if (field.TypeId === 4) {
+        if (
+            field.TypeId === 4 ||
+            validationLower.includes('image') ||
+            validationLower.includes('file')
+        ) {
             return (
                 <Box key={field.Id} sx={{ border: '1px dashed #ccc', borderRadius: 1.5, p: 1.5, textAlign: 'center' }}>
                     <Typography variant="caption" sx={{ display: 'block', mb: 1, fontWeight: 600, color: hasError ? 'error.main' : 'text.secondary' }}>
@@ -278,40 +298,89 @@ function AddDealers({ open, onClose, onDealerAdded }) {
         }
 
         // 5. Dropdown field
-        if (field.TypeId === 5) {
+        if (field.TypeId === 5 || field.Options) {
             const rawOptions = field.Options ? field.Options.split(',') : [];
             const options = rawOptions.map(opt => opt.trim()).filter(Boolean);
 
+            if (options.length > 0) {
+                return (
+                    <FormControl key={field.Id} fullWidth size="small" required={isRequired} error={hasError}>
+                        <InputLabel id={`label-${field.Id}`}>{field.Description}</InputLabel>
+                        <Select
+                            labelId={`label-${field.Id}`}
+                            label={field.Description}
+                            value={value}
+                            onChange={(e) => handleInputChange(field.Id, e.target.value)}
+                        >
+                            {options.map((opt, idx) => (
+                                <MenuItem key={idx} value={opt}>
+                                    {opt}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                        {hasError && (
+                            <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>
+                                {helperText}
+                            </Typography>
+                        )}
+                    </FormControl>
+                );
+            }
+        }
+
+        // 6. Explicit Date field (ONLY when description or validation specifically says date)
+        if (
+            descLower.includes('date') ||
+            validationLower === 'date' ||
+            typeNameLower === 'date'
+        ) {
             return (
-                <FormControl key={field.Id} fullWidth size="small" required={isRequired} error={hasError}>
-                    <InputLabel id={`label - ${ field.Id } `}>{field.Description}</InputLabel>
-                    <Select
-                        labelId={`label - ${ field.Id } `}
-                        label={field.Description}
-                        value={value}
-                        onChange={(e) => handleInputChange(field.Id, e.target.value)}
-                    >
-                        {options.map((opt, idx) => (
-                            <MenuItem key={idx} value={opt}>
-                                {opt}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                    {hasError && (
-                        <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>
-                            {helperText}
-                        </Typography>
-                    )}
-                </FormControl>
+                <TextField
+                    key={field.Id}
+                    fullWidth
+                    size="small"
+                    type="date"
+                    label={field.Description}
+                    required={isRequired}
+                    error={hasError}
+                    helperText={helperText}
+                    value={value}
+                    InputLabelProps={{ shrink: true }}
+                    onChange={(e) => handleInputChange(field.Id, e.target.value)}
+                />
             );
         }
 
-        // Fallback for any other type
+        // 7. Explicit Numeric field (e.g., Quantity, Amount, Pin Code)
+        if (
+            (validationLower === 'number' || validationLower === 'numeric' || typeNameLower === 'number') &&
+            !descLower.includes('contact') &&
+            !descLower.includes('phone') &&
+            !descLower.includes('address')
+        ) {
+            return (
+                <TextField
+                    key={field.Id}
+                    fullWidth
+                    size="small"
+                    type="number"
+                    label={field.Description}
+                    required={isRequired}
+                    error={hasError}
+                    helperText={helperText}
+                    value={value}
+                    onChange={(e) => handleInputChange(field.Id, e.target.value)}
+                />
+            );
+        }
+
+        // 8. Default fallback: Standard Text field
         return (
             <TextField
                 key={field.Id}
                 fullWidth
                 size="small"
+                type="text"
                 label={field.Description}
                 required={isRequired}
                 error={hasError}
@@ -408,7 +477,7 @@ function AddDealers({ open, onClose, onDealerAdded }) {
                             px: 3,
                             fontWeight: 600,
                             "&:hover": {
-                                backgroundColor: '#70042c',
+                                backgroundColor: '#d85d13',
                             }
                         }}
                     >
