@@ -61,11 +61,28 @@ function VisitTable() {
   const isRM = user?.is_rm || user?.isRM || Boolean(user?.subordinates && user.subordinates.length > 0);
   const canSelectEmployee = isAdmin || isRM;
 
+  const formatDateToYMD = (date) => {
+    if (!date) return '';
+    const d = date instanceof Date ? date : new Date(date);
+    if (isNaN(d.getTime())) return '';
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [employees, setEmployees] = useState([])
-  const [selectedEmpId, setSelectedEmpId] = useState(canSelectEmployee ? "" : user.emp_id)
+  const [selectedEmpId, setSelectedEmpId] = useState(canSelectEmployee ? "" : (user?.emp_id || user?.EmpId || ""))
   const [loading, setLoading] = useState(false)
   const [noData, setNoData] = useState(false)
+
+  // Sync selectedEmpId if non-admin user loads asynchronously
+  useEffect(() => {
+    if (!canSelectEmployee && (user?.emp_id || user?.EmpId) && !selectedEmpId) {
+      setSelectedEmpId(user.emp_id || user.EmpId);
+    }
+  }, [canSelectEmployee, user?.emp_id, user?.EmpId, selectedEmpId]);
 
   // Popup states for image
   const [openDialog, setOpenDialog] = useState(false)
@@ -73,6 +90,7 @@ function VisitTable() {
   const [rotation, setRotation] = useState(0)
   const [address, setAddress] = useState("")
   const [time, setTime] = useState("")
+
   useEffect(() => {
     if (canSelectEmployee) {
       const fetchEmployees = async () => {
@@ -106,11 +124,11 @@ function VisitTable() {
     setLoading(true)
     setNoData(false)
     try {
-      const formattedDate = selectedDate.toISOString().substr(0, 10)
+      const formattedDate = formatDateToYMD(selectedDate)
       const url = `${BASE_URL}/visit/view_visit.php?empId=${selectedEmpId}&date=${formattedDate}`
 
       const response = await axios.get(url)
-      if (response.data.success && response.data.data.length > 0) {
+      if (response.data && response.data.success && Array.isArray(response.data.data) && response.data.data.length > 0) {
         setVisits(response.data.data)
       } else {
         setVisits([])
@@ -118,13 +136,20 @@ function VisitTable() {
       }
     } catch (err) {
       console.error("Error fetching visits:", err)
+      setVisits([])
       setNoData(true)
     }
     setLoading(false)
   }
 
+  useEffect(() => {
+    fetchVisits()
+  }, [selectedEmpId, selectedDate])
+
   const handleDateChange = (event) => {
-    setSelectedDate(new Date(event.target.value))
+    if (event.target.value) {
+      setSelectedDate(new Date(event.target.value + "T00:00:00"))
+    }
   }
 
   const planVisit = (event) => {
@@ -195,24 +220,66 @@ function VisitTable() {
 
   return (
     <Box sx={{ p: { xs: 1, md: 2 }, bgcolor: "#f8fafc", minHeight: "100vh" }}>
-      {/* Header Section */}
+      {/* Header Section with Separate Navigation Buttons */}
       <Paper 
         elevation={0} 
         sx={{ 
-          p: 3, 
+          p: { xs: 2, sm: 3 }, 
           mb: 3, 
           borderRadius: 2, 
           background: 'white',
           border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
         }}
       >
-        <Box>
-          <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }} gutterBottom>
-            Visit Management
-          </Typography>
-          <Typography variant="body2" sx={{ color: "#64748b", fontSize: "0.85rem" }}>
-            Track and manage employee field visits, dealer check-ins, and activity logs
-          </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+          <Box>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: "#f37021", letterSpacing: -0.3 }} gutterBottom>
+              Visit Management
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#64748b", fontSize: "0.85rem" }}>
+              Track and manage employee field visits, dealer check-ins, and activity logs
+            </Typography>
+          </Box>
+          <Stack direction="row" spacing={1.5}>
+            <Button
+              variant="contained"
+              startIcon={<Visibility />}
+              sx={{
+                borderRadius: 2,
+                bgcolor: "#f37021",
+                color: "white",
+                fontWeight: "600",
+                px: 2.5,
+                py: 0.8,
+                textTransform: "none",
+                "&:hover": {
+                  bgcolor: "#d95300",
+                },
+              }}
+            >
+              View All Visits
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={planVisit}
+              startIcon={<CalendarToday />}
+              sx={{
+                borderRadius: 2,
+                borderColor: alpha("#f37021", 0.5),
+                color: "#f37021",
+                fontWeight: "600",
+                px: 2.5,
+                py: 0.8,
+                textTransform: "none",
+                "&:hover": {
+                  borderColor: "#f37021",
+                  bgcolor: alpha("#f37021", 0.06),
+                },
+              }}
+            >
+              Plan Visits
+            </Button>
+          </Stack>
         </Box>
       </Paper>
 
@@ -229,7 +296,7 @@ function VisitTable() {
       >
         <Grid container spacing={2} alignItems="center">
           {canSelectEmployee && (
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} sm={6} md={5}>
               <Autocomplete
                 options={employees}
                 getOptionLabel={(option) => `${option.Name} (${option.EmpId})`}
@@ -259,10 +326,10 @@ function VisitTable() {
             </Grid>
           )}
 
-          <Grid item xs={12} md={canSelectEmployee ? 3 : 4}>
+          <Grid item xs={12} sm={canSelectEmployee ? 6 : 8} md={canSelectEmployee ? 4 : 8}>
             <TextField
               type="date"
-              value={selectedDate.toISOString().substr(0, 10)}
+              value={formatDateToYMD(selectedDate)}
               onChange={handleDateChange}
               variant="outlined"
               fullWidth
@@ -280,7 +347,7 @@ function VisitTable() {
             />
           </Grid>
 
-          <Grid item xs={12} md={2}>
+          <Grid item xs={12} sm={12} md={canSelectEmployee ? 3 : 4}>
             <Button
               variant="contained"
               fullWidth
@@ -298,28 +365,6 @@ function VisitTable() {
               }}
             >
               Search
-            </Button>
-          </Grid>
-
-          <Grid item xs={12} md={canSelectEmployee ? 3 : 3}>
-            <Button
-              variant="outlined"
-              fullWidth
-              onClick={planVisit}
-              startIcon={<Add />}
-              size="small"
-              sx={{
-                borderRadius: 2,
-                borderColor: alpha("#f37021", 0.5),
-                color: "#f37021",
-                py: 1,
-                "&:hover": {
-                  borderColor: "#f37021",
-                  bgcolor: alpha("#f37021", 0.04),
-                },
-              }}
-            >
-              Plan Visits
             </Button>
           </Grid>
         </Grid>

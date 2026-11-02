@@ -46,6 +46,7 @@ import {
   Description,
   ExpandMore,
   ExpandLess,
+  Search,
 } from '@mui/icons-material';
 import axios from 'axios';
 import { useAuth } from '../auth/AuthContext';
@@ -241,24 +242,66 @@ function PlanVisit() {
 
   return (
     <Box sx={{ p: { xs: 1, md: 2 }, bgcolor: "#f8fafc", minHeight: "100vh" }}>
-      {/* Header Section */}
+      {/* Header Section with Separate Buttons */}
       <Paper 
         elevation={0} 
         sx={{ 
-          p: 3, 
+          p: { xs: 2, sm: 3 }, 
           mb: 3, 
           borderRadius: 2, 
           background: 'white',
           border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
         }}
       >
-        <Box sx={{ mb: 1 }}>
-          <Typography variant="h5" fontWeight="700" color="#f37021" gutterBottom>
-            Planned Visits
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            View and manage scheduled employee visits
-          </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+          <Box>
+            <Typography variant="h5" fontWeight="700" color="#f37021" gutterBottom>
+              Planned Visits
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              View and manage scheduled employee visits
+            </Typography>
+          </Box>
+          <Stack direction="row" spacing={1.5}>
+            <Button
+              variant="outlined"
+              onClick={() => navigate("/visit")}
+              startIcon={<Visibility />}
+              sx={{
+                borderRadius: 2,
+                borderColor: alpha("#f37021", 0.5),
+                color: "#f37021",
+                fontWeight: "600",
+                px: 2.5,
+                py: 0.8,
+                textTransform: "none",
+                "&:hover": {
+                  borderColor: "#f37021",
+                  bgcolor: alpha("#f37021", 0.06),
+                },
+              }}
+            >
+              View All Visits
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<CalendarToday />}
+              sx={{
+                borderRadius: 2,
+                bgcolor: "#f37021",
+                color: "white",
+                fontWeight: "600",
+                px: 2.5,
+                py: 0.8,
+                textTransform: "none",
+                "&:hover": {
+                  bgcolor: "#d95300",
+                },
+              }}
+            >
+              Plan Visits
+            </Button>
+          </Stack>
         </Box>
       </Paper>
 
@@ -275,7 +318,7 @@ function PlanVisit() {
       >
         <Grid container spacing={2} alignItems="center">
           {canSelectEmployee && (
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} sm={6} md={5}>
               <Autocomplete
                 options={employees}
                 getOptionLabel={(option) => `${option.Name} (${option.EmpId})`}
@@ -305,7 +348,7 @@ function PlanVisit() {
             </Grid>
           )}
 
-          <Grid item xs={12} md={canSelectEmployee ? 3 : 4}>
+          <Grid item xs={12} sm={canSelectEmployee ? 6 : 8} md={canSelectEmployee ? 4 : 8}>
             <TextField
               type="date"
               value={formatDateToYMD(selectedDate)}
@@ -326,12 +369,12 @@ function PlanVisit() {
             />
           </Grid>
 
-          <Grid item xs={12} md={2}>
+          <Grid item xs={12} sm={12} md={canSelectEmployee ? 3 : 4}>
             <Button
               variant="contained"
               fullWidth
               onClick={fetchVisits}
-              startIcon={<Visibility />}
+              startIcon={<Search />}
               size="small"
               sx={{
                 borderRadius: 2,
@@ -339,33 +382,11 @@ function PlanVisit() {
                 fontWeight: "600",
                 py: 1,
                 "&:hover": {
-                  bgcolor: "#6d052cff",
+                  bgcolor: "#d95300",
                 },
               }}
             >
-              View Plans
-            </Button>
-          </Grid>
-
-          <Grid item xs={12} md={canSelectEmployee ? 3 : 3}>
-            <Button
-              variant="outlined"
-              fullWidth
-              onClick={() => navigate("/visit")}
-              startIcon={<ArrowBack />}
-              size="small"
-              sx={{
-                borderRadius: 2,
-                borderColor: alpha("#f37021", 0.5),
-                color: "#f37021",
-                py: 1,
-                "&:hover": {
-                  borderColor: "#f37021",
-                  bgcolor: alpha("#f37021", 0.04),
-                },
-              }}
-            >
-              All Visits
+              Search
             </Button>
           </Grid>
         </Grid>
@@ -438,13 +459,7 @@ function PlanVisit() {
                 </TableHead>
                 <TableBody>
                   {visits
-                    .filter((visit) => {
-                      if (!visit.Plan_Visit) return true;
-                      const pDate = String(visit.Plan_Visit).substring(0, 10);
-                      const fDate = formatDateToYMD(selectedDate);
-                      return pDate === fDate;
-                    })
-                    .sort((a, b) => new Date(b.Plan_Visit || b.create_time || 0) - new Date(a.Plan_Visit || a.create_time || 0))
+                    .sort((a, b) => new Date(b.Plan_Visit || b.create_time || b.VisitTime || 0) - new Date(a.Plan_Visit || a.create_time || a.VisitTime || 0))
                     .map((visit, index) => (
                       <TableRow
                         key={`${visit.DealerID}-${index}`}
