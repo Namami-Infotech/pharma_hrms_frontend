@@ -24,11 +24,6 @@ import { useAuth } from "../auth/AuthContext";
 
 const LEAVE_TYPES = [
   { key: "CL", label: "Casual Leave (CL)", color: "#2563eb", desc: "Short-notice personal leaves" },
-  { key: "SL", label: "Sick Leave (SL)", color: "#059669", desc: "Medical / sickness leaves" },
-  { key: "EL", label: "Earned Leave (EL)", color: "#d97706", desc: "Earned or accrued annual leave" },
-  { key: "PL", label: "Privilege Leave (PL)", color: "#7c3aed", desc: "Planned vacation leaves" },
-  { key: "BL", label: "Bereavement Leave (BL)", color: "#dc2626", desc: "Compassionate bereavement leaves" },
-  { key: "CompOff", label: "Comp Off", color: "#0891b2", desc: "Compensatory days off" },
 ];
 
 export default function ManageLeaveBalance({ open, onClose, employees = [], onUpdated }) {
@@ -36,11 +31,6 @@ export default function ManageLeaveBalance({ open, onClose, employees = [], onUp
   const [selectedEmpId, setSelectedEmpId] = useState("");
   const [balances, setBalances] = useState({
     CL: 0,
-    SL: 0,
-    EL: 0,
-    PL: 0,
-    BL: 0,
-    CompOff: 0,
   });
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -73,14 +63,9 @@ export default function ManageLeaveBalance({ open, onClose, employees = [], onUp
         const d = res.data.data;
         setBalances({
           CL: parseFloat(d.CL ?? d.cl ?? 0),
-          SL: parseFloat(d.SL ?? d.sl ?? 0),
-          EL: parseFloat(d.EL ?? d.el ?? 0),
-          PL: parseFloat(d.PL ?? d.pl ?? 0),
-          BL: parseFloat(d.BL ?? d.bl ?? 0),
-          CompOff: parseFloat(d.CompOff ?? d.compoff ?? 0),
         });
       } else {
-        setBalances({ CL: 0, SL: 0, EL: 0, PL: 0, BL: 0, CompOff: 0 });
+        setBalances({ CL: 0 });
       }
     } catch (err) {
       console.error("Error fetching balance:", err);
@@ -106,12 +91,7 @@ export default function ManageLeaveBalance({ open, onClose, employees = [], onUp
     try {
       const payload = {
         empid: selectedEmpId,
-        SL: balances.SL,
-        EL: balances.EL,
         CL: balances.CL,
-        PL: balances.PL,
-        BL: balances.BL,
-        CompOff: balances.CompOff,
         Tenent_Id: user?.tenent_id || 1,
       };
 

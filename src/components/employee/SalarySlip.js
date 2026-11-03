@@ -216,6 +216,8 @@ function SalarySlip() {
   };
 
   const rate = salarySlip?.rate || {
+    salary: 0,
+    da: 0,
     basicDa: 0,
     hra: 0,
     conv: 0,
@@ -225,6 +227,7 @@ function SalarySlip() {
 
   const earn = salarySlip?.earnings || {
     basic: 0,
+    da: 0,
     hra: 0,
     conv: 0,
     specialAllow: 0,
@@ -593,8 +596,12 @@ function SalarySlip() {
                   }}
                 >
                   <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>BASIC & DA</span>
-                    <span style={{ fontWeight: 600 }}>{rate.basicDa}</span>
+                    <span>SALARY</span>
+                    <span style={{ fontWeight: 600 }}>{rate.salary}</span>
+                  </Box>
+                  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                    <span>DA</span>
+                    <span style={{ fontWeight: 600 }}>{rate.da}</span>
                   </Box>
                   <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                     <span>HRA</span>
@@ -622,8 +629,12 @@ function SalarySlip() {
                   }}
                 >
                   <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>BASIC</span>
+                    <span>SALARY</span>
                     <span style={{ fontWeight: 600 }}>{earn.basic}</span>
+                  </Box>
+                  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                    <span>DA</span>
+                    <span style={{ fontWeight: 600 }}>{earn.da}</span>
                   </Box>
                   <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                     <span>HRA</span>

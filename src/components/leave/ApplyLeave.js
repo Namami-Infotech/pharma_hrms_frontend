@@ -45,20 +45,14 @@ import { useAuth } from "../auth/AuthContext";
 
 // Allowed legitimate leave types definition
 const VALID_LEAVE_TYPES = [
-  { key: "SL", label: "Sick Leave (SL)" },
-  { key: "EL", label: "Earned Leave (EL)" },
   { key: "CL", label: "Casual Leave (CL)" },
-  { key: "PL", label: "Privilege Leave (PL)" },
-  { key: "BL", label: "Bereavement Leave (BL)" },
-  { key: "CompOff", label: "Comp Off" },
-  { key: "HalfDay", label: "Half Day" },
   { key: "LWP", label: "Leave Without Pay (LWP)" },
 ];
 
 // Compact Leave Balance Card
 const LeaveBalanceCard = ({ category, balance, isSelected, onClick, value }) => {
   const theme = useTheme();
-  const isSpecial = value === "HalfDay" || value === "LWP";
+  const isSpecial = value === "LWP";
 
   const getBalanceColor = () => {
     if (isSpecial) return theme.palette.info.main;
@@ -241,7 +235,7 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
         const data = response.data.data || {};
         const availableCategories = VALID_LEAVE_TYPES.map((vt) => {
           let bal = 0;
-          if (vt.key === "HalfDay" || vt.key === "LWP") {
+          if (vt.key === "LWP") {
             bal = 99; // Unlimited
           } else {
             bal = parseFloat(data[vt.key] ?? data[vt.key.toLowerCase()] ?? data[vt.key.toUpperCase()] ?? 0);
@@ -324,9 +318,9 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
       errors.reason = "Please enter reason for leave.";
     }
 
-    // Check balance if not LWP or HalfDay
+    // Check balance for Casual Leave; Leave Without Pay has no balance.
     const days = calculateDays();
-    if (leaveDetails.category && leaveDetails.category !== "LWP" && leaveDetails.category !== "HalfDay") {
+    if (leaveDetails.category === "CL") {
       const selectedCategory = categories.find((cat) => cat.value === leaveDetails.category);
       if (selectedCategory && days > selectedCategory.balance) {
         errors.category = `Insufficient balance. Available ${selectedCategory.label}: ${selectedCategory.balance} day(s), Requested: ${days} day(s).`;
@@ -496,7 +490,7 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
                   <em>Select Leave Type</em>
                 </MenuItem>
                 {categories.map((category) => {
-                  const isSpecial = category.value === "HalfDay" || category.value === "LWP";
+                  const isSpecial = category.value === "LWP";
                   return (
                     <MenuItem key={category.value} value={category.value}>
                       <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
