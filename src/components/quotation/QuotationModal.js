@@ -109,7 +109,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
     subject: "Quotation for Supply of Pharmaceutical Products",
     quotation_date: new Date().toISOString().slice(0, 10),
     valid_until: "",
-    prepared_by: "Aberdure Sales Team",
+    prepared_by: "",
     status: "Sent",
     tax_type: "GST",
     tax_percent: 12,
@@ -181,7 +181,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
 
   // 2. Initialize form data
   useEffect(() => {
-    const loggedInName = user?.Name || user?.name || user?.EmpId || "Aberdure Sales Team";
+    const loggedInName = user?.username || user?.Name || user?.name || user?.EmpName || user?.emp_name || user?.emp_id || user?.EmpId || "";
 
     if (quotation) {
       setFormData({
@@ -352,11 +352,12 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
 
   // Build payload for preview or submission
   const buildQuotationPayload = () => {
-    const loggedInName = user?.Name || user?.name || user?.EmpId || "Aberdure Sales Team";
+    const loggedInName = user?.username || user?.Name || user?.name || user?.EmpName || user?.emp_name || user?.emp_id || user?.EmpId || "";
     const isInterState = formData.tax_type === "IGST";
     const cgstPercent = isInterState ? 0 : taxPercent / 2;
     const sgstPercent = isInterState ? 0 : taxPercent / 2;
     const cgstAmount = isInterState ? 0 : Math.round((taxAmount / 2) * 100) / 100;
+    const sgstAmount = isInterState ? 0 : Math.round((taxAmount / 2) * 100) / 100;
     const thresholdLimit = parseFloat(approvalThreshold) || 35;
     const hasHighDiscount = items.some((it) => (parseFloat(it.discount) || 0) > thresholdLimit) || (parseFloat(formData.discount_percent) || 0) > thresholdLimit;
 

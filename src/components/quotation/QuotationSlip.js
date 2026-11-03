@@ -671,13 +671,18 @@ function QuotationSlip({ quotation, onBack, onEdit }) {
               For {comp.name}
             </Typography>
 
-            <Box sx={{ mt: 4, width: "100%", borderTop: "1px solid #9ca3af", pt: 0.5 }}>
+            <Box sx={{ mt: 3, width: "100%", borderTop: "1px solid #9ca3af", pt: 0.5 }}>
               <Typography sx={{ fontSize: "10px", fontWeight: 800 }}>
-                Authorized Signatory
+                {quotation.prepared_by || "Authorized Signatory"}
               </Typography>
               <Typography sx={{ fontSize: "8.5px", color: "#6b7280" }}>
-                Sales & Commercial Operations
+                Prepared By {quotation.emp_id ? `(${quotation.emp_id})` : ""}
               </Typography>
+              {quotation.approved_by && (
+                <Typography sx={{ fontSize: "8.5px", color: "#16a34a", fontWeight: 700, mt: 0.5 }}>
+                  ✓ Approved By: {quotation.approved_by}
+                </Typography>
+              )}
             </Box>
           </Box>
         </Box>

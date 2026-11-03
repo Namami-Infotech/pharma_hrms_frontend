@@ -183,7 +183,11 @@ function QuotationList() {
   const handleApproveQuotation = async (id) => {
     setApprovingId(id);
     try {
-      const res = await axios.post(`${BASE_URL}/quotation/approve_quotation.php`, { id });
+      const approverName = user?.username || user?.Name || user?.name || user?.EmpName || user?.emp_name || user?.emp_id || user?.EmpId || "";
+      const res = await axios.post(`${BASE_URL}/quotation/approve_quotation.php`, {
+        id,
+        approved_by: approverName,
+      });
       if (res.data && res.data.success) {
         setSuccessMsg(res.data.message || "Quotation approved and sent to client email.");
         fetchQuotations();
@@ -202,7 +206,12 @@ function QuotationList() {
     setError("");
     try {
       const tenantId = user?.tenent_id || 1;
+      const empId = user?.emp_id || user?.EmpId || "";
+      const userRole = user?.role || user?.Role || "";
+
       let url = `${BASE_URL}/quotation/list_quotations.php?Tenent_Id=${tenantId}`;
+      if (empId) url += `&empId=${encodeURIComponent(empId)}`;
+      if (userRole) url += `&role=${encodeURIComponent(userRole)}`;
       if (statusFilter !== "All") url += `&status=${statusFilter}`;
       if (search.trim()) url += `&search=${encodeURIComponent(search.trim())}`;
 
@@ -224,7 +233,7 @@ function QuotationList() {
   useEffect(() => {
     fetchQuotations();
     fetchThreshold();
-  }, [statusFilter]);
+  }, [statusFilter, user?.emp_id, user?.EmpId, user?.role]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -251,9 +260,14 @@ function QuotationList() {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
+      const approverName = user?.username || user?.Name || user?.name || user?.EmpName || user?.emp_name || user?.emp_id || user?.EmpId || "";
       const res = await axios.post(
         `${BASE_URL}/quotation/update_quotation.php`,
-        { id, status: newStatus }
+        {
+          id,
+          status: newStatus,
+          approved_by: newStatus === "Approved" ? approverName : null,
+        }
       );
       if (res.data.success) {
         setSuccessMsg(`Status updated to ${newStatus}.`);
@@ -572,6 +586,8 @@ function QuotationList() {
                   <TableCell sx={{ fontWeight: 800 }}>Valid Till</TableCell>
                   <TableCell sx={{ fontWeight: 800 }}>Items</TableCell>
                   <TableCell sx={{ fontWeight: 800, textAlign: "right" }}>Total (₹)</TableCell>
+                  <TableCell sx={{ fontWeight: 800 }}>Created By</TableCell>
+                  <TableCell sx={{ fontWeight: 800 }}>Approved By</TableCell>
                   <TableCell sx={{ fontWeight: 800, textAlign: "center" }}>Status</TableCell>
                   <TableCell sx={{ fontWeight: 800, textAlign: "center" }}>Actions</TableCell>
                 </TableRow>
@@ -617,6 +633,42 @@ function QuotationList() {
                         {parseFloat(row.total_amount || 0).toLocaleString("en-IN", {
                           minimumFractionDigits: 2,
                         })}
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" fontWeight="600" sx={{ color: "#1e293b" }}>
+                          {row.created_by_name || (row.prepared_by && row.prepared_by !== "Aberdure Sales Team" && row.prepared_by !== "Sales Team" ? row.prepared_by : null) || row.emp_id || "—"}
+                        </Typography>
+                        {row.emp_id && (
+                          <Typography variant="caption" color="text.secondary" sx={{ display: "block", fontSize: "11px" }}>
+                            ID: {row.emp_id}
+                          </Typography>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {row.status === "Approved" && (row.approved_by || row.approved_by_name) ? (
+                          <Box>
+                            <Chip
+                              label={row.approved_by || row.approved_by_name}
+                              size="small"
+                              color="success"
+                              variant="outlined"
+                              sx={{ fontWeight: 600, fontSize: "11px", height: "22px" }}
+                            />
+                            {row.approval_date && (
+                              <Typography variant="caption" display="block" color="text.secondary" sx={{ fontSize: "10px", mt: 0.3 }}>
+                                {new Date(row.approval_date).toLocaleDateString("en-IN", {
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric"
+                                })}
+                              </Typography>
+                            )}
+                          </Box>
+                        ) : (
+                          <Typography variant="caption" color="text.secondary">
+                            —
+                          </Typography>
+                        )}
                       </TableCell>
                       <TableCell sx={{ textAlign: "center" }}>
                         {canApproveQuotation ? (
