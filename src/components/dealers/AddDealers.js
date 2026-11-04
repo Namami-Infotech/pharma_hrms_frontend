@@ -71,7 +71,7 @@ function AddDealers({ open, onClose, onDealerAdded }) {
             if (res.data && res.data.success) {
                 let fetchedFields = res.data.data || [];
                 // Ensure State field is always present as mandatory field
-                const hasStateField = fetchedFields.some(f => 
+                const hasStateField = fetchedFields.some(f =>
                     (f.Description || '').toLowerCase().includes('state') ||
                     (f.Caption || '').toLowerCase().includes('state') ||
                     String(f.Id) === '7'
@@ -271,6 +271,8 @@ function AddDealers({ open, onClose, onDealerAdded }) {
                 />
             );
         }
+
+        console.log("stateeeee", isState);
 
         // 1b. State / Doctor State (Select Dropdown with Indian States, opens at bottom with scroll)
         if (isState) {
@@ -647,7 +649,7 @@ function AddDealers({ open, onClose, onDealerAdded }) {
                 <Box sx={{ display: 'flex', alignItems: 'center', color: 'text.secondary' }}>
                     <LocationOn sx={{ fontSize: 16, mr: 0.5, color: latLong ? '#10b981' : 'text.disabled' }} />
                     <Typography variant="caption" color="text.secondary">
-                        {latLong ? `GPS: ${ latLong } ` : "Acquiring GPS..."}
+                        {latLong ? `GPS: ${latLong} ` : "Acquiring GPS..."}
                     </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', gap: 1 }}>
