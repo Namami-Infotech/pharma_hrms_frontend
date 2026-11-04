@@ -182,7 +182,7 @@ function ProductList() {
 
   useEffect(() => {
     fetchProducts();
-  }, [categoryFilter, unitFilter, statusFilter]);
+  }, [unitFilter, statusFilter]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -325,7 +325,7 @@ function ProductList() {
 
       {/* Stats Cards */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={4} md={4}>
           <StatCard
             title="TOTAL PRODUCTS"
             value={stats.totalProducts}
@@ -334,7 +334,7 @@ function ProductList() {
             subtitle="Cataloged medicines"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={4} md={4}>
           <StatCard
             title="ACTIVE / FORMULARY"
             value={stats.activeProducts}
@@ -343,22 +343,13 @@ function ProductList() {
             subtitle="Available for sales"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={4} md={4}>
           <StatCard
             title="AVERAGE PRICE"
             value={`₹${parseFloat(stats.avgPrice || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}`}
             color="#0284c7"
             icon={<Inventory2 />}
             subtitle="Per unit rate"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            title="CATEGORIES"
-            value={stats.totalCategories}
-            color="#d97706"
-            icon={<Category />}
-            subtitle="Therapeutic groups"
           />
         </Grid>
       </Grid>
@@ -368,7 +359,7 @@ function ProductList() {
         <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
           <form onSubmit={handleSearchSubmit}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={5}>
                 <TextField
                   fullWidth
                   size="small"
@@ -385,24 +376,7 @@ function ProductList() {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={4} md={2.5}>
-                <FormControl fullWidth size="small">
-                  <InputLabel>Category</InputLabel>
-                  <Select
-                    value={categoryFilter}
-                    label="Category"
-                    onChange={(e) => setCategoryFilter(e.target.value)}
-                  >
-                    {STANDARD_CATEGORIES.map((cat) => (
-                      <MenuItem key={cat} value={cat}>
-                        {cat}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              <Grid item xs={6} sm={4} md={2}>
+              <Grid item xs={6} sm={4} md={2.5}>
                 <FormControl fullWidth size="small">
                   <InputLabel>Unit</InputLabel>
                   <Select
@@ -431,7 +405,7 @@ function ProductList() {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={6} sm={4} md={2}>
+              <Grid item xs={6} sm={4} md={2.5}>
                 <FormControl fullWidth size="small">
                   <InputLabel>Status</InputLabel>
                   <Select
@@ -446,7 +420,7 @@ function ProductList() {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} md={1.5}>
+              <Grid item xs={12} md={2}>
                 <Button
                   fullWidth
                   type="submit"

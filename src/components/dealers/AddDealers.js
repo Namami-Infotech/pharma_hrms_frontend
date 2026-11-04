@@ -18,6 +18,7 @@ import {
     Typography,
     Alert,
     IconButton,
+    Autocomplete,
 } from '@mui/material';
 import { LocationOn, CloudUpload, Delete, Close } from '@mui/icons-material';
 import axios from 'axios';
@@ -70,6 +71,16 @@ function AddDealers({ open, onClose, onDealerAdded }) {
             const res = await axios.get(`${BASE_URL}/dealer/get_dealer_fields.php`);
             if (res.data && res.data.success) {
                 const fetchedFields = res.data.data || [];
+                // Ensure State field is always present as mandatory field
+                if (!fetchedFields.some(f => (f.Description || '').toLowerCase().includes('state'))) {
+                    fetchedFields.push({
+                        Id: 7,
+                        Description: 'Dealer State',
+                        Mandatory: 1,
+                        Active: 1,
+                        TypeId: 1
+                    });
+                }
                 setFields(fetchedFields);
 
                 // Initialize form values
@@ -117,10 +128,35 @@ function AddDealers({ open, onClose, onDealerAdded }) {
     const validateForm = () => {
         const errors = {};
         for (const field of fields) {
-            if (field.Mandatory) {
-                const val = formData[field.Id];
-                if (val === undefined || val === null || String(val).trim() === '') {
-                    errors[field.Id] = `${field.Description} is required.`;
+            const descLower = (field.Description || '').toLowerCase();
+            const val = formData[field.Id];
+            const strVal = val !== undefined && val !== null ? String(val).trim() : '';
+
+            // 1. Mandatory check (including State as mandatory)
+            const isState = descLower.includes('state');
+            const isMandatory = field.Mandatory || isState;
+
+            if (isMandatory) {
+                if (!strVal) {
+                    const displayName = isState ? 'State' : (descLower.includes('dealer name') ? 'Doctor Name' : field.Description);
+                    errors[field.Id] = `${displayName} is required.`;
+                    continue;
+                }
+            }
+
+            // 2. Phone / Mobile Number validation
+            if (strVal && (descLower.includes('contact') || descLower.includes('phone') || descLower.includes('mobile'))) {
+                const digitsOnly = strVal.replace(/\D/g, '');
+                if (digitsOnly.length < 10 || digitsOnly.length > 15) {
+                    errors[field.Id] = 'Please enter a valid 10-digit mobile number.';
+                }
+            }
+
+            // 3. Email ID validation
+            if (strVal && (descLower.includes('mail') || descLower.includes('email'))) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(strVal)) {
+                    errors[field.Id] = 'Please enter a valid email address.';
                 }
             }
         }
@@ -133,32 +169,34 @@ function AddDealers({ open, onClose, onDealerAdded }) {
         setSuccessMsg('');
 
         if (!validateForm()) {
-            setErrorMsg('Please fill in all mandatory fields.');
+            setErrorMsg('Please correct the highlighted fields.');
             return;
         }
 
         setSubmitting(true);
         try {
+            const currentEmpId = user?.emp_id || user?.EmpId || user?.id || '';
             const payload = {
                 checkpoints: formData,
                 latLong: latLong || '',
-                addedByEmpId: user ? user.emp_id : ''
+                addedByEmpId: currentEmpId,
+                empId: currentEmpId,
             };
 
             const response = await axios.post(`${BASE_URL}/dealer/add_dealers.php`, payload);
 
             if (response.data && response.data.success) {
-                setSuccessMsg('Dealer registered successfully!');
+                setSuccessMsg('Doctor registered successfully!');
                 setTimeout(() => {
                     if (onDealerAdded) onDealerAdded();
                     onClose();
                 }, 800);
             } else {
-                setErrorMsg(response.data.message || 'Failed to add dealer.');
+                setErrorMsg(response.data.message || 'Failed to add doctor.');
             }
         } catch (err) {
-            console.error('Error adding dealer:', err);
-            setErrorMsg(err.response?.data?.message || err.message || 'Error saving dealer details.');
+            console.error('Error adding doctor:', err);
+            setErrorMsg(err.response?.data?.message || err.message || 'Error saving doctor details.');
         } finally {
             setSubmitting(false);
         }
@@ -166,13 +204,26 @@ function AddDealers({ open, onClose, onDealerAdded }) {
 
     // Helper to render individual dynamic input based on field metadata
     const renderFieldInput = (field) => {
-        const isRequired = !!field.Mandatory;
-        const hasError = !!formErrors[field.Id];
-        const helperText = formErrors[field.Id] || '';
-        const value = formData[field.Id] !== undefined ? formData[field.Id] : '';
         const descLower = (field.Description || '').toLowerCase();
         const validationLower = (field.Validation || '').toLowerCase();
         const typeNameLower = (field.TypeName || '').toLowerCase();
+        const isState = descLower.includes('state');
+        const isRequired = !!field.Mandatory || isState;
+        const hasError = !!formErrors[field.Id];
+        const helperText = formErrors[field.Id] || '';
+        const value = formData[field.Id] !== undefined ? formData[field.Id] : '';
+
+        // UI label replacement (frontend only, does not affect API payload or field.Id)
+        let uiLabel = field.Description;
+        if (descLower.includes('dealer name')) {
+            uiLabel = 'Doctor Name';
+        } else if (isState) {
+            uiLabel = 'State';
+        } else if (descLower.includes('contact') || descLower.includes('phone') || descLower.includes('mobile')) {
+            uiLabel = 'Contact Info / Mobile';
+        } else if (descLower.includes('mail') || descLower.includes('email')) {
+            uiLabel = 'Email ID';
+        }
 
         // 1. Address & Remarks (ALWAYS Text, multiline)
         if (
@@ -186,7 +237,7 @@ function AddDealers({ open, onClose, onDealerAdded }) {
                     fullWidth
                     size="small"
                     type="text"
-                    label={field.Description}
+                    label={uiLabel}
                     required={isRequired}
                     error={hasError}
                     helperText={helperText}
@@ -194,6 +245,38 @@ function AddDealers({ open, onClose, onDealerAdded }) {
                     multiline
                     rows={2}
                     onChange={(e) => handleInputChange(field.Id, e.target.value)}
+                />
+            );
+        }
+
+        // 1b. State / Doctor State (Autocomplete with all Indian States)
+        if (isState) {
+            const INDIAN_STATES = [
+                "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat",
+                "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh",
+                "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
+                "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh",
+                "Uttarakhand", "West Bengal", "Delhi", "Jammu and Kashmir", "Ladakh", "Puducherry", "Chandigarh"
+            ];
+            return (
+                <Autocomplete
+                    key={field.Id}
+                    freeSolo
+                    options={INDIAN_STATES}
+                    value={value || ''}
+                    onChange={(event, newValue) => handleInputChange(field.Id, newValue || '')}
+                    onInputChange={(event, newInputValue) => handleInputChange(field.Id, newInputValue || '')}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            fullWidth
+                            size="small"
+                            label={uiLabel}
+                            required={true}
+                            error={hasError}
+                            helperText={helperText}
+                        />
+                    )}
                 />
             );
         }
@@ -211,7 +294,7 @@ function AddDealers({ open, onClose, onDealerAdded }) {
                     fullWidth
                     size="small"
                     type="tel"
-                    label={field.Description}
+                    label={uiLabel}
                     required={isRequired}
                     error={hasError}
                     helperText={helperText}
@@ -235,7 +318,7 @@ function AddDealers({ open, onClose, onDealerAdded }) {
                     fullWidth
                     size="small"
                     type="email"
-                    label={field.Description}
+                    label={uiLabel}
                     required={isRequired}
                     error={hasError}
                     helperText={helperText}
@@ -381,7 +464,7 @@ function AddDealers({ open, onClose, onDealerAdded }) {
                 fullWidth
                 size="small"
                 type="text"
-                label={field.Description}
+                label={uiLabel}
                 required={isRequired}
                 error={hasError}
                 helperText={helperText}
@@ -406,10 +489,10 @@ function AddDealers({ open, onClose, onDealerAdded }) {
             >
                 <Box>
                     <Typography variant="h6" fontWeight={700}>
-                        Add New Dealer
+                        Add New Doctor
                     </Typography>
                     <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.85)' }}>
-                        Form dynamically loaded from database checkpoints
+                        Doctor registration details
                     </Typography>
                 </Box>
                 <IconButton onClick={onClose} size="small" sx={{ color: 'white' }}>
@@ -487,7 +570,7 @@ function AddDealers({ open, onClose, onDealerAdded }) {
                                 Saving...
                             </>
                         ) : (
-                            'Save Dealer'
+                            'Save Doctor'
                         )}
                     </Button>
                 </Box>

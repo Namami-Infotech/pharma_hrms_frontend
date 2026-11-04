@@ -159,6 +159,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
               phone: (d.ContactInfo || d["Contact Info"] || "").toString().trim(),
               email: (d.MailId || d["Mail Id"] || "").toString().trim(),
               address: (d.Address || "").toString().trim(),
+              state: (d.State || d["Dealer State"] || d.state || "").toString().trim(),
               gst: (d.GST || d.GSTIN || d.Pan || "").toString().trim(),
               raw: d,
             };
@@ -282,14 +283,24 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
     setShowPreview(false);
   }, [quotation, open, user, clients]);
 
-  // When a client is chosen from dropdown, auto-populate client details & detect Delhi vs outside
+  // When a doctor is chosen from dropdown, auto-populate details & check state (Same State: Delhi -> CGST/SGST, Different State -> IGST)
   const handleClientSelect = (clientObj) => {
     setSelectedClient(clientObj);
     if (clientObj) {
+      const clientState = (clientObj.state || "").trim().toLowerCase();
       const clientGst = (clientObj.gst || "").trim();
       const clientAddr = (clientObj.address || "").toLowerCase();
-      // Auto-detect if same state (Delhi: 07) or out of state (IGST)
-      const isSameState = clientGst.startsWith("07") || clientAddr.includes("delhi");
+
+      // Check same state (Delhi) vs different state
+      let isSameState = true;
+      if (clientState) {
+        // If state is Delhi / New Delhi / DL -> Same state, otherwise different state (IGST)
+        isSameState = clientState.includes("delhi") || clientState === "dl";
+      } else {
+        // Fallback to GSTIN prefix (07 = Delhi) or address
+        isSameState = clientGst.startsWith("07") || clientAddr.includes("delhi");
+      }
+
       const detectedTaxType = isSameState ? "CGST/SGST" : "IGST";
 
       setFormData((prev) => ({
@@ -298,6 +309,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
         client_phone: clientObj.phone,
         client_email: clientObj.email,
         client_address: clientObj.address,
+        client_state: clientObj.state || "",
         client_gst: clientObj.gst || prev.client_gst,
         tax_type: detectedTaxType,
       }));
@@ -308,6 +320,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
         client_phone: "",
         client_email: "",
         client_address: "",
+        client_state: "",
         client_gst: "",
         tax_type: "CGST/SGST",
       }));
@@ -421,7 +434,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
       total_amount: grandTotal,
       tax_type: isInterState ? "IGST" : "CGST/SGST",
       totalInWords: numberToWords(grandTotal),
-      quotation_no: quotation?.quotation_no || "AP/QT/PREVIEW",
+      quotation_no: quotation?.quotation_no || "QT-PREVIEW",
       company: {
         name: "M/S ABERDURE PHARMA",
         tagline: "Quality Medicines For Better Health",
@@ -437,7 +450,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
 
   const handleOpenPreview = () => {
     if (!formData.client_name.trim()) {
-      setError("Please choose a Client / Hospital from the dropdown before previewing.");
+      setError("Please choose a Doctor / Hospital from the dropdown before previewing.");
       return;
     }
     if (items.some((it) => !it.description.trim() || Number(it.qty) <= 0)) {
@@ -452,7 +465,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
     if (e) e.preventDefault();
 
     if (!formData.client_name.trim()) {
-      setError("Please select a Client from the dropdown.");
+      setError("Please select a Doctor from the dropdown.");
       return;
     }
 
@@ -601,11 +614,11 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
               mb: 1.5,
             }}
           >
-            1. Client
+            1. Doctor
           </Typography>
 
           <Grid container spacing={2} sx={{ mb: 2.5 }}>
-            {/* Client Dropdown (Full Width) */}
+            {/* Doctor Dropdown (Full Width) */}
             <Grid item xs={12}>
               <Autocomplete
                 size="small"
@@ -622,8 +635,8 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Client *"
-                    placeholder="Search client..."
+                    label="Doctor *"
+                    placeholder="Search doctor..."
                     required
                     InputProps={{
                       ...params.InputProps,
@@ -693,6 +706,18 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
                             icon={<Receipt sx={{ fontSize: "13px !important" }} />}
                             label={`GSTIN: ${formData.client_gst}`}
                             sx={{ fontSize: "11px", bgcolor: "#f1f5f9" }}
+                          />
+                        )}
+                        {formData.client_state && (
+                          <Chip
+                            size="small"
+                            label={`State: ${formData.client_state} (${formData.tax_type})`}
+                            sx={{ 
+                              fontSize: "11px", 
+                              bgcolor: formData.tax_type === "IGST" ? "rgba(184, 22, 82, 0.1)" : "rgba(243, 112, 33, 0.1)",
+                              color: formData.tax_type === "IGST" ? "#b81652" : "#f37021",
+                              fontWeight: 600,
+                            }}
                           />
                         )}
                       </Box>
@@ -803,11 +828,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
                           </li>
                         )}
                       />
-                      {it.composition && (
-                        <Typography variant="caption" sx={{ color: "#64748b", display: "block", mt: 0.3, pl: 0.5 }}>
-                          ({it.composition})
-                        </Typography>
-                      )}
+
                     </TableCell>
 
                     {/* HSN (Auto from Product, Read-only) */}
@@ -900,7 +921,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
                     )}
 
                     {/* Line Total */}
-                    <TableCell sx={{ textAlign: "right", fontWeight: 800, color: "#f37021" }}>
+                    <TableCell sx={{ textAlign: "right", fontWeight: 600, fontSize: "13.5px", color: "#0f172a" }}>
                       ₹{parseFloat(it.amount || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                     </TableCell>
 
@@ -949,10 +970,10 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
             <Grid item xs={12} sm={6}>
               <Paper variant="outlined" sx={{ p: 2.5, bgcolor: "#f9fafb", borderRadius: 2 }}>
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
-                  <Typography variant="subtitle1" fontWeight="bold" color="#f37021">
+                  <Typography variant="subtitle1" sx={{ fontWeight: 600, color: "#334155" }}>
                     GRAND TOTAL:
                   </Typography>
-                  <Typography variant="h5" fontWeight="900" color="#f37021">
+                  <Typography variant="h6" sx={{ fontWeight: 700, color: "#ea580c" }}>
                     ₹{grandTotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                   </Typography>
                 </Box>

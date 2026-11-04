@@ -63,6 +63,7 @@ import {
   Block,
   AccountBalance,
   Payments,
+  Paid,
   HomeWork,
   DirectionsCar,
   Star,
@@ -217,7 +218,7 @@ const EmployeeCard = ({
             </Grid>
           </Grid>
 
-          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 1 }}>
             <Tooltip title="View Details">
               <IconButton
                 size="small"
@@ -236,19 +237,23 @@ const EmployeeCard = ({
                 <Edit fontSize="small" />
               </IconButton>
             </Tooltip>
-            <Tooltip title={employee.IsActive ? "Disable Employee" : "Permanently Disabled"}>
-              <IconButton
-                size="small"
-                color={employee.IsActive ? "error" : "default"}
-                onClick={() => onToggleStatus(employee)}
-                disabled={!employee.IsActive}
-              >
-                {employee.IsActive ? (
-                  <Block fontSize="small" />
-                ) : (
-                  <Close fontSize="small" />
-                )}
-              </IconButton>
+            <Tooltip title={!isAdmin ? "Only Admin can change status" : employee.IsActive ? "Deactivate Employee" : "Activate Employee"}>
+              <span>
+                <Switch
+                  size="small"
+                  checked={Boolean(employee.IsActive)}
+                  disabled={!isAdmin}
+                  onChange={() => onToggleStatus(employee)}
+                  sx={{
+                    "& .MuiSwitch-switchBase.Mui-checked": {
+                      color: "#10b981",
+                    },
+                    "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                      backgroundColor: "#10b981",
+                    },
+                  }}
+                />
+              </span>
             </Tooltip>
           </Box>
         </CardContent>
@@ -630,7 +635,15 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
                   <DetailRow
                     icon={<Payments sx={{ color: theme.palette.success.main }} />}
                     label="Basic Salary"
-                    value={`₹${parseFloat(employeeSalary.basic_salary || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month (₹${parseFloat(employeeSalary.basic_salary_per_annum || (parseFloat(employeeSalary.basic_salary || 0) * 12)).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / annum)`}
+                    value={`₹${parseFloat(employeeSalary.basic_salary || employee?.basic_salary || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month`}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={3}>
+                  <DetailRow
+                    icon={<Paid sx={{ color: "#ea580c" }} />}
+                    label="Daily Allowance (DA)"
+                    value={`₹${parseFloat(employeeSalary.da !== undefined && employeeSalary.da !== null ? employeeSalary.da : (employee?.da || 0)).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / day`}
                   />
                 </Grid>
 
@@ -638,7 +651,7 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
                   <DetailRow
                     icon={<HomeWork sx={{ color: theme.palette.info.main }} />}
                     label="HRA"
-                    value={`₹${parseFloat(employeeSalary.hra || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month (₹${parseFloat(employeeSalary.hra_per_annum || (parseFloat(employeeSalary.hra || 0) * 12)).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / annum)`}
+                    value={`₹${parseFloat(employeeSalary.hra || employee?.hra || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month`}
                   />
                 </Grid>
 
@@ -646,7 +659,7 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
                   <DetailRow
                     icon={<DirectionsCar sx={{ color: theme.palette.warning.main }} />}
                     label="Conveyance"
-                    value={`₹${parseFloat(employeeSalary.conveyance || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month (₹${parseFloat(employeeSalary.conveyance_per_annum || (parseFloat(employeeSalary.conveyance || 0) * 12)).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / annum)`}
+                    value={`₹${parseFloat(employeeSalary.conveyance || employee?.conveyance || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month`}
                   />
                 </Grid>
 
@@ -654,7 +667,7 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
                   <DetailRow
                     icon={<Star sx={{ color: theme.palette.secondary.main }} />}
                     label="Special Allowance"
-                    value={`₹${parseFloat(employeeSalary.special_allowance || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month (₹${parseFloat(employeeSalary.special_allowance_per_annum || (parseFloat(employeeSalary.special_allowance || 0) * 12)).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / annum)`}
+                    value={`₹${parseFloat(employeeSalary.special_allowance || employee?.special_allowance || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month`}
                   />
                 </Grid>
 
@@ -662,7 +675,7 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
                   <DetailRow
                     icon={<AccountBalance sx={{ color: theme.palette.error.main }} />}
                     label="EPF (Deduction)"
-                    value={`₹${parseFloat(employeeSalary.epf || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month (₹${parseFloat(employeeSalary.epf_per_annum || (parseFloat(employeeSalary.epf || 0) * 12)).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / annum)`}
+                    value={`₹${parseFloat(employeeSalary.epf || employee?.pf_deduction || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month`}
                   />
                 </Grid>
 
@@ -670,7 +683,7 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
                   <DetailRow
                     icon={<AccountBalance sx={{ color: theme.palette.info.main }} />}
                     label="ESI (Deduction)"
-                    value={`₹${parseFloat(employeeSalary.esi || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month (₹${parseFloat(employeeSalary.esi_per_annum || (parseFloat(employeeSalary.esi || 0) * 12)).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / annum)`}
+                    value={`₹${parseFloat(employeeSalary.esi || employee?.esi_deduction || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month`}
                   />
                 </Grid>
 
@@ -678,15 +691,7 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
                   <DetailRow
                     icon={<TrendingUp sx={{ color: theme.palette.primary.main }} />}
                     label="Monthly Gross Salary"
-                    value={`₹${parseFloat(employeeSalary.gross_salary || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month (₹${parseFloat(employeeSalary.gross_salary_per_annum || (parseFloat(employeeSalary.gross_salary || 0) * 12)).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / annum)`}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6} md={3}>
-                  <DetailRow
-                    icon={<AccountBalanceWallet sx={{ color: "#f37021" }} />}
-                    label="Net Take Home"
-                    value={`₹${parseFloat(employeeSalary.net_take_home || employeeSalary.gross_salary || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month (₹${parseFloat((parseFloat(employeeSalary.net_take_home || employeeSalary.gross_salary || 0)) * 12).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / annum)`}
+                    value={`₹${parseFloat(employeeSalary.gross_salary || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month`}
                   />
                 </Grid>
               </Grid>
@@ -2085,47 +2090,21 @@ const exportToExcel = () => {
                             <Typography variant="body2">{employee.Shift}</Typography>
                           </TableCell> */}
                           <TableCell>
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
-                              <Tooltip
-                                title={
-                                  !isAdmin
-                                    ? "Only Admin can change employee status"
-                                    : employee.IsActive
-                                    ? "Click to deactivate employee"
-                                    : "Click to activate employee"
-                                }
-                              >
-                                <span>
-                                  <Switch
-                                    size="small"
-                                    checked={Boolean(employee.IsActive)}
-                                    disabled={!isAdmin}
-                                    onChange={() => handleToggleEmployeeStatus(employee)}
-                                    sx={{
-                                      "& .MuiSwitch-switchBase.Mui-checked": {
-                                        color: "#10b981",
-                                      },
-                                      "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                                        backgroundColor: "#10b981",
-                                      },
-                                    }}
-                                  />
-                                </span>
-                              </Tooltip>
-                              <Typography
-                                variant="caption"
-                                sx={{
-                                  ml: 0.5,
-                                  fontWeight: "bold",
-                                  color: employee.IsActive ? "success.main" : "text.secondary",
-                                }}
-                              >
-                                {employee.IsActive ? "Active" : "Inactive"}
-                              </Typography>
-                            </Box>
+                            <Chip
+                              size="small"
+                              label={employee.IsActive ? "Active" : "Inactive"}
+                              sx={{
+                                fontWeight: 700,
+                                fontSize: "11px",
+                                height: "22px",
+                                bgcolor: employee.IsActive ? "rgba(16, 185, 129, 0.12)" : "rgba(148, 163, 184, 0.12)",
+                                color: employee.IsActive ? "#059669" : "#64748b",
+                                border: `1px solid ${employee.IsActive ? "rgba(16, 185, 129, 0.3)" : "rgba(148, 163, 184, 0.25)"}`,
+                              }}
+                            />
                           </TableCell>
                           <TableCell>
-                            <Box sx={{ display: "flex", gap: 0.5 }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                               <Tooltip title="View Details">
                                 <IconButton
                                   size="small"
@@ -2147,22 +2126,30 @@ const exportToExcel = () => {
                                 </IconButton>
                               </Tooltip>
                               <Tooltip
-                                title={employee.IsActive ? "Disable Employee" : "Permanently Disabled"}
+                                title={
+                                  !isAdmin
+                                    ? "Only Admin can change status"
+                                    : employee.IsActive
+                                    ? "Deactivate Employee"
+                                    : "Activate Employee"
+                                }
                               >
-                                <IconButton
-                                  size="small"
-                                  color={employee.IsActive ? "error" : "default"}
-                                  onClick={() =>
-                                    handleToggleEmployeeStatus(employee)
-                                  }
-                                  disabled={!employee.IsActive}
-                                >
-                                  {employee.IsActive ? (
-                                    <Block fontSize="small" />
-                                  ) : (
-                                    <Close fontSize="small" />
-                                  )}
-                                </IconButton>
+                                <span>
+                                  <Switch
+                                    size="small"
+                                    checked={Boolean(employee.IsActive)}
+                                    disabled={!isAdmin}
+                                    onChange={() => handleToggleEmployeeStatus(employee)}
+                                    sx={{
+                                      "& .MuiSwitch-switchBase.Mui-checked": {
+                                        color: "#10b981",
+                                      },
+                                      "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                                        backgroundColor: "#10b981",
+                                      },
+                                    }}
+                                  />
+                                </span>
                               </Tooltip>
                             </Box>
                           </TableCell>

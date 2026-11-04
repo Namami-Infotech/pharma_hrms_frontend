@@ -200,7 +200,7 @@ function DealerList() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+        <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Avatar
               sx={{
@@ -230,90 +230,68 @@ function DealerList() {
               </Typography>
             </Box>
           </Box>
-          <Button
-            variant="contained"
-            onClick={() => setOpenAddModal(true)}
-            startIcon={<Add />}
-            sx={{
-              bgcolor: COLORS.primary,
-              borderRadius: 2,
-              px: 2.5,
-              py: 1,
-              fontWeight: 600,
-              color: '#fff',
-              textTransform: 'none',
-              boxShadow: `0 4px 14px ${COLORS.primary}40`,
-              "&:hover": {
-                bgcolor: '#d95300',
-                transform: 'translateY(-1px)',
-                boxShadow: `0 6px 20px ${COLORS.primary}60`
-              },
-              transition: 'all 0.2s ease',
-            }}
-          >
-            Add Lead
-          </Button>
-        </Box>
-      </motion.div>
-
-      {/* Stats and Export Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-      >
-        <Card sx={{ 
-          mb: 4, 
-          borderRadius: 3,
-          border: `1px solid ${theme.palette.divider}`,
-          background: COLORS.surface,
-          boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
-        }}>
-          <CardContent sx={{ p: 3 }}>
-            <Stack
-              direction={isMobile ? "column" : "row"}
-              justifyContent="space-between"
-              alignItems={isMobile ? "stretch" : "center"}
-              spacing={3}
+          
+          <Stack direction="row" spacing={1.5} alignItems="center" sx={{ flexWrap: 'wrap' }}>
+            <Chip
+              label={`Total: ${dealers.length} Dealers`}
+              sx={{
+                bgcolor: `${COLORS.primary}15`,
+                color: COLORS.primary,
+                fontWeight: 700,
+                fontSize: "0.85rem",
+                py: 2,
+                px: 0.5,
+                borderRadius: 2,
+                border: `1px solid ${COLORS.primary}30`,
+              }}
+            />
+            <Button
+              variant="outlined"
+              onClick={exportToCsv}
+              startIcon={<Download />}
+              sx={{
+                borderColor: COLORS.secondary,
+                color: COLORS.secondary,
+                borderRadius: 2,
+                px: 2.5,
+                py: 1,
+                fontWeight: 600,
+                textTransform: 'none',
+                "&:hover": { 
+                  borderColor: '#5a6fd8',
+                  bgcolor: `${COLORS.secondary}10`,
+                  transform: 'translateY(-1px)',
+                },
+                transition: 'all 0.2s ease',
+              }}
             >
-              <Box>
-                <Typography variant="h3" fontWeight={700} color={COLORS.primary} gutterBottom>
-                  {dealers.length}
-                </Typography>
-                <Typography variant="body1" color="text.secondary" fontWeight={500}>
-                  Total Leads / Dealers
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Active records in the system
-                </Typography>
-              </Box>
-              <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap', gap: 1.5 }}>
-                <Button
-                  variant="outlined"
-                  onClick={exportToCsv}
-                  startIcon={<Download />}
-                  sx={{
-                    borderColor: COLORS.secondary,
-                    color: COLORS.secondary,
-                    borderRadius: 2,
-                    px: 3,
-                    py: 1.5,
-                    fontWeight: 600,
-                    "&:hover": { 
-                      borderColor: '#5a6fd8',
-                      bgcolor: `${COLORS.secondary}10`,
-                      transform: 'translateY(-1px)',
-                    },
-                    transition: 'all 0.2s ease',
-                    minWidth: 140,
-                  }}
-                >
-                  Export CSV
-                </Button>
-              </Stack>
-            </Stack>
-          </CardContent>
-        </Card>
+              Export CSV
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => setOpenAddModal(true)}
+              startIcon={<Add />}
+              sx={{
+                bgcolor: COLORS.primary,
+                borderRadius: 2,
+                px: 2.5,
+                py: 1,
+                fontWeight: 600,
+                color: '#fff',
+                textTransform: 'none',
+                boxShadow: `0 4px 14px ${COLORS.primary}40`,
+                "&:hover": {
+                  bgcolor: '#d95300',
+                  transform: 'translateY(-1px)',
+                  boxShadow: `0 6px 20px ${COLORS.primary}60`
+                },
+                transition: 'all 0.2s ease',
+              }}
+            >
+              Add Doctor
+            </Button>
+          </Stack>
+        </Box>
       </motion.div>
 
       {/* Dealers Table */}
@@ -345,6 +323,7 @@ function DealerList() {
                   <TableCell>Dealer ID</TableCell>
                   <TableCell>Company</TableCell>
                   <TableCell>Contact Person</TableCell>
+                  <TableCell>State</TableCell>
                   <TableCell>Address</TableCell>
                   <TableCell>Contact</TableCell>
                   <TableCell>Email</TableCell>
@@ -398,6 +377,11 @@ function DealerList() {
                       </Box>
                     </TableCell>
                     <TableCell>
+                      <Typography variant="body2" fontWeight={500}>
+                        {dealer.State || dealer['Dealer State'] || '-'}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
                       <Tooltip title={dealer.Address} arrow>
                         <Typography variant="body2" sx={{ 
                           maxWidth: 200, 
@@ -443,12 +427,12 @@ function DealerList() {
                     </TableCell>
                     <TableCell>
                       <Chip 
-                        label={dealer.AddedByName} 
+                        label={dealer.AddedByName || dealer.AddedByEmpId || 'Admin'} 
                         size="small" 
                         sx={{
                           bgcolor: `${COLORS.secondary}15`,
                           color: COLORS.secondary,
-                          fontWeight: 500,
+                          fontWeight: 600,
                           borderRadius: 1.5
                         }} 
                       />

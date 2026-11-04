@@ -506,10 +506,7 @@ function SalarySlip() {
     if (!selectedEmpId) return;
 
     if (isBeforeJoining && selectedEmp?.JoinDate) {
-      const jd = new Date(selectedEmp.JoinDate);
-      const jMonthName = MONTHS.find((m) => m.value === jd.getMonth() + 1)?.label || jd.getMonth() + 1;
-      const formattedDate = `${String(jd.getDate()).padStart(2, '0')}-${String(jd.getMonth() + 1).padStart(2, '0')}-${jd.getFullYear()}`;
-      setError(`Salary slip cannot be generated before employee's joining month (${jMonthName} ${jd.getFullYear()}). Employee joined on ${formattedDate}.`);
+      setError("Data not found before joining date.");
       setSalarySlip(null);
       return;
     }
@@ -792,16 +789,11 @@ function SalarySlip() {
                 label="Month"
                 onChange={(e) => setSelectedMonth(Number(e.target.value))}
               >
-                {MONTHS.map((m) => {
-                  const isCurrentOrFuture =
-                    selectedYear > maxAllowedYear ||
-                    (selectedYear === maxAllowedYear && m.value > maxAllowedMonth);
-                  return (
-                    <MenuItem key={m.value} value={m.value} disabled={isCurrentOrFuture}>
-                      {m.label} {isCurrentOrFuture ? "(Upcoming)" : ""}
-                    </MenuItem>
-                  );
-                })}
+                {MONTHS.map((m) => (
+                  <MenuItem key={m.value} value={m.value}>
+                    {m.label}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Grid>
@@ -813,15 +805,9 @@ function SalarySlip() {
               <Select
                 value={selectedYear}
                 label="Year"
-                onChange={(e) => {
-                  const yr = Number(e.target.value);
-                  setSelectedYear(yr);
-                  if (yr === maxAllowedYear && selectedMonth > maxAllowedMonth) {
-                    setSelectedMonth(maxAllowedMonth);
-                  }
-                }}
+                onChange={(e) => setSelectedYear(Number(e.target.value))}
               >
-                {YEARS.filter((y) => y <= maxAllowedYear).map((y) => (
+                {YEARS.map((y) => (
                   <MenuItem key={y} value={y}>
                     {y}
                   </MenuItem>
@@ -849,7 +835,7 @@ function SalarySlip() {
               size="small"
               startIcon={<Visibility fontSize="small" />}
               onClick={() => setIsSlipOpen(true)}
-              disabled={loading || !salarySlip || isBeforeJoining}
+              disabled={loading || !salarySlip}
               sx={{
                 bgcolor: "#f37021",
                 "&:hover": { bgcolor: "#d95300" },
@@ -876,7 +862,7 @@ function SalarySlip() {
                 )
               }
               onClick={handleDownloadPDF}
-              disabled={downloading || !salarySlip || isBeforeJoining}
+              disabled={downloading || !salarySlip}
               sx={{
                 borderColor: "#f37021",
                 color: "#f37021",
@@ -894,31 +880,13 @@ function SalarySlip() {
               {downloading ? "PDF..." : "Download PDF"}
             </Button>
 
-            <Button
-              variant="outlined"
-              size="small"
-              startIcon={<Print fontSize="small" />}
-              onClick={handlePrint}
-              disabled={!salarySlip || isBeforeJoining}
-              sx={{
-                borderColor: "#94a3b8",
-                color: "#475569",
-                "&:hover": { borderColor: "#64748b", bgcolor: "#f8fafc" },
-                borderRadius: 2,
-                textTransform: "none",
-                fontWeight: 600,
-                fontSize: "13px",
-                py: 0.8,
-              }}
-            >
-              Print
-            </Button>
+
           </Grid>
         </Grid>
       </Card>
 
       {error && (
-        <Alert severity="warning" sx={{ mb: 2 }}>
+        <Alert severity="info" sx={{ mb: 2 }}>
           {error}
         </Alert>
       )}
@@ -1309,24 +1277,7 @@ function SalarySlip() {
               {downloading ? "PDF..." : "Download PDF"}
             </Button>
 
-            <Button
-              variant="outlined"
-              size="small"
-              startIcon={<Print fontSize="small" />}
-              onClick={handlePrint}
-              sx={{
-                borderColor: "#cbd5e1",
-                color: "#475569",
-                borderRadius: 2,
-                textTransform: "none",
-                fontWeight: 600,
-                fontSize: "12.5px",
-                py: 0.6,
-                px: 1.5,
-              }}
-            >
-              Print
-            </Button>
+
 
             <IconButton
               size="small"

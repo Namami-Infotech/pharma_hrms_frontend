@@ -273,15 +273,8 @@ function ApplyExpense({ open, onClose, onExpenseApplied }) {
                   border: '1px solid #e5e7eb',
                 }}
               >
-                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                  <Chip
-                    icon={<Receipt sx={{ fontSize: 16 }} />}
-                    label={`Expense #${index + 1}`}
-                    size="small"
-                    sx={{ color: "#f37021", borderColor: "rgba(243, 112, 33,0.3)", fontWeight: 600 }}
-                    variant="outlined"
-                  />
-                  {expenseEntries.length > 1 && (
+                {expenseEntries.length > 1 && (
+                  <Box display="flex" justifyContent="flex-end" alignItems="center" mb={1}>
                     <Tooltip title="Remove Entry">
                       <IconButton
                         onClick={() => handleRemoveEntry(index)}
@@ -291,8 +284,8 @@ function ApplyExpense({ open, onClose, onExpenseApplied }) {
                         <Delete fontSize="small" />
                       </IconButton>
                     </Tooltip>
-                  )}
-                </Box>
+                  </Box>
+                )}
 
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={6}>
@@ -373,23 +366,7 @@ function ApplyExpense({ open, onClose, onExpenseApplied }) {
                   </Grid>
                 </Grid>
 
-                {entry.imagePreview && (
-                  <Box mt={2}>
-                    <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary', display: 'block', mb: 0.5 }}>
-                      Receipt Preview:
-                    </Typography>
-                    <img
-                      src={entry.imagePreview || "/placeholder.svg"}
-                      alt="Receipt preview"
-                      style={{
-                        maxWidth: '160px',
-                        maxHeight: '120px',
-                        borderRadius: '6px',
-                        border: '1px solid #e5e7eb'
-                      }}
-                    />
-                  </Box>
-                )}
+                
               </Box>
             ))}
           </AnimatePresence>
@@ -473,7 +450,7 @@ function ApplyExpense({ open, onClose, onExpenseApplied }) {
   );
 }
 
-// Receipt Upload Component
+// Receipt Upload Component - Compact box with inline thumbnail preview
 function ReceiptUpload({ entry, index, onDrop }) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -487,28 +464,56 @@ function ReceiptUpload({ entry, index, onDrop }) {
     <Box
       {...getRootProps()}
       sx={{
-        border: '2px dashed',
-        borderColor: isDragActive ? 'primary.main' : 'grey.300',
-        borderRadius: 2,
-        p: 2,
-        textAlign: 'center',
+        border: '1.5px dashed',
+        borderColor: entry.imagePreview ? '#f37021' : (isDragActive ? '#f37021' : '#d1d5db'),
+        borderRadius: '4px',
+        px: 1.5,
+        height: '40px',
+        boxSizing: 'border-box',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         cursor: 'pointer',
-        backgroundColor: isDragActive ? 'action.hover' : 'background.paper',
-        transition: 'all 0.3s ease',
+        backgroundColor: entry.imagePreview ? 'rgba(243, 112, 33, 0.04)' : (isDragActive ? 'rgba(243, 112, 33, 0.08)' : '#fcfcfc'),
+        transition: 'all 0.2s ease',
+        overflow: 'hidden',
         '&:hover': {
-          borderColor: 'primary.main',
-          backgroundColor: 'action.hover'
+          borderColor: '#f37021',
+          backgroundColor: 'rgba(243, 112, 33, 0.05)'
         }
       }}
     >
       <input {...getInputProps()} />
-      <CloudUpload sx={{ fontSize: 40, color: 'grey.400', mb: 1 }} />
-      <Typography variant="body2" color="textSecondary">
-        {isDragActive ? 'Drop receipt here' : 'Upload Receipt'}
-      </Typography>
-      <Typography variant="caption" color="textSecondary">
-        Drag & drop or click to select
-      </Typography>
+      {entry.imagePreview ? (
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, overflow: 'hidden' }}>
+            <img
+              src={entry.imagePreview}
+              alt="Receipt"
+              style={{
+                height: '28px',
+                width: '32px',
+                objectFit: 'cover',
+                borderRadius: '3px',
+                border: '1px solid #e5e7eb'
+              }}
+            />
+            <Typography variant="caption" sx={{ fontSize: '0.74rem', color: '#16a34a', fontWeight: 600, whiteSpace: 'nowrap' }}>
+              ✓ Receipt Added
+            </Typography>
+          </Box>
+          <Typography variant="caption" sx={{ fontSize: '0.7rem', color: '#f37021', fontWeight: 600, ml: 1 }}>
+            Change
+          </Typography>
+        </Box>
+      ) : (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
+          <CloudUpload sx={{ fontSize: 18, color: isDragActive ? '#f37021' : '#9ca3af' }} />
+          <Typography variant="body2" sx={{ fontSize: '0.78rem', color: 'text.secondary', fontWeight: 500 }}>
+            {isDragActive ? 'Drop receipt here' : 'Upload Receipt (Drag/Click)'}
+          </Typography>
+        </Box>
+      )}
     </Box>
   );
 }

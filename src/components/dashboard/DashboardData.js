@@ -27,6 +27,7 @@ import {
   TableHead,
   TableRow,
   Tabs,
+  TextField,
   Tooltip,
   Typography,
   useMediaQuery,
@@ -35,7 +36,6 @@ import {
 import {
   AccessTime,
   CalendarMonth,
-  Laptop,
   CurrencyRupee,
   Dashboard as DashboardIcon,
   EventAvailable,
@@ -63,11 +63,8 @@ import {
   YAxis,
   Tooltip as RechartsTooltip,
 } from 'recharts';
-import { format } from 'date-fns';
-
 
 const HoverCard = ({ children, sx = {}, ...props }) => {
-  
   return (
     <Card
       component={motion.div}
@@ -86,60 +83,6 @@ const HoverCard = ({ children, sx = {}, ...props }) => {
   );
 };
 
-const StatCard = ({ icon, title, value, color, subtitle, progress }) => {
-  
-  const theme = useTheme();
-  const accent = color || theme.palette.primary.main;
-  return (
-    <HoverCard sx={{ height: '100%', borderLeft: `4px solid ${accent}` }}>
-      <CardContent>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
-          <Box>
-            <Typography variant="subtitle2" color="text.secondary" sx={{ letterSpacing: 0.2 }}>
-              {title}
-            </Typography>
-            <Typography variant="h5" fontWeight={700} sx={{ mt: 0.5 }}>
-              {value}
-            </Typography>
-            {subtitle && (
-              <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
-                {subtitle}
-              </Typography>
-            )}
-          </Box>
-
-          <Avatar
-            sx={{
-              bgcolor: `${accent}20`,
-              color: accent,
-              width: 52,
-              height: 52,
-              boxShadow: '0 4px 10px rgba(0,0,0,0.06)',
-            }}
-          >
-            {icon}
-          </Avatar>
-        </Box>
-
-        {typeof progress === 'number' && (
-          <Box sx={{ mt: 2 }}>
-            <LinearProgress
-              variant="determinate"
-              value={progress}
-              sx={{
-                height: 8,
-                borderRadius: 6,
-                backgroundColor: `${accent}20`,
-                '& .MuiLinearProgress-bar': { backgroundColor: accent },
-              }}
-            />
-          </Box>
-        )}
-      </CardContent>
-    </HoverCard>
-  );
-};
-
 const TabPanel = ({ children, value, index, ...other }) => {
   return (
     <div role="tabpanel" hidden={value !== index} id={`tabpanel-${index}`} aria-labelledby={`tab-${index}`} {...other}>
@@ -148,14 +91,21 @@ const TabPanel = ({ children, value, index, ...other }) => {
   );
 };
 
+const getTodayStr = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
 const DashboardData = () => {
-  
   const [employeeData, setEmployeeData] = useState(null);
   const [leaveDetails, setLeaveDetails] = useState(null);
+  const [leaveRequests, setLeaveRequests] = useState([]);
   const [expenseDetails, setExpenseDetails] = useState([]);
   const [attendanceDetails, setAttendanceDetails] = useState([]);
-  const [assetDetails, setAssetDetails] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(getTodayStr());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState(0);
@@ -165,8 +115,12 @@ const DashboardData = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { user } = useAuth();
   const EmpId = user?.emp_id;
+  const role = user?.role || '';
 
-  
+  const isAdmin = ['Admin', 'admin', 'SuperAdmin', 'HR'].includes(role) ||
+    (typeof role === 'string' && role.toLowerCase().includes('admin'));
+  const isRM = Boolean(user?.is_rm || user?.isRM || role === 'Regional Manager' || role === 'Manager');
+
   const calculateStats = () => {
     const presentDays = attendanceDetails.filter((day) => day.firstIn !== 'N/A').length;
     const totalDays = attendanceDetails.length;
@@ -199,8 +153,6 @@ const DashboardData = () => {
       .filter((expense) => expense.Status === 'Pending')
       .reduce((sum, expense) => sum + parseFloat(expense.expenseAmount || 0), 0);
 
-    const assetCount = assetDetails.length;
-
     return {
       attendance: {
         presentDays,
@@ -216,15 +168,11 @@ const DashboardData = () => {
         approved: totalExpense - pendingExpense,
         count: expenseDetails.length,
       },
-      asset: {
-        count: assetCount,
-      },
     };
   };
 
   const stats = calculateStats();
 
-  
   const leaveChartData = [
     { name: 'Sick', value: stats.leave.sick, color: theme.palette.error.main },
     { name: 'Casual', value: stats.leave.casual, color: theme.palette.primary.main },
@@ -246,25 +194,42 @@ const DashboardData = () => {
 
   useEffect(() => {
     fetchData();
-    
   }, [EmpId]);
 
   const fetchData = async () => {
     setLoading(true);
     try {
+      const empUrl = `${BASE_URL}/employee/view_employee.php?EmpId=${EmpId}`;
+      const leaveBalUrl = `${BASE_URL}/leave/balance_leave.php?empid=${EmpId}`;
+      
+      // Admin sees everyone's expenses, RM sees subordinates + own, Employee sees only own
+      const expUrl = `${BASE_URL}/expense/get_expense.php?EmpId=${EmpId}&role=${encodeURIComponent(role)}`;
+      
+      // Attendance: Admin sees all, RM sees team, Employee sees own
+      const attUrl = isAdmin
+        ? `${BASE_URL}/attendance/view_attendance.php?role=Admin`
+        : isRM
+        ? `${BASE_URL}/attendance/view_attendance.php?EmpId=${EmpId}&includeTeam=true&role=${encodeURIComponent(role)}`
+        : `${BASE_URL}/attendance/view_attendance.php?EmpId=${EmpId}&role=${encodeURIComponent(role)}`;
+
+      // Leaves: Admin sees everyone's leaves, RM sees subordinates + own, Employee sees only own
+      const leaveReqUrl = isAdmin
+        ? `${BASE_URL}/leave/get_leave.php?role=Admin`
+        : `${BASE_URL}/leave/get_leave.php?empId=${EmpId}&role=${encodeURIComponent(role)}`;
+
       const responses = await Promise.all([
-        axios.get(`${BASE_URL}/employee/view_employee.php?EmpId=${EmpId}`),
-        axios.get(`${BASE_URL}/leave/balance_leave.php?empid=${EmpId}`),
-        axios.get(`${BASE_URL}/expense/get_expense.php?EmpId=${EmpId}`),
-        axios.get(`${BASE_URL}/attendance/view_attendance.php?EmpId=${EmpId}`),
-        axios.get(`${BASE_URL}/assets/get_issue_asset.php?EmpId=${EmpId}`),
+        axios.get(empUrl).catch(() => ({ data: { data: null } })),
+        axios.get(leaveBalUrl).catch(() => ({ data: { data: null } })),
+        axios.get(expUrl).catch(() => ({ data: { data: [] } })),
+        axios.get(attUrl).catch(() => ({ data: { data: [] } })),
+        axios.get(leaveReqUrl).catch(() => ({ data: { data: [] } })),
       ]);
 
-      setEmployeeData(responses[0].data.data);
-      setLeaveDetails(responses[1].data.data);
-      setExpenseDetails(responses[2].data.data || []);
-      setAttendanceDetails(responses[3].data.data || []);
-      setAssetDetails(responses[4].data.data || []);
+      setEmployeeData(responses[0]?.data?.data || null);
+      setLeaveDetails(responses[1]?.data?.data || null);
+      setExpenseDetails(responses[2]?.data?.data || []);
+      setAttendanceDetails(responses[3]?.data?.data || []);
+      setLeaveRequests(responses[4]?.data?.data || []);
     } catch (err) {
       setError('Failed to fetch data');
       console.error(err);
@@ -281,10 +246,27 @@ const DashboardData = () => {
 
   const handleTabChange = (event, newValue) => setActiveTab(newValue);
 
+  // Filter attendance records by chosen date
+  const filteredAttendance = attendanceDetails.filter((day) => {
+    if (!selectedDate) return true;
+    const raw = (day.date || '').trim();
+    const parts = raw.split(/[-/]/);
+    if (parts.length === 3) {
+      let dStr = '';
+      if (parts[0].length === 4) {
+        dStr = `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+      } else {
+        dStr = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+      }
+      return dStr === selectedDate;
+    }
+    return false;
+  });
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
-        <CircularProgress size={56} />
+        <CircularProgress size={56} sx={{ color: '#f37021' }} />
         <Box sx={{ ml: 2 }}>
           <Typography variant="h6">Loading your dashboard...</Typography>
         </Box>
@@ -305,74 +287,75 @@ const DashboardData = () => {
     );
   }
 
-  
   return (
     <Box sx={{ maxWidth: 1400, mx: 'auto', p: { xs: 2, md: 3 }, bgcolor: '#f5f7fa', minHeight: '100%' }}>
-      
+      {/* Employee Header Banner */}
       <Paper
         elevation={4}
         sx={{
           p: { xs: 2, md: 3 },
           mb: 3,
-          borderRadius: 2,
-          background: `linear-gradient(90deg, ${theme.palette.primary.main || '#f37021'} 0%, ${theme.palette.secondary?.main || '#b81652'} 100%)`,
-          color: 'common.white',
+          borderRadius: 2.5,
+          background: 'linear-gradient(135deg, #f37021 0%, #ff7a29 50%, #ea580c 100%)',
+          boxShadow: '0 8px 25px rgba(243, 112, 33, 0.3)',
+          color: '#ffffff',
         }}
       >
         <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} md={8}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.35 }}>
-                <Avatar
-                  src={employeeData?.Pic}
-                  alt={employeeData?.Name}
-                  sx={{
-                    width: { xs: 72, md: 96 },
-                    height: { xs: 72, md: 96 },
-                    border: '3px solid rgba(255,255,255,0.3)',
-                    boxShadow: '0 6px 18px rgba(0,0,0,0.12)',
-                  }}
-                />
-              </motion.div>
+          <Grid item>
+            <Avatar
+              sx={{
+                width: { xs: 64, md: 80 },
+                height: { xs: 64, md: 80 },
+                bgcolor: 'rgba(255,255,255,0.25)',
+                border: '3px solid rgba(255,255,255,0.6)',
+                color: '#ffffff',
+                fontWeight: 700,
+                fontSize: { xs: '1.5rem', md: '2rem' },
+              }}
+              src={employeeData?.Image ? `${BASE_URL}/../${employeeData.Image}` : undefined}
+            >
+              {employeeData?.Name ? employeeData.Name.charAt(0) : 'A'}
+            </Avatar>
+          </Grid>
 
-              <Box>
-                <Typography variant="h4" fontWeight={800} sx={{ letterSpacing: 0.2, color: 'common.white' }}>
-                  {employeeData?.Name || 'N/A'}
-                </Typography>
-                <Typography variant="subtitle1" sx={{ opacity: 0.95, color: 'common.white' }}>
-                  {employeeData?.Designation || 'N/A'}
-                </Typography>
+          <Grid item xs={12} sm>
+            <Typography variant={isMobile ? 'h6' : 'h5'} fontWeight={800} sx={{ color: '#ffffff !important' }}>
+              {employeeData?.Name || user?.name || 'Administrator'}
+            </Typography>
 
-                <Box sx={{ display: 'flex', gap: 1, mt: 1, flexWrap: 'wrap' }}>
-                  <Chip
-                    icon={<Avatar sx={{ bgcolor: 'transparent' }}><Typography sx={{ color: 'white', fontSize: 12 }}>ID</Typography></Avatar>}
-                    label={` ${employeeData?.EmpId || 'N/A'}`}
-                    sx={{ bgcolor: 'rgba(255,255,255,0.15)', color: 'white', fontWeight: 600 }}
-                    size="small"
-                  />
-                  {employeeData?.Department && (
-                    <Chip
-                      label={employeeData.Department}
-                      sx={{ bgcolor: 'rgba(255,255,255,0.12)', color: 'white' }}
-                      size="small"
-                    />
-                  )}
-                </Box>
-              </Box>
+            <Typography variant="body2" sx={{ color: '#ffffff !important', opacity: 0.95, mt: 0.5, fontWeight: 500 }}>
+              {employeeData?.Designation || user?.role || 'Staff'}
+            </Typography>
+
+            <Box sx={{ display: 'flex', gap: 1, mt: 1, flexWrap: 'wrap' }}>
+              <Chip
+                label={`ID: ${employeeData?.EmpId || EmpId || 'N/A'}`}
+                size="small"
+                sx={{ bgcolor: 'rgba(255,255,255,0.25)', color: '#ffffff !important', fontWeight: 600 }}
+              />
+              <Chip
+                label={employeeData?.Department || (isAdmin ? 'Management' : 'Operations')}
+                size="small"
+                sx={{ bgcolor: 'rgba(255,255,255,0.25)', color: '#ffffff !important', fontWeight: 500 }}
+              />
             </Box>
           </Grid>
 
-          <Grid item xs={12} md={4}>
-            <Box sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' }, gap: 1 }}>
+          <Grid item>
+            <Box sx={{ display: 'flex', gap: 1 }}>
               <Button
-                variant="contained"
-                startIcon={<Refresh />}
+                variant="outlined"
+                size="small"
+                startIcon={<Refresh sx={{ color: '#ffffff' }} />}
                 onClick={handleRefresh}
                 disabled={refreshing}
                 sx={{
-                  bgcolor: 'rgba(255,255,255,0.16)',
-                  color: 'white',
-                  '&:hover': { bgcolor: 'rgba(255,255,255,0.22)' },
+                  bgcolor: 'rgba(255,255,255,0.2)',
+                  color: '#ffffff !important',
+                  borderColor: 'rgba(255,255,255,0.6)',
+                  fontWeight: 600,
+                  '&:hover': { bgcolor: 'rgba(255,255,255,0.3)', borderColor: '#ffffff' },
                 }}
               >
                 {refreshing ? 'Refreshing...' : 'Refresh'}
@@ -382,53 +365,7 @@ const DashboardData = () => {
         </Grid>
       </Paper>
 
-     
-      {/* <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            icon={<DonutLarge />}
-            title="Attendance Rate"
-            value={`${stats.attendance.attendanceRate.toFixed(0)}%`}
-            color={theme.palette.primary.main}
-            subtitle={`${stats.attendance.presentDays}/${stats.attendance.totalDays} days present`}
-            progress={stats.attendance.attendanceRate}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            icon={<EventAvailable />}
-            title="Leave Balance"
-            value={stats.leave.total}
-            color={theme.palette.success.main}
-            subtitle="Available leaves"
-            progress={Math.min((stats.leave.total / 30) * 100, 100)}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            icon={<LocalAtm />}
-            title="Total Expenses"
-            value={`₹${Number(stats.expense.total || 0).toFixed(0)}`}
-            color={theme.palette.warning.main}
-            subtitle={`${stats.expense.count} claims`}
-            
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            icon={<Laptop />}
-            title="Assets Assigned"
-            value={stats.asset.count}
-            color={theme.palette.info.main}
-            subtitle="Company assets"
-          />
-        </Grid>
-      </Grid> */}
-
-      
+      {/* Tabs Container - Assets removed */}
       <Paper elevation={2} sx={{ borderRadius: 2 }}>
         <Tabs
           value={activeTab}
@@ -445,73 +382,52 @@ const DashboardData = () => {
           <Tab icon={<AccessTime />} iconPosition="start" label="Attendance" />
           <Tab icon={<EventAvailable />} iconPosition="start" label="Leave" />
           <Tab icon={<Receipt />} iconPosition="start" label="Expense" />
-          <Tab icon={<Laptop />} iconPosition="start" label="Assets" />
         </Tabs>
 
-        
+        {/* TAB 0: DASHBOARD OVERVIEW */}
         <TabPanel value={activeTab} index={0}>
           <Grid container spacing={3}>
-            
-            <Grid item xs={12} md={8}>
+            {/* Attendance Chart */}
+            <Grid item xs={12} md={7}>
               <HoverCard>
-                <CardHeader title="Recent Attendance" action={<IconButton><MoreVert /></IconButton>} />
+                <CardHeader title="Working Hours (Recent Days)" subheader="Hours logged across working sessions" />
                 <Divider />
                 <CardContent>
-                  <Box sx={{ height: 300 }}>
+                  <Box sx={{ height: 260 }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={attendanceChartData}>
-                        <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-                        <YAxis />
-                        <RechartsTooltip formatter={(value) => [`${value} hrs`, 'Working Hours']} />
-                        <Bar dataKey="hours" name="Working Hours">
-                          {attendanceChartData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Bar>
+                        <XAxis dataKey="date" stroke="#94a3b8" />
+                        <YAxis stroke="#94a3b8" />
+                        <RechartsTooltip />
+                        <Bar dataKey="hours" fill="#f37021" radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
-                  </Box>
-
-                  <Box sx={{ mt: 2 }}>
-                    <Typography variant="subtitle2">Last 7 Days Summary</Typography>
-                    <Grid container spacing={2} sx={{ mt: 1 }}>
-                      <Grid item xs={6}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <CheckCircle fontSize="small" sx={{ color: theme.palette.success.main }} />
-                          <Typography variant="body2">On Time: {stats.attendance.onTimeDays}</Typography>
-                        </Box>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <AccessTime fontSize="small" sx={{ color: theme.palette.warning.main }} />
-                          <Typography variant="body2">Late: {stats.attendance.presentDays - stats.attendance.onTimeDays}</Typography>
-                        </Box>
-                      </Grid>
-                    </Grid>
                   </Box>
                 </CardContent>
               </HoverCard>
             </Grid>
 
-            
-            <Grid item xs={12} md={4}>
-              <HoverCard sx={{ height: '100%' }}>
-                <CardHeader title="Leave Balance" action={<IconButton><MoreVert /></IconButton>} />
+            {/* Leave Balance Pie */}
+            <Grid item xs={12} md={5}>
+              <HoverCard>
+                <CardHeader title="Leave Balance" subheader="Available paid leave quotas" />
                 <Divider />
                 <CardContent>
-                  <Box sx={{ height: 220 }}>
+                  <Box sx={{ height: 180 }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
                           data={leaveChartData}
                           cx="50%"
                           cy="50%"
-                          innerRadius={50}
-                          outerRadius={80}
+                          innerRadius={45}
+                          outerRadius={70}
                           paddingAngle={6}
                           dataKey="value"
                         >
-                          {leaveChartData.map((entry, idx) => <Cell key={`c-${idx}`} fill={entry.color} />)}
+                          {leaveChartData.map((entry, idx) => (
+                            <Cell key={`c-${idx}`} fill={entry.color} />
+                          ))}
                         </Pie>
                         <RechartsTooltip />
                       </PieChart>
@@ -521,28 +437,31 @@ const DashboardData = () => {
                   <Grid container spacing={1} sx={{ mt: 1 }}>
                     <Grid item xs={4} textAlign="center">
                       <Typography variant="h6" color={theme.palette.error.main}>{stats.leave.sick}</Typography>
-                      <Typography variant="caption" color="text.secondary">Sick</Typography>
+                      <Typography variant="caption" color="text.secondary">Sick (SL)</Typography>
                     </Grid>
                     <Grid item xs={4} textAlign="center">
                       <Typography variant="h6" color={theme.palette.primary.main}>{stats.leave.casual}</Typography>
-                      <Typography variant="caption" color="text.secondary">Casual</Typography>
+                      <Typography variant="caption" color="text.secondary">Casual (CL)</Typography>
                     </Grid>
                     <Grid item xs={4} textAlign="center">
                       <Typography variant="h6" color={theme.palette.success.main}>{stats.leave.earned}</Typography>
-                      <Typography variant="caption" color="text.secondary">Earned</Typography>
+                      <Typography variant="caption" color="text.secondary">Earned (EL)</Typography>
                     </Grid>
                   </Grid>
                 </CardContent>
               </HoverCard>
             </Grid>
 
-            
-            <Grid item xs={12} md={6}>
+            {/* Recent Expenses List */}
+            <Grid item xs={12}>
               <HoverCard>
-                <CardHeader title="Recent Expenses" action={<IconButton><MoreVert /></IconButton>} />
+                <CardHeader
+                  title="Recent Expenses"
+                  subheader={isAdmin ? "All organization expense claims" : isRM ? "Team & personal expense claims" : "Your personal expense claims"}
+                />
                 <Divider />
                 <CardContent sx={{ p: 0 }}>
-                  <List sx={{ maxHeight: 300, overflow: 'auto' }}>
+                  <List sx={{ maxHeight: 320, overflow: 'auto' }}>
                     {expenseDetails.slice(0, 6).map((expense, index) => (
                       <React.Fragment key={expense.detailId || index}>
                         <ListItem
@@ -555,12 +474,17 @@ const DashboardData = () => {
                           }
                         >
                           <ListItemAvatar>
-                            <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
+                            <Avatar sx={{ bgcolor: '#f37021' }}>
                               <CurrencyRupee />
                             </Avatar>
                           </ListItemAvatar>
                           <ListItemText
-                            primary={<Typography fontWeight={600}>{expense.expenseType} — ₹{expense.expenseAmount}</Typography>}
+                            primary={
+                              <Typography fontWeight={600}>
+                                {(isAdmin || isRM) && expense.employeeName ? `${expense.employeeName} (${expense.empId}) — ` : ''}
+                                {expense.expenseType} — ₹{parseFloat(expense.expenseAmount || 0).toLocaleString('en-IN')}
+                              </Typography>
+                            }
                             secondary={<Typography variant="caption" color="text.secondary">{expense.expenseDate}</Typography>}
                           />
                         </ListItem>
@@ -570,44 +494,7 @@ const DashboardData = () => {
 
                     {expenseDetails.length === 0 && (
                       <ListItem>
-                        <ListItemText primary="No expense records found" secondary="Submit your first expense claim" />
-                      </ListItem>
-                    )}
-                  </List>
-                </CardContent>
-              </HoverCard>
-            </Grid>
-
-            
-            <Grid item xs={12} md={6}>
-              <HoverCard>
-                <CardHeader title="Assigned Assets" action={<IconButton><MoreVert /></IconButton>} />
-                <Divider />
-                <CardContent sx={{ p: 0 }}>
-                  <List sx={{ maxHeight: 300, overflow: 'auto' }}>
-                    {assetDetails.slice(0, 6).map((asset, index) => (
-                      <React.Fragment key={index}>
-                        <ListItem>
-                          <ListItemAvatar>
-                            <Avatar sx={{ bgcolor: theme.palette.info.main }}>
-                              <Laptop />
-                            </Avatar>
-                          </ListItemAvatar>
-                          <ListItemText
-                            primary={<Typography fontWeight={600}>{asset.asset_name}</Typography>}
-                            secondary={<Typography variant="caption" color="text.secondary">{asset.make_name} {asset.model_name}</Typography>}
-                          />
-                          <Tooltip title="Serial Number">
-                            <Chip label={asset.serial_number} size="small" variant="outlined" />
-                          </Tooltip>
-                        </ListItem>
-                        {index < Math.min(assetDetails.length - 1, 5) && <Divider variant="inset" component="li" />}
-                      </React.Fragment>
-                    ))}
-
-                    {assetDetails.length === 0 && (
-                      <ListItem>
-                        <ListItemText primary="No assets assigned" secondary="Contact IT department for equipment" />
+                        <ListItemText primary="No expense records found" secondary="Expense claims will appear here" />
                       </ListItem>
                     )}
                   </List>
@@ -617,13 +504,45 @@ const DashboardData = () => {
           </Grid>
         </TabPanel>
 
-       
+        {/* TAB 1: ATTENDANCE WITH CHOOSE DATE FIELD */}
         <TabPanel value={activeTab} index={1}>
           <HoverCard>
             <CardHeader
               title="Attendance History"
-              subheader="Recent attendance records"
-              action={<Button variant="outlined" startIcon={<CalendarMonth />} size="small">View Calendar</Button>}
+              subheader={selectedDate ? `Attendance records for ${selectedDate}` : "Showing all attendance records"}
+              action={
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                  <TextField
+                    type="date"
+                    size="small"
+                    label="Choose Date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    InputLabelProps={{ shrink: true }}
+                    sx={{
+                      bgcolor: '#ffffff',
+                      minWidth: 165,
+                      '& .MuiInputBase-root': { fontSize: '0.85rem' },
+                    }}
+                  />
+                  <Button
+                    size="small"
+                    variant={selectedDate === getTodayStr() ? "contained" : "outlined"}
+                    sx={selectedDate === getTodayStr() ? { bgcolor: '#f37021', '&:hover': { bgcolor: '#d95300' } } : {}}
+                    onClick={() => setSelectedDate(getTodayStr())}
+                  >
+                    Today
+                  </Button>
+                  <Button
+                    size="small"
+                    variant={!selectedDate ? "contained" : "outlined"}
+                    sx={!selectedDate ? { bgcolor: '#f37021', '&:hover': { bgcolor: '#d95300' } } : {}}
+                    onClick={() => setSelectedDate('')}
+                  >
+                    All Dates
+                  </Button>
+                </Box>
+              }
             />
             <Divider />
             <CardContent>
@@ -631,19 +550,30 @@ const DashboardData = () => {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>Date</TableCell>
-                      <TableCell>Check In</TableCell>
-                      <TableCell>Check Out</TableCell>
-                      <TableCell>Working Hours</TableCell>
-                      <TableCell>Status</TableCell>
+                      {(isAdmin || isRM) && <TableCell sx={{ fontWeight: 700 }}>Employee</TableCell>}
+                      <TableCell sx={{ fontWeight: 700 }}>Date</TableCell>
+                      <TableCell sx={{ fontWeight: 700 }}>Check In</TableCell>
+                      <TableCell sx={{ fontWeight: 700 }}>Check Out</TableCell>
+                      <TableCell sx={{ fontWeight: 700 }}>Working Hours</TableCell>
+                      <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {attendanceDetails.map((day, index) => {
+                    {filteredAttendance.map((day, index) => {
                       const isOnTime = day.firstIn !== 'N/A' && compareTimes(day.firstIn, '10:00 AM');
 
                       return (
                         <TableRow key={index} hover>
+                          {(isAdmin || isRM) && (
+                            <TableCell>
+                              <Typography fontWeight={600} variant="body2">
+                                {day.employeeName || day.empId}
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                ID: {day.empId}
+                              </Typography>
+                            </TableCell>
+                          )}
                           <TableCell>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                               <Today fontSize="small" sx={{ color: theme.palette.primary.main }} />
@@ -651,12 +581,31 @@ const DashboardData = () => {
                             </Box>
                           </TableCell>
                           <TableCell>
-                            {day.firstIn !== 'N/A' ? <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><AccessTime fontSize="small" sx={{ color: isOnTime ? theme.palette.success.main : theme.palette.warning.main }} />{day.firstIn}</Box> : 'N/A'}
+                            {day.firstIn !== 'N/A' ? (
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <AccessTime
+                                  fontSize="small"
+                                  sx={{ color: isOnTime ? theme.palette.success.main : theme.palette.warning.main }}
+                                />
+                                {day.firstIn}
+                              </Box>
+                            ) : (
+                              'N/A'
+                            )}
                           </TableCell>
                           <TableCell>
-                            {day.lastOut !== 'N/A' ? <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><AccessTime fontSize="small" sx={{ color: theme.palette.info.main }} />{day.lastOut}</Box> : 'N/A'}
+                            {day.lastOut !== 'N/A' ? (
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <AccessTime fontSize="small" sx={{ color: theme.palette.info.main }} />
+                                {day.lastOut}
+                              </Box>
+                            ) : (
+                              'N/A'
+                            )}
                           </TableCell>
-                          <TableCell><Typography fontWeight={600}>{day.workingHours} hrs</Typography></TableCell>
+                          <TableCell>
+                            <Typography fontWeight={600}>{day.workingHours} hrs</Typography>
+                          </TableCell>
                           <TableCell>
                             <Chip
                               label={day.firstIn !== 'N/A' ? (isOnTime ? 'On Time' : 'Late') : 'Absent'}
@@ -668,10 +617,12 @@ const DashboardData = () => {
                       );
                     })}
 
-                    {attendanceDetails.length === 0 && (
+                    {filteredAttendance.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={5} align="center">
-                          <Typography variant="body1" sx={{ py: 3 }}>No attendance records found</Typography>
+                        <TableCell colSpan={(isAdmin || isRM) ? 6 : 5} align="center">
+                          <Typography variant="body1" sx={{ py: 3, color: 'text.secondary' }}>
+                            No attendance records found{selectedDate ? ` for ${selectedDate}` : ''}.
+                          </Typography>
                         </TableCell>
                       </TableRow>
                     )}
@@ -682,16 +633,17 @@ const DashboardData = () => {
           </HoverCard>
         </TabPanel>
 
-        
+        {/* TAB 2: LEAVE WITH ALL/TEAM/OWN RECORDS */}
         <TabPanel value={activeTab} index={2}>
           <Grid container spacing={3}>
+            {/* Personal Leave Balance */}
             <Grid item xs={12} md={4}>
               <HoverCard>
-                <CardHeader title="Leave Balance" />
+                <CardHeader title="Your Leave Balance" />
                 <Divider />
                 <CardContent>
                   <Box sx={{ mb: 3 }}>
-                    <Typography variant="subtitle1" gutterBottom>Sick Leave</Typography>
+                    <Typography variant="subtitle1" gutterBottom>Sick Leave (SL)</Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                       <Box sx={{ flexGrow: 1, mr: 2 }}>
                         <LinearProgress
@@ -714,7 +666,7 @@ const DashboardData = () => {
                   </Box>
 
                   <Box sx={{ mb: 3 }}>
-                    <Typography variant="subtitle1" gutterBottom>Casual Leave</Typography>
+                    <Typography variant="subtitle1" gutterBottom>Casual Leave (CL)</Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                       <Box sx={{ flexGrow: 1, mr: 2 }}>
                         <LinearProgress
@@ -737,7 +689,7 @@ const DashboardData = () => {
                   </Box>
 
                   <Box>
-                    <Typography variant="subtitle1" gutterBottom>Earned Leave</Typography>
+                    <Typography variant="subtitle1" gutterBottom>Earned Leave (EL)</Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                       <Box sx={{ flexGrow: 1, mr: 2 }}>
                         <LinearProgress
@@ -762,103 +714,166 @@ const DashboardData = () => {
               </HoverCard>
             </Grid>
 
+            {/* Leave Applications List */}
             <Grid item xs={12} md={8}>
               <HoverCard>
                 <CardHeader
                   title="Leave Applications"
-                  action={<Button variant="contained" size="small" startIcon={<EventAvailable />}>Apply Leave</Button>}
+                  subheader={isAdmin ? "All employees' leave requests" : isRM ? "Team & personal leave requests" : "Your leave requests"}
                 />
                 <Divider />
                 <CardContent>
-                  <Typography variant="body1" sx={{ py: 4, textAlign: 'center', color: 'text.secondary' }}>
-                    Your recent leave applications will appear here
-                  </Typography>
+                  <TableContainer>
+                    <Table size="small">
+                      <TableHead>
+                        <TableRow>
+                          {(isAdmin || isRM) && <TableCell sx={{ fontWeight: 700 }}>Employee</TableCell>}
+                          <TableCell sx={{ fontWeight: 700 }}>Type</TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>Dates</TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>Days</TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>Reason</TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {leaveRequests.map((leave, index) => (
+                          <TableRow key={leave.id || leave.Id || index} hover>
+                            {(isAdmin || isRM) && (
+                              <TableCell>
+                                <Typography fontWeight={600} variant="body2">
+                                  {leave.EmployeeName || leave.EmpId}
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                  ID: {leave.EmpId}
+                                </Typography>
+                              </TableCell>
+                            )}
+                            <TableCell>
+                              <Chip
+                                label={leave.category || leave.Category || leave.LeaveType || 'Leave'}
+                                size="small"
+                                variant="outlined"
+                                sx={{ fontWeight: 600 }}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>
+                                {leave.StartDate} - {leave.EndDate}
+                              </Typography>
+                            </TableCell>
+                            <TableCell>
+                              <Typography fontWeight={600} variant="body2">
+                                {leave.TotalDays || 1}
+                              </Typography>
+                            </TableCell>
+                            <TableCell sx={{ maxWidth: 180 }}>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                                title={leave.Reason || ''}
+                              >
+                                {leave.Reason || '-'}
+                              </Typography>
+                            </TableCell>
+                            <TableCell>
+                              <Chip
+                                label={leave.Status}
+                                color={
+                                  leave.Status === 'Approved'
+                                    ? 'success'
+                                    : leave.Status === 'Rejected'
+                                    ? 'error'
+                                    : 'warning'
+                                }
+                                size="small"
+                              />
+                            </TableCell>
+                          </TableRow>
+                        ))}
+
+                        {leaveRequests.length === 0 && (
+                          <TableRow>
+                            <TableCell colSpan={(isAdmin || isRM) ? 6 : 5} align="center">
+                              <Typography variant="body2" sx={{ py: 3, color: 'text.secondary' }}>
+                                No leave applications found
+                              </Typography>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
                 </CardContent>
               </HoverCard>
             </Grid>
           </Grid>
         </TabPanel>
 
-        
+        {/* TAB 3: EXPENSE WITH ALL/TEAM/OWN RECORDS */}
         <TabPanel value={activeTab} index={3}>
           <HoverCard>
-            <CardHeader title="Expense Claims" subheader="Your expense reimbursement requests" action={<Button variant="contained" startIcon={<Receipt />} size="small">New Claim</Button>} />
+            <CardHeader
+              title="Expense Claims"
+              subheader={isAdmin ? "All employees' reimbursement requests" : isRM ? "Team & personal reimbursement requests" : "Your reimbursement requests"}
+            />
             <Divider />
             <CardContent>
               <TableContainer>
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>Type</TableCell>
-                      <TableCell>Amount</TableCell>
-                      <TableCell>Date</TableCell>
-                      <TableCell>Status</TableCell>
-                      <TableCell>Actions</TableCell>
+                      {(isAdmin || isRM) && <TableCell sx={{ fontWeight: 700 }}>Employee</TableCell>}
+                      <TableCell sx={{ fontWeight: 700 }}>Type</TableCell>
+                      <TableCell sx={{ fontWeight: 700 }}>Amount</TableCell>
+                      <TableCell sx={{ fontWeight: 700 }}>Date</TableCell>
+                      <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {expenseDetails.map((expense, index) => (
                       <TableRow key={expense.detailId || index} hover>
+                        {(isAdmin || isRM) && (
+                          <TableCell>
+                            <Typography fontWeight={600} variant="body2">
+                              {expense.employeeName || expense.empId}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              ID: {expense.empId}
+                            </Typography>
+                          </TableCell>
+                        )}
                         <TableCell>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             <Receipt fontSize="small" sx={{ color: theme.palette.primary.main }} />
                             {expense.expenseType}
                           </Box>
                         </TableCell>
-                        <TableCell><Typography fontWeight={600}>₹{expense.expenseAmount}</Typography></TableCell>
+                        <TableCell>
+                          <Typography fontWeight={600}>
+                            ₹{parseFloat(expense.expenseAmount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                          </Typography>
+                        </TableCell>
                         <TableCell>{expense.expenseDate}</TableCell>
                         <TableCell>
-                          <Chip label={expense.Status} color={expense.Status === 'Approved' ? 'success' : expense.Status === 'Rejected' ? 'error' : 'warning'} size="small" />
-                        </TableCell>
-                        <TableCell>
-                          <Tooltip title="View Details"><IconButton size="small"><MoreVert fontSize="small" /></IconButton></Tooltip>
+                          <Chip
+                            label={expense.Status}
+                            color={expense.Status === 'Approved' ? 'success' : expense.Status === 'Rejected' ? 'error' : 'warning'}
+                            size="small"
+                          />
                         </TableCell>
                       </TableRow>
                     ))}
 
                     {expenseDetails.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={5} align="center"><Typography sx={{ py: 3 }}>No expense claims found</Typography></TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </CardContent>
-          </HoverCard>
-        </TabPanel>
-
-        
-        <TabPanel value={activeTab} index={4}>
-          <HoverCard>
-            <CardHeader title="Assigned Assets" subheader="Company assets issued to you" />
-            <Divider />
-            <CardContent>
-              <TableContainer>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Asset</TableCell>
-                      <TableCell>Make</TableCell>
-                      <TableCell>Model</TableCell>
-                      <TableCell>Serial Number</TableCell>
-                      <TableCell>Status</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {assetDetails.map((asset, index) => (
-                      <TableRow key={index} hover>
-                        <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><Laptop fontSize="small" sx={{ color: theme.palette.info.main }} />{asset.asset_name}</Box></TableCell>
-                        <TableCell>{asset.make_name}</TableCell>
-                        <TableCell>{asset.model_name}</TableCell>
-                        <TableCell><Typography fontWeight={600}>{asset.serial_number}</Typography></TableCell>
-                        <TableCell><Chip label="Active" color="success" size="small" /></TableCell>
-                      </TableRow>
-                    ))}
-
-                    {assetDetails.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={5} align="center"><Typography sx={{ py: 3 }}>No assets assigned</Typography></TableCell>
+                        <TableCell colSpan={(isAdmin || isRM) ? 5 : 4} align="center">
+                          <Typography sx={{ py: 3, color: 'text.secondary' }}>No expense claims found</Typography>
+                        </TableCell>
                       </TableRow>
                     )}
                   </TableBody>
@@ -871,7 +886,6 @@ const DashboardData = () => {
     </Box>
   );
 };
-
 
 const compareTimes = (checkInTime, shiftStartTime) => {
   if (checkInTime === 'N/A') return false;
@@ -895,7 +909,7 @@ const compareTimes = (checkInTime, shiftStartTime) => {
   if (shiftPeriod === 'AM' && shiftHourNum === 12) shift24Hour = 0;
 
   if (checkIn24Hour < shift24Hour) return true;
-  if (checkIn24Hour === shift24Hour && checkInMinuteNum <= shiftMinuteNum + 10) return true;
+  if (checkIn24Hour === shift24Hour && checkInMinuteNum <= shiftMinuteNum) return true;
   return false;
 };
 

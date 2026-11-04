@@ -966,28 +966,7 @@ const [expanded, setExpanded] = useState(false);
         />
       </Paper>
 
-      {/* Floating Action Button */}
-      <Zoom in={true}>
-        <Tooltip title="Add Leave">
-          <Fab
-            onClick={() => setApplyLeaveOpen(true)}
-            sx={{
-              position: "fixed",
-              bottom: 24,
-              right: 24,
-              zIndex: theme.zIndex.speedDial,
-              bgcolor: '#f37021',
-              color: 'white',
-              '&:hover': {
-                bgcolor: '#d95300',
-              }
-            }}
-            size="medium"
-          >
-            <Add />
-          </Fab>
-        </Tooltip>
-      </Zoom>
+      {/* Floating Action Button removed as requested */}
 
       {/* Apply Leave Dialog */}
       <ApplyLeave

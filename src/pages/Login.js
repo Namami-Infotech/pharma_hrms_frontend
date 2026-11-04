@@ -48,8 +48,6 @@ import { BASE_URL } from "../api/endpoints"
 import logo from "../assets/aberdure_logo.png"
 import newLogo from "../assets/aberdure_logo_new.png"
 import banner from "../assets/pharma.avif"
-import playstore from "../assets/playstore.png"
-import appstore from "../assets/appstore.png"
 
 const API_URL = `${BASE_URL}/auth`
 
@@ -119,6 +117,9 @@ const StyledTextField = ({ ...props }) => {
         '& .MuiInputLabel-root': {
           color: theme.palette.text.secondary,
           fontSize: { xs: '0.9rem', sm: '1rem' },
+        },
+        '& input::-ms-reveal, & input::-ms-clear': {
+          display: 'none !important',
         },
         my: 1.5,
       }}
@@ -316,7 +317,7 @@ export default function EnhancedLoginPage() {
               width: 150,
               height: 150,
               borderRadius: '50%',
-              background: `radial-gradient(circle, ${alpha('#b81652', 0.08)} 0%, transparent 70%)`,
+              background: `radial-gradient(circle, ${alpha('#f37021', 0.08)} 0%, transparent 70%)`,
               animation: 'float 8s ease-in-out infinite 1s',
             }}
           />
@@ -344,7 +345,9 @@ export default function EnhancedLoginPage() {
               justifyContent: 'center',
               alignItems: 'center',
               padding: { xs: 2, md: 3, lg: 4 },
-              background: 'linear-gradient(135deg, #f37021 0%, #ea580c 100%)',
+              background: '#ffffff',
+              borderRight: '1px solid #eef2f6',
+              boxShadow: '4px 0 24px rgba(0,0,0,0.03)',
               position: 'relative',
               overflow: 'hidden',
               height: '100%',
@@ -375,7 +378,7 @@ export default function EnhancedLoginPage() {
                   display: 'inline-block',
                   mb: { xs: 1.5, md: 2 },
                   mt: { xs: 0, md: -3, lg: -5 },
-                  filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.22))',
+                  filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.08))',
                 }}
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 300 }}
@@ -388,11 +391,11 @@ export default function EnhancedLoginPage() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
                 sx={{
-                  color: 'white',
-                  fontWeight: 800,
+                  color: '#f37021',
+                  fontWeight: 900,
                   mb: 1,
-                  fontSize: { xs: '1.5rem', md: '2.2rem', lg: '3.2rem' },
-                  textShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                  fontSize: { xs: '1.5rem', md: '2.2rem', lg: '3.0rem' },
+                  letterSpacing: '-0.5px',
                   lineHeight: 1.2,
                 }}
               >
@@ -406,12 +409,12 @@ export default function EnhancedLoginPage() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
                 sx={{
-                  color: 'rgba(255,255,255,0.92)',
-                  fontWeight: 400,
+                  color: '#64748b',
+                  fontWeight: 500,
                   mb: { xs: 2, md: 2.5 },
-                  maxWidth: 420,
-                  lineHeight: 1.45,
-                  fontSize: { xs: '0.85rem', md: '0.95rem', lg: '1.15rem' },
+                  maxWidth: 440,
+                  lineHeight: 1.5,
+                  fontSize: { xs: '0.85rem', md: '0.95rem', lg: '1.1rem' },
                   mx: 'auto',
                 }}
               >
@@ -434,9 +437,10 @@ export default function EnhancedLoginPage() {
                   style={{
                     maxWidth: '100%',
                     height: 'auto',
-                    maxHeight: isMobile ? 170 : 250,
-                    borderRadius: '12px',
-                    boxShadow: '0 12px 28px rgba(0,0,0,0.3)',
+                    maxHeight: isMobile ? 180 : 260,
+                    borderRadius: '16px',
+                    boxShadow: '0 16px 36px rgba(0,0,0,0.1)',
+                    border: '1px solid #f1f5f9',
                     objectFit: 'cover',
                   }}
                 />
@@ -672,67 +676,6 @@ export default function EnhancedLoginPage() {
                     >
                       {loading ? '' : 'Sign In'}
                     </StyledButton>
-
-                    {/* Mobile App Downloads */}
-                    {!isSmallMobile && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.4 }}
-                      >
-                        <Box sx={{ mt: 3, textAlign: 'center' }}>
-                          <Typography 
-                            variant="body2" 
-                            color="text.secondary" 
-                            sx={{ mb: 2, opacity: 0.8, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
-                          >
-                            Get the Aberdure Pharma mobile app
-                          </Typography>
-
-                          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
-                            <Tooltip title="Download from Google Play Store" arrow TransitionComponent={Zoom}>
-                              <Link 
-                                to="https://play.google.com/store/apps/details?id=com.namami.safeguard" 
-                                target="_blank"
-                                style={{ textDecoration: 'none' }}
-                              >
-                                <motion.img
-                                  src={playstore}
-                                  alt="Google Play Store"
-                                  style={{
-                                    height: isMobile ? 35 : 40,
-                                    cursor: 'pointer',
-                                  }}
-                                  whileHover={{ scale: 1.05 }}
-                                  whileTap={{ scale: 0.95 }}
-                                  transition={{ type: "spring", stiffness: 400 }}
-                                />
-                              </Link>
-                            </Tooltip>
-
-                            <Tooltip title="Download from Apple App Store" arrow TransitionComponent={Zoom}>
-                              <Link 
-                                to="https://apps.apple.com/in/app/hr-smile/id6738949653" 
-                                target="_blank"
-                                style={{ textDecoration: 'none' }}
-                              >
-                                <motion.img
-                                  src={appstore}
-                                  alt="Apple App Store"
-                                  style={{
-                                    height: isMobile ? 35 : 40,
-                                    cursor: 'pointer',
-                                  }}
-                                  whileHover={{ scale: 1.05 }}
-                                  whileTap={{ scale: 0.95 }}
-                                  transition={{ type: "spring", stiffness: 400 }}
-                                />
-                              </Link>
-                            </Tooltip>
-                          </Box>
-                        </Box>
-                      </motion.div>
-                    )}
                   </Box>
                 </motion.form>
               </Box>

@@ -164,21 +164,7 @@ function QuotationSlip({ quotation, onBack, onEdit }) {
             </Button>
           )}
 
-          <Button
-            startIcon={<Print />}
-            variant="outlined"
-            onClick={handlePrint}
-            sx={{
-              borderColor: "#f37021",
-              color: "#f37021",
-              textTransform: "none",
-              fontWeight: 600,
-              borderRadius: 2,
-              "&:hover": { borderColor: "#d95300", bgcolor: "rgba(243, 112, 33,0.04)" },
-            }}
-          >
-            Print
-          </Button>
+
 
           <Button
             startIcon={

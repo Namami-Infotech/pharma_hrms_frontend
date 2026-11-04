@@ -184,9 +184,13 @@ function QuotationList() {
     setApprovingId(id);
     try {
       const approverName = user?.username || user?.Name || user?.name || user?.EmpName || user?.emp_name || user?.emp_id || user?.EmpId || "";
+      const currentEmpId = user?.emp_id || user?.EmpId || "";
+      const currentRole = user?.role || user?.Role || "";
       const res = await axios.post(`${BASE_URL}/quotation/approve_quotation.php`, {
         id,
         approved_by: approverName,
+        emp_id: currentEmpId,
+        role: currentRole,
       });
       if (res.data && res.data.success) {
         setSuccessMsg(res.data.message || "Quotation approved and sent to client email.");
@@ -195,7 +199,7 @@ function QuotationList() {
         setError(res.data?.message || "Failed to approve quotation.");
       }
     } catch (err) {
-      setError("Error approving quotation.");
+      setError(err.response?.data?.message || "Error approving quotation.");
     } finally {
       setApprovingId(null);
     }
@@ -261,21 +265,27 @@ function QuotationList() {
   const handleStatusChange = async (id, newStatus) => {
     try {
       const approverName = user?.username || user?.Name || user?.name || user?.EmpName || user?.emp_name || user?.emp_id || user?.EmpId || "";
+      const currentEmpId = user?.emp_id || user?.EmpId || "";
+      const currentRole = user?.role || user?.Role || "";
       const res = await axios.post(
         `${BASE_URL}/quotation/update_quotation.php`,
         {
           id,
           status: newStatus,
           approved_by: newStatus === "Approved" ? approverName : null,
+          emp_id: currentEmpId,
+          role: currentRole,
         }
       );
       if (res.data.success) {
         setSuccessMsg(`Status updated to ${newStatus}.`);
         fetchQuotations();
+      } else {
+        setError(res.data?.message || "Failed to update status.");
       }
     } catch (err) {
       console.error("Error updating status:", err);
-      setError("Failed to update status.");
+      setError(err.response?.data?.message || "Failed to update status.");
     }
   };
 
@@ -473,7 +483,7 @@ function QuotationList() {
               <TextField
                 fullWidth
                 size="small"
-                placeholder="Search by Quote No, Client, Phone..."
+                placeholder="Search by Quote No, Doctor, Phone..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 InputProps={{
@@ -581,7 +591,7 @@ function QuotationList() {
               <TableHead sx={{ bgcolor: "#f8fafc" }}>
                 <TableRow>
                   <TableCell sx={{ fontWeight: 800 }}>Quotation No</TableCell>
-                  <TableCell sx={{ fontWeight: 800 }}>Client / Hospital</TableCell>
+                  <TableCell sx={{ fontWeight: 800 }}>Doctor / Hospital</TableCell>
                   <TableCell sx={{ fontWeight: 800 }}>Issue Date</TableCell>
                   <TableCell sx={{ fontWeight: 800 }}>Valid Till</TableCell>
                   <TableCell sx={{ fontWeight: 800 }}>Items</TableCell>
@@ -595,12 +605,23 @@ function QuotationList() {
               <TableBody>
                 {quotations
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <TableRow
-                      key={row.id}
-                      hover
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
+                  .map((row) => {
+                    const currentEmpId = String(user?.emp_id || user?.EmpId || "").trim();
+                    const currentEmpName = String(user?.Name || user?.username || user?.name || "").trim().toLowerCase();
+                    const isOwnQuotation = (!isAdmin) && (
+                      (row.emp_id && String(row.emp_id).trim() === currentEmpId) ||
+                      (row.EmpId && String(row.EmpId).trim() === currentEmpId) ||
+                      (row.prepared_by && (String(row.prepared_by).trim() === currentEmpId || String(row.prepared_by).trim().toLowerCase() === currentEmpName)) ||
+                      (row.created_by_name && String(row.created_by_name).trim().toLowerCase() === currentEmpName)
+                    );
+                    const isLockedStatus = ["approved", "sent"].includes((row.status || "").toLowerCase());
+
+                    return (
+                      <TableRow
+                        key={row.id}
+                        hover
+                        sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                      >
                       <TableCell sx={{ fontWeight: 700, color: "#f37021" }}>
                         {row.quotation_no}
                       </TableCell>
@@ -671,7 +692,7 @@ function QuotationList() {
                         )}
                       </TableCell>
                       <TableCell sx={{ textAlign: "center" }}>
-                        {canApproveQuotation ? (
+                        {canApproveQuotation && !isLockedStatus && !isOwnQuotation ? (
                           <FormControl size="small" variant="standard">
                             <Select
                               value={row.status || "Sent"}
@@ -693,7 +714,7 @@ function QuotationList() {
                       </TableCell>
                       <TableCell sx={{ textAlign: "center" }}>
                         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 0.5 }}>
-                          {canApproveQuotation && (row.status === "Pending Approval" || (row.status || "").toLowerCase() === "pending") && (
+                          {canApproveQuotation && !isLockedStatus && !isOwnQuotation && (row.status === "Pending Approval" || (row.status || "").toLowerCase() === "pending") && (
                             <Tooltip title="Approve & Send to Client Email">
                               <span>
                                 <Button
@@ -764,7 +785,8 @@ function QuotationList() {
                         </Box>
                       </TableCell>
                     </TableRow>
-                  ))}
+                  );
+                })}
               </TableBody>
             </Table>
 

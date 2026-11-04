@@ -37,3 +37,9 @@ body, p, .body-text {
   font-size: 0.875rem;
   line-height: 1.5;
 }
+
+/* Hide browser native password reveal and clear buttons (Microsoft Edge, etc.) */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none !important;
+}

@@ -432,6 +432,12 @@ function PlanVisit() {
                   <TableRow>
                     <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>
                       <Box sx={{ display: "flex", alignItems: "center" }}>
+                        <Person sx={{ mr: 0.5, fontSize: '0.9rem' }} />
+                        Visited By
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
                         <Business sx={{ mr: 0.5, fontSize: '0.9rem' }} />
                         Dealer
                       </Box>
@@ -446,12 +452,6 @@ function PlanVisit() {
                       <Box sx={{ display: "flex", alignItems: "center" }}>
                         <Description sx={{ mr: 0.5, fontSize: '0.9rem' }} />
                         Remarks
-                      </Box>
-                    </TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <Person sx={{ mr: 0.5, fontSize: '0.9rem' }} />
-                        Visit By
                       </Box>
                     </TableCell>
                     <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>Actions</TableCell>
@@ -469,6 +469,20 @@ function PlanVisit() {
                           },
                         }}
                       >
+                        <TableCell sx={{ py: 1 }}>
+                          <Chip 
+                            label={visit.EmpName || visit.Name || "N/A"} 
+                            size="small" 
+                            sx={{ 
+                              height: 24, 
+                              fontSize: '0.75rem',
+                              fontWeight: 600,
+                              bgcolor: alpha(theme.palette.secondary.main, 0.1),
+                              color: theme.palette.secondary.main,
+                            }} 
+                          />
+                        </TableCell>
+
                         <TableCell sx={{ py: 1 }}>
                           <Typography variant="body2" fontWeight="500" sx={{ fontSize: '0.8rem' }}>
                             {visit.DealerName}
@@ -522,19 +536,6 @@ function PlanVisit() {
                               </Button>
                             )}
                           </Box>
-                        </TableCell>
-
-                        <TableCell sx={{ py: 1 }}>
-                          <Chip 
-                            label={visit.EmpName ? `${visit.EmpName} (${visit.EmpId})` : (visit.EmpId || "N/A")} 
-                            size="small" 
-                            sx={{ 
-                              height: 24, 
-                              fontSize: '0.7rem',
-                              bgcolor: alpha(theme.palette.secondary.main, 0.1),
-                              color: theme.palette.secondary.main,
-                            }} 
-                          />
                         </TableCell>
 
                         <TableCell sx={{ py: 1 }}>
