@@ -28,8 +28,8 @@ import logo from "../assets/aberdure_logo.png"
 const AberdureLogo = () => (
   <Box
     sx={{
-      width: 38,
-      height: 38,
+      width: 48,
+      height: 48,
       borderRadius: 1.5,
       overflow: "hidden",
       display: "flex",
@@ -175,12 +175,15 @@ function Sidebar({ open, onClose, variant = "permanent" }) { // Add props for mo
   const routes = []
   userModules.forEach((id) => {
     const route = MODULES_BY_ID[id]
-    // Filter out notifications for now
+    // Filter out notifications, offices, and regularise (Offices & Regularise commented out as requested)
     if (
       route &&
       route.path &&
       route.path !== "/notification" &&
       route.name?.toLowerCase() !== "notifications" &&
+      // Offices and Regularise commented out for now
+      route.path !== "/offices" &&
+      route.path !== "/regularise" &&
       !seenPaths[route.path]
     ) {
       seenPaths[route.path] = true
@@ -223,11 +226,11 @@ function Sidebar({ open, onClose, variant = "permanent" }) { // Add props for mo
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        height: 72,
-        minHeight: 72,
-        maxHeight: 72,
+        height: 84,
+        minHeight: 84,
+        maxHeight: 84,
         px: 2,
-        py: 1,
+        py: 0.5,
         bgcolor: "#ffffff",
         position: "sticky",
         top: 0,
@@ -242,9 +245,10 @@ function Sidebar({ open, onClose, variant = "permanent" }) { // Add props for mo
         src={logo}
         alt="Aberdure Pharma"
         sx={{
-          height: 50,
-          maxHeight: 52,
-          maxWidth: "90%",
+          height: "auto",
+          maxHeight: 74,
+          maxWidth: "92%",
+          width: "auto",
           objectFit: "contain",
           display: "block",
         }}

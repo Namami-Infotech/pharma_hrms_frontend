@@ -478,6 +478,7 @@ function ProductList() {
                 <TableCell sx={{ fontWeight: 800, color: "#1e293b", textAlign: "center" }}>HSN Code</TableCell>
                 <TableCell sx={{ fontWeight: 800, color: "#1e293b" }}>Unit</TableCell>
                 <TableCell sx={{ fontWeight: 800, color: "#1e293b", textAlign: "right" }}>Price (₹)</TableCell>
+                <TableCell sx={{ fontWeight: 800, color: "#1e293b", textAlign: "center" }}>GST (%)</TableCell>
                 <TableCell sx={{ fontWeight: 800, color: "#1e293b" }}>Status</TableCell>
                 <TableCell sx={{ fontWeight: 800, color: "#1e293b", textAlign: "center" }}>Actions</TableCell>
               </TableRow>
@@ -485,7 +486,7 @@ function ProductList() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={8} sx={{ textAlign: "center", py: 5 }}>
+                  <TableCell colSpan={9} sx={{ textAlign: "center", py: 5 }}>
                     <CircularProgress size={32} sx={{ color: "#f37021", mb: 1 }} />
                     <Typography variant="body2" color="text.secondary">
                       Loading products catalog...
@@ -494,7 +495,7 @@ function ProductList() {
                 </TableRow>
               ) : products.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} sx={{ textAlign: "center", py: 5 }}>
+                  <TableCell colSpan={9} sx={{ textAlign: "center", py: 5 }}>
                     <LocalPharmacy sx={{ fontSize: 44, color: "#cbd5e1", mb: 1 }} />
                     <Typography variant="subtitle1" fontWeight="bold" color="text.secondary">
                       No products found
@@ -598,6 +599,20 @@ function ProductList() {
                         <Typography variant="subtitle2" fontWeight="800" color="#f37021">
                           ₹{parseFloat(prd.price || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                         </Typography>
+                      </TableCell>
+
+                      {/* GST (%) */}
+                      <TableCell sx={{ textAlign: "center" }}>
+                        <Chip
+                          size="small"
+                          label={`${prd.gst !== undefined ? prd.gst : 5}%`}
+                          sx={{
+                            fontWeight: 700,
+                            fontSize: "11px",
+                            bgcolor: "#eff6ff",
+                            color: "#1d4ed8",
+                          }}
+                        />
                       </TableCell>
 
                       {/* Status */}

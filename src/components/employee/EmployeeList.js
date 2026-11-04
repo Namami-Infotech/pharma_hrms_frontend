@@ -40,6 +40,7 @@ import {
   Fade,
   Autocomplete,
   Checkbox,
+  Switch,
 } from "@mui/material";
 import {
   Edit,
@@ -81,6 +82,7 @@ const EmployeeCard = ({
   onToggleStatus,
   onViewDetails,
   theme,
+  isAdmin = false,
 }) => {
   return (
     <motion.div
@@ -136,11 +138,44 @@ const EmployeeCard = ({
                 </Typography>
               </Box>
             </Box>
-            <Chip
-              label={employee.IsActive ? "Active" : "Inactive"}
-              color={employee.IsActive ? "success" : "error"}
-              size="small"
-            />
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Tooltip
+                title={
+                  !isAdmin
+                    ? "Only Admin can change employee status"
+                    : employee.IsActive
+                    ? "Click to deactivate employee"
+                    : "Click to activate employee"
+                }
+              >
+                <span>
+                  <Switch
+                    size="small"
+                    checked={Boolean(employee.IsActive)}
+                    disabled={!isAdmin}
+                    onChange={() => onToggleStatus(employee)}
+                    sx={{
+                      "& .MuiSwitch-switchBase.Mui-checked": {
+                        color: "#10b981",
+                      },
+                      "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                        backgroundColor: "#10b981",
+                      },
+                    }}
+                  />
+                </span>
+              </Tooltip>
+              <Typography
+                variant="caption"
+                sx={{
+                  ml: 0.5,
+                  fontWeight: "bold",
+                  color: employee.IsActive ? "success.main" : "text.secondary",
+                }}
+              >
+                {employee.IsActive ? "Active" : "Inactive"}
+              </Typography>
+            </Box>
           </Box>
 
           <Grid container spacing={2} sx={{ mb: 2 }}>
@@ -433,14 +468,14 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 3 }}>
-        <Grid container spacing={3}>
+      <DialogContent sx={{ p: 3, pt: "28px !important" }}>
+        <Grid container spacing={3} sx={{ mt: 0.5 }}>
           {/* Personal Information */}
           <Grid item xs={12}>
             <Typography
               variant="h6"
               gutterBottom
-              sx={{ display: "flex", alignItems: "center" }}
+              sx={{ display: "flex", alignItems: "center", mt: 1 }}
             >
               <Person sx={{ mr: 1, color: theme.palette.primary.main }} />
               Personal Information
@@ -590,85 +625,68 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
                 <Typography variant="body1" color="text.secondary">Loading salary structure...</Typography>
               </Box>
             ) : employeeSalary ? (
-              <Grid container spacing={2}>
+              <Grid container spacing={3} sx={{ mt: 0.5 }}>
                 <Grid item xs={12} sm={6} md={3}>
-                  <SalaryCard
-                    title="Basic Salary"
-                    amount={employeeSalary.basic_salary}
-                    annualAmount={employeeSalary.basic_salary_per_annum || parseFloat(employeeSalary.basic_salary || 0) * 12}
-                    color="#10b981"
-                    icon={<Payments />}
+                  <DetailRow
+                    icon={<Payments sx={{ color: theme.palette.success.main }} />}
+                    label="Basic Salary"
+                    value={`₹${parseFloat(employeeSalary.basic_salary || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month (₹${parseFloat(employeeSalary.basic_salary_per_annum || (parseFloat(employeeSalary.basic_salary || 0) * 12)).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / annum)`}
                   />
                 </Grid>
 
                 <Grid item xs={12} sm={6} md={3}>
-                  <SalaryCard
-                    title="HRA"
-                    amount={employeeSalary.hra}
-                    annualAmount={employeeSalary.hra_per_annum || parseFloat(employeeSalary.hra || 0) * 12}
-                    color="#3b82f6"
-                    icon={<HomeWork />}
+                  <DetailRow
+                    icon={<HomeWork sx={{ color: theme.palette.info.main }} />}
+                    label="HRA"
+                    value={`₹${parseFloat(employeeSalary.hra || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month (₹${parseFloat(employeeSalary.hra_per_annum || (parseFloat(employeeSalary.hra || 0) * 12)).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / annum)`}
                   />
                 </Grid>
 
                 <Grid item xs={12} sm={6} md={3}>
-                  <SalaryCard
-                    title="Conveyance"
-                    amount={employeeSalary.conveyance}
-                    annualAmount={employeeSalary.conveyance_per_annum || parseFloat(employeeSalary.conveyance || 0) * 12}
-                    color="#f59e0b"
-                    icon={<DirectionsCar />}
+                  <DetailRow
+                    icon={<DirectionsCar sx={{ color: theme.palette.warning.main }} />}
+                    label="Conveyance"
+                    value={`₹${parseFloat(employeeSalary.conveyance || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month (₹${parseFloat(employeeSalary.conveyance_per_annum || (parseFloat(employeeSalary.conveyance || 0) * 12)).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / annum)`}
                   />
                 </Grid>
 
                 <Grid item xs={12} sm={6} md={3}>
-                  <SalaryCard
-                    title="Special Allowance"
-                    amount={employeeSalary.special_allowance}
-                    annualAmount={employeeSalary.special_allowance_per_annum || parseFloat(employeeSalary.special_allowance || 0) * 12}
-                    color="#8b5cf6"
-                    icon={<Star />}
+                  <DetailRow
+                    icon={<Star sx={{ color: theme.palette.secondary.main }} />}
+                    label="Special Allowance"
+                    value={`₹${parseFloat(employeeSalary.special_allowance || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month (₹${parseFloat(employeeSalary.special_allowance_per_annum || (parseFloat(employeeSalary.special_allowance || 0) * 12)).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / annum)`}
                   />
                 </Grid>
 
                 <Grid item xs={12} sm={6} md={3}>
-                  <SalaryCard
-                    title="EPF (Deduction)"
-                    amount={employeeSalary.epf}
-                    annualAmount={employeeSalary.epf_per_annum || parseFloat(employeeSalary.epf || 0) * 12}
-                    color="#ec4899"
-                    icon={<AccountBalance />}
+                  <DetailRow
+                    icon={<AccountBalance sx={{ color: theme.palette.error.main }} />}
+                    label="EPF (Deduction)"
+                    value={`₹${parseFloat(employeeSalary.epf || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month (₹${parseFloat(employeeSalary.epf_per_annum || (parseFloat(employeeSalary.epf || 0) * 12)).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / annum)`}
                   />
                 </Grid>
 
                 <Grid item xs={12} sm={6} md={3}>
-                  <SalaryCard
-                    title="ESI (Deduction)"
-                    amount={employeeSalary.esi}
-                    annualAmount={employeeSalary.esi_per_annum || parseFloat(employeeSalary.esi || 0) * 12}
-                    color="#06b6d4"
-                    icon={<AccountBalance />}
+                  <DetailRow
+                    icon={<AccountBalance sx={{ color: theme.palette.info.main }} />}
+                    label="ESI (Deduction)"
+                    value={`₹${parseFloat(employeeSalary.esi || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month (₹${parseFloat(employeeSalary.esi_per_annum || (parseFloat(employeeSalary.esi || 0) * 12)).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / annum)`}
                   />
                 </Grid>
 
                 <Grid item xs={12} sm={6} md={3}>
-                  <SalaryCard
-                    title="Monthly Gross Salary"
-                    amount={employeeSalary.gross_salary}
-                    annualAmount={employeeSalary.gross_salary_per_annum || parseFloat(employeeSalary.gross_salary || 0) * 12}
-                    color="#0284c7"
-                    icon={<TrendingUp />}
+                  <DetailRow
+                    icon={<TrendingUp sx={{ color: theme.palette.primary.main }} />}
+                    label="Monthly Gross Salary"
+                    value={`₹${parseFloat(employeeSalary.gross_salary || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month (₹${parseFloat(employeeSalary.gross_salary_per_annum || (parseFloat(employeeSalary.gross_salary || 0) * 12)).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / annum)`}
                   />
                 </Grid>
 
                 <Grid item xs={12} sm={6} md={3}>
-                  <SalaryCard
-                    title="Net Take Home"
-                    amount={employeeSalary.net_take_home || employeeSalary.gross_salary}
-                    annualAmount={(parseFloat(employeeSalary.net_take_home || employeeSalary.gross_salary || 0)) * 12}
-                    color="#f37021"
-                    icon={<AccountBalanceWallet />}
-                    isHighlighted={true}
+                  <DetailRow
+                    icon={<AccountBalanceWallet sx={{ color: "#f37021" }} />}
+                    label="Net Take Home"
+                    value={`₹${parseFloat(employeeSalary.net_take_home || employeeSalary.gross_salary || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month (₹${parseFloat((parseFloat(employeeSalary.net_take_home || employeeSalary.gross_salary || 0)) * 12).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / annum)`}
                   />
                 </Grid>
               </Grid>
@@ -696,7 +714,8 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
 
 function EmployeeList() {
   const { user } = useAuth();
-  const isAdmin = ["Admin", "admin", "SuperAdmin"].includes(user?.role);
+  const userRole = (user?.Role || user?.role || "").toString().toLowerCase();
+  const isAdmin = userRole === "admin" || userRole === "superadmin";
   const isRM = user?.is_rm || user?.isRM || Boolean(user?.subordinates && user.subordinates.length > 0);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -711,6 +730,28 @@ function EmployeeList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
+  const [formGeneralError, setFormGeneralError] = useState("");
+
+  const maxAllowedDOB = (() => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() - 18);
+    return d.toISOString().split("T")[0];
+  })();
+
+  const handleFieldChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (formErrors[field]) {
+      setFormErrors((prev) => {
+        const copy = { ...prev };
+        delete copy[field];
+        return copy;
+      });
+    }
+    if (formGeneralError) {
+      setFormGeneralError("");
+    }
+  };
   const [filterRole, setFilterRole] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [salary, setSalary] = useState([]);
@@ -733,7 +774,7 @@ function EmployeeList() {
     OfficeIsActive: 1,
     RM: "", // Reporting Manager (will store EmpId)
     RMName: "", // Reporting Manager Name (for display)
-    Shift: "",
+    Shift: "9:00 AM - 6:00 PM",
     WeekOff: "",
     Designation: "",
     DOB: "",
@@ -805,22 +846,15 @@ function EmployeeList() {
   const [lastEmpIdFromBackend, setLastEmpIdFromBackend] = useState("");
 
   const generateNextEmployeeId = (allEmployees, lastEmpIdHint = null) => {
-    if (!allEmployees || allEmployees.length === 0) return "EMP0001";
+    if (!allEmployees || allEmployees.length === 0) return "AP0001";
 
     const existingIds = new Set(
       allEmployees.map((e) => (e.EmpId || "").toString().trim().toUpperCase())
     );
 
     // Determine the prefix and number padding
-    let prefix = "EMP";
+    let prefix = "AP";
     let padLength = 4;
-
-    const testId = lastEmpIdHint || (allEmployees[allEmployees.length - 1]?.EmpId || "");
-    const match = testId.match(/^([A-Za-z_]+)([0-9]+)$/);
-    if (match) {
-      prefix = match[1];
-      padLength = Math.max(match[2].length, 3);
-    }
 
     // Find the highest number already used for this prefix
     let maxNum = 0;
@@ -950,6 +984,8 @@ function EmployeeList() {
   
   const openFormAfterOfficeLoad = async (mode, employee = null) => {
     setFormMode(mode);
+    setFormErrors({});
+    setFormGeneralError("");
     if (mode === "edit" && employee) {
       // Find the RM name if RM exists
       const rmEmployee = employees.find((emp) => emp.EmpId === employee.RM);
@@ -1002,7 +1038,7 @@ function EmployeeList() {
       
         RM: employee.RM || "",
         RMName: rmName,
-        Shift: employee.Shift || "",
+        Shift: employee.Shift || "9:00 AM - 6:00 PM",
         DOB: employee.DOB || "",
         JoinDate: employee.JoinDate || "",
         WeekOff: employee.WeekOff || "Sunday",
@@ -1058,7 +1094,7 @@ function EmployeeList() {
         OfficeIsActive: 1,
         RM: "",
         RMName: "",
-        Shift: "",
+        Shift: "9:00 AM - 6:00 PM",
         DOB: "",
         JoinDate: "",
         WeekOff: "",
@@ -1085,62 +1121,163 @@ function EmployeeList() {
     setOpenForm(true);
   };
 
+  const validateEmployeeForm = () => {
+    const errs = {};
+
+    // 1. Employee ID
+    if (!formData.EmpId || !String(formData.EmpId).trim()) {
+      errs.EmpId = "Employee ID is required.";
+    }
+
+    // 2. Full Name
+    if (!formData.Name || !String(formData.Name).trim()) {
+      errs.Name = "Full Name is required.";
+    } else if (!/^[A-Za-z ]{2,}$/.test(formData.Name.trim())) {
+      errs.Name = "Full Name must contain at least 2 letters (letters and spaces only).";
+    }
+
+    // 3. Password (add mode only)
+    if (formMode === "add") {
+      if (!formData.Password) {
+        errs.Password = "Password is required.";
+      } else if (formData.Password.length < 6) {
+        errs.Password = "Password must be at least 6 characters.";
+      }
+    }
+
+    // 4. Mobile Number
+    const mobileStr = String(formData.Mobile || "").trim();
+    if (!mobileStr) {
+      errs.Mobile = "Mobile Number is required.";
+    } else if (!/^\d{10}$/.test(mobileStr)) {
+      errs.Mobile = "Mobile Number must contain exactly 10 digits.";
+    }
+
+    // 5. Email Address
+    const emailStr = String(formData.EmailId || "").trim();
+    if (!emailStr) {
+      errs.EmailId = "Email Address is required.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr)) {
+      errs.EmailId = "Please enter a valid Email Address.";
+    }
+
+    // 6. Designation
+    if (!formData.Designation || !String(formData.Designation).trim()) {
+      errs.Designation = "Designation is required.";
+    }
+
+    // 7. Date of Birth (DOB) - MUST BE AT LEAST 18 YEARS OLD
+    if (!formData.DOB) {
+      errs.DOB = "Date of Birth is required.";
+    } else {
+      const birthDate = new Date(formData.DOB);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      if (isNaN(age)) {
+        errs.DOB = "Please select a valid Date of Birth.";
+      } else if (age < 18) {
+        errs.DOB = `Employee must be at least 18 years old (current age: ${age < 0 ? 0 : age} yrs).`;
+      }
+    }
+
+    // 8. Date of Joining
+    if (!formData.JoinDate) {
+      errs.JoinDate = "Date of Joining is required.";
+    }
+
+    // 9. PAN Card Number (10 chars: 5 letters, 4 digits, 1 letter)
+    if (formData.PanNumber && String(formData.PanNumber).trim()) {
+      const panUpper = String(formData.PanNumber).trim().toUpperCase();
+      if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(panUpper)) {
+        errs.PanNumber = "PAN must be 10 characters: 5 letters, 4 digits, 1 letter (e.g. ABCDE1234F).";
+      }
+    }
+
+    // 10. Role
+    if (!formData.Role || !String(formData.Role).trim()) {
+      errs.Role = "Role is required.";
+    }
+
+    // 11. Shift
+    if (!formData.Shift || !String(formData.Shift).trim()) {
+      formData.Shift = "9:00 AM - 6:00 PM";
+    }
+
+    // 12. Week Off
+    if (!formData.WeekOff || !String(formData.WeekOff).trim()) {
+      errs.WeekOff = "Week Off is required.";
+    }
+
+    // 13. Salary fields
+    const salaryKeys = [
+      { key: "basic_salary", label: "Basic Salary" },
+      { key: "hra", label: "HRA" },
+      { key: "conveyance", label: "Conveyance" },
+      { key: "special_allowance", label: "Special Allowance" },
+      { key: "da", label: "Day Allowance" },
+      { key: "pf_deduction", label: "PF / EPF Deduction" },
+      { key: "esi_deduction", label: "ESI Deduction" },
+    ];
+    salaryKeys.forEach(({ key, label }) => {
+      const val = formData[key];
+      if (val === "" || val === undefined || val === null) {
+        errs[key] = `${label} is required.`;
+      } else if (isNaN(Number(val)) || Number(val) < 0) {
+        errs[key] = `${label} must be a valid non-negative number.`;
+      }
+    });
+
+    // 14. UAN & ESI (Strict Length & Digits)
+    const uanVal = String(formData.UAN || "").trim();
+    if (!uanVal) {
+      errs.UAN = "UAN is required.";
+    } else if (uanVal !== "0" && !/^\d{12}$/.test(uanVal)) {
+      errs.UAN = "UAN must be exactly 12 numeric digits (or 0 if not applicable).";
+    }
+
+    const esiVal = String(formData.ESI || "").trim();
+    if (!esiVal && esiVal !== "0") {
+      errs.ESI = "ESI is required.";
+    } else if (esiVal !== "0" && !/^\d{10,17}$/.test(esiVal)) {
+      errs.ESI = "ESI must be a 17-digit number (or 0 if not applicable).";
+    }
+
+    return errs;
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    setSubmitting(true);
+    setFormGeneralError("");
 
-    // Check if offices are selected and get the distance
-    if (!formData.OfficeName || !formData.LatLong) {
-      alert("Please select an office");
+    const validationErrors = validateEmployeeForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setFormErrors(validationErrors);
       setSubmitting(false);
+
+      const firstKey = Object.keys(validationErrors)[0];
+      setFormGeneralError(`Please fix the highlighted errors: ${validationErrors[firstKey]}`);
+
+      setTimeout(() => {
+        const el =
+          document.querySelector(`[name="${firstKey}"]`) ||
+          document.getElementById(`field-${firstKey}`);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          if (el.focus) el.focus();
+        }
+      }, 100);
+
       return;
     }
 
-   
-    const latLongParts = formData.LatLong.split(",");
-    const distance = latLongParts[2] || "0"; 
+    setFormErrors({});
+    setSubmitting(true);
 
-    const requiredFields = [
-      "EmpId",
-      "Name",
-      "Mobile",
-      "EmailId",
-      "Role",
-      "OfficeId",
-      "Designation",
-    ];
-    
-    for (const field of requiredFields) {
-      if (!formData[field]) {
-        const fieldLabels = {
-          EmpId: "Employee ID",
-          Name: "Full Name",
-          Mobile: "Mobile Number",
-          EmailId: "Email Address",
-          Role: "Role",
-          OfficeId: "Office",
-          Designation: "Designation",
-        };
-        
-        alert(`Please fill in all required fields. Missing: ${fieldLabels[field] || field}`);
-        setSubmitting(false);
-        return;
-      }
-    }
-    
-    // Additional check for office details (but don't block submission if they exist)
-    if (!formData.OfficeName && formData.OfficeId) {
-      // If OfficeId exists but OfficeName doesn't, try to find it from offices array
-      const office = offices.find(o => o.Id == formData.OfficeId);
-      if (office) {
-        setFormData(prev => ({
-          ...prev,
-          OfficeName: office.OfficeName,
-          LatLong: office.LatLong || "",
-        }));
-      }
-    }
-    
+    const distance = "0";
     
     const formattedFormData = {
       EmpId: formData.EmpId,
@@ -1163,9 +1300,9 @@ function EmployeeList() {
       Grade: formData.Grade,
       UAN: formData.UAN,
       ESI: formData.ESI,
-      ProbationPeriod: formData.ProbationPeriod || "", // Added Probation Period
+      ProbationPeriod: formData.ProbationPeriod || "",
       FatherName: formData.FatherName || "",
-      PanNumber: formData.PanNumber || "",
+      PanNumber: (formData.PanNumber || "").toUpperCase(),
       AadharNumber: formData.AadharNumber || "",
       basic_salary: parseFloat(formData.basic_salary) || 0,
       da: parseFloat(formData.da) || 0,
@@ -1178,13 +1315,7 @@ function EmployeeList() {
       advance: parseFloat(formData.advance) || 0,
       lwf: parseFloat(formData.lwf) || 0,
       Distance: distance,
-      Offices: formData.OfficeId ? [
-        {
-          OfficeName: formData.OfficeName,
-          LatLong: formData.LatLong,
-          Distance: formData.Distance,
-        }
-      ] : [],
+      Offices: [],
     };
 
     const url =
@@ -1344,6 +1475,8 @@ function EmployeeList() {
   const handleCloseForm = () => {
     setOpenForm(false);
     setError("");
+    setFormErrors({});
+    setFormGeneralError("");
   };
 
   // NEW: Open disable dialog
@@ -1364,23 +1497,40 @@ function EmployeeList() {
     setDisableDate("");
   };
 
-  // UPDATED: Handle employee status toggle
+  // UPDATED: Handle employee status toggle (Admin only)
   const handleToggleEmployeeStatus = async (employee) => {
+    if (!isAdmin) {
+      alert("Only administrators have permission to change employee active/inactive status.");
+      return;
+    }
     if (!employee || !employee.EmpId) {
       console.error("Please provide both Employee ID and action");
       return;
     }
 
-    // If employee is active, open disable dialog instead of directly disabling
+    // If employee is active, open disable dialog to set leave date & reason
     if (employee.IsActive) {
       handleOpenDisableDialog(employee);
       return;
     }
 
-    // If employee is already disabled, show message that they cannot be re-enabled
+    // If employee is inactive, activate them
     if (!employee.IsActive) {
-      alert("This employee has been permanently disabled and cannot be re-enabled.");
-      return;
+      try {
+        const response = await axios.post(`${BASE_URL}/employee/disable_employee.php`, {
+          EmpId: employee.EmpId,
+          action: "enable",
+        });
+        if (response.data.success) {
+          alert("Employee has been activated successfully.");
+          fetchEmployees();
+        } else {
+          alert(response.data.message || "Failed to activate employee.");
+        }
+      } catch (err) {
+        console.error("Error activating employee:", err);
+        alert("Error activating employee: " + (err.response?.data?.message || err.message));
+      }
     }
   };
 
@@ -1426,38 +1576,115 @@ const exportToExcel = () => {
   setExporting(true);
   
   try {
-    // Prepare data with the requested fields including OfficeName
-    const exportData = filteredEmployees.map(employee => ({
-      "Grade": employee.Grade || 'N/A',
-      "Name": employee.Name || 'N/A',
-      "ID": employee.EmpId || 'N/A',
-      "Designation": employee.Designation || 'N/A',
-      "Mobile No": employee.Mobile || 'N/A',
-      "Office": employee.OfficeName || 'N/A' // Added OfficeName field
-    }));
+    // Helper to format dates cleanly as DD-MM-YYYY
+    const fmtDate = (d) => {
+      if (!d) return "N/A";
+      try {
+        const dt = new Date(d);
+        if (isNaN(dt.getTime())) return String(d).slice(0, 10);
+        const day = String(dt.getDate()).padStart(2, "0");
+        const month = String(dt.getMonth() + 1).padStart(2, "0");
+        const year = dt.getFullYear();
+        return `${day}-${month}-${year}`;
+      } catch (_) {
+        return String(d).slice(0, 10);
+      }
+    };
+
+    // Prepare data arranged in the exact order when adding an employee (excluding Password and Father's Name)
+    const exportData = filteredEmployees.map((employee) => {
+      // Find salary structure fallback if available
+      const sal = Array.isArray(salary)
+        ? salary.find((s) => String(s.empId).trim() === String(employee.EmpId).trim() || String(s.emp_name).trim().toLowerCase() === String(employee.Name).trim().toLowerCase())
+        : null;
+
+      // Find reporting manager display name
+      const rmEmp = Array.isArray(employees)
+        ? employees.find((e) => String(e.EmpId).trim() === String(employee.RM).trim())
+        : null;
+      const rmDisplay = rmEmp
+        ? `${rmEmp.Name} (${rmEmp.EmpId})`
+        : (employee.RM && String(employee.RM).trim() !== "" ? employee.RM : "N/A");
+
+      const basicSal = parseFloat(employee.basic_salary !== undefined && employee.basic_salary !== null && employee.basic_salary !== "" ? employee.basic_salary : (sal?.basic_salary || 0));
+      const hraVal = parseFloat(employee.hra !== undefined && employee.hra !== null && employee.hra !== "" ? employee.hra : (sal?.hra || 0));
+      const convVal = parseFloat(employee.conveyance !== undefined && employee.conveyance !== null && employee.conveyance !== "" ? employee.conveyance : (sal?.conveyance || 0));
+      const specialVal = parseFloat(employee.special_allowance !== undefined && employee.special_allowance !== null && employee.special_allowance !== "" ? employee.special_allowance : (sal?.special_allowance || 0));
+      const daVal = parseFloat(employee.da !== undefined && employee.da !== null && employee.da !== "" ? employee.da : 0);
+      const pfVal = parseFloat(employee.pf_deduction !== undefined && employee.pf_deduction !== null && employee.pf_deduction !== "" ? employee.pf_deduction : (sal?.epf || 0));
+      const esiVal = parseFloat(employee.esi_deduction !== undefined && employee.esi_deduction !== null && employee.esi_deduction !== "" ? employee.esi_deduction : (sal?.esi || 0));
+
+      return {
+        // 1. Personal Information (Password & Father's Name excluded)
+        "Employee ID": employee.EmpId || "N/A",
+        "Full Name": employee.Name || "N/A",
+        "Mobile Number": employee.Mobile || "N/A",
+        "Email Address": employee.EmailId || "N/A",
+        "Designation": employee.Designation || "N/A",
+        "Date of Birth": fmtDate(employee.DOB),
+        "Date of Joining": fmtDate(employee.JoinDate),
+        "PAN / ID Number": employee.PanNumber || "N/A",
+
+        // 2. Work Information
+        "Role": employee.new_role || employee.Role || "N/A",
+        "Reporting Manager": rmDisplay,
+        "Week Off": employee.WeekOff || "N/A",
+
+        // 3. Salary Information
+        "Basic Salary": basicSal,
+        "HRA": hraVal,
+        "Conveyance": convVal,
+        "Special Allowance": specialVal,
+        "Day Allowance": daVal,
+        "PF / EPF Deduction": pfVal,
+        "ESI Deduction": esiVal,
+
+        // 4. UAN/ESI Information
+        "UAN": employee.UAN || "N/A",
+        "ESI": employee.ESI || "N/A",
+
+        // 5. Status
+        "Status": Number(employee.IsActive) === 1 ? "Active" : "Inactive",
+      };
+    });
     
     // Create worksheet
     const ws = XLSX.utils.json_to_sheet(exportData);
     
     // Set column widths for better formatting
     const wscols = [
-      { wch: 10 }, // Grade
-      { wch: 25 }, // Name
-      { wch: 15 }, // ID
-      { wch: 25 }, // Designation
-      { wch: 15 }, // Mobile No
-      { wch: 25 }  // Office (new column)
+      { wch: 15 }, // Employee ID
+      { wch: 22 }, // Full Name
+      { wch: 15 }, // Mobile Number
+      { wch: 26 }, // Email Address
+      { wch: 22 }, // Designation
+      { wch: 15 }, // Date of Birth
+      { wch: 15 }, // Date of Joining
+      { wch: 16 }, // PAN / ID Number
+      { wch: 18 }, // Role
+      { wch: 24 }, // Reporting Manager
+      { wch: 18 }, // Week Off
+      { wch: 14 }, // Basic Salary
+      { wch: 12 }, // HRA
+      { wch: 14 }, // Conveyance
+      { wch: 16 }, // Special Allowance
+      { wch: 14 }, // Day Allowance
+      { wch: 18 }, // PF / EPF Deduction
+      { wch: 16 }, // ESI Deduction
+      { wch: 16 }, // UAN
+      { wch: 18 }, // ESI
+      { wch: 12 }, // Status
     ];
     ws['!cols'] = wscols;
     
     // Create workbook
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Employee List");
+    XLSX.utils.book_append_sheet(wb, ws, "Employee Report");
     
     // Generate filename with current date
     const date = new Date();
     const formattedDate = `${date.getDate()}_${date.getMonth() + 1}_${date.getFullYear()}`;
-    const filename = `Employee_List_${formattedDate}.xlsx`;
+    const filename = `Employee_Report_${formattedDate}.xlsx`;
     
     // Export to Excel
     XLSX.writeFile(wb, filename);
@@ -1470,7 +1697,32 @@ const exportToExcel = () => {
   }
 };
 
-  const filteredEmployees = employees.filter((employee) => {
+  const sortEmployeesMostRecent = (a, b) => {
+    // 1. Primary: Sort by database primary key ID descending (most recently created row first)
+    const idA = Number(a.id);
+    const idB = Number(b.id);
+    if (!isNaN(idA) && !isNaN(idB) && idA > 0 && idB > 0 && idA !== idB) {
+      return idB - idA;
+    }
+
+    // 2. Secondary: Sort by CreateDate descending
+    if (a.CreateDate && b.CreateDate) {
+      const timeDiff = new Date(b.CreateDate) - new Date(a.CreateDate);
+      if (!isNaN(timeDiff) && timeDiff !== 0) return timeDiff;
+    }
+
+    // 3. Fallback: Sort by numeric sequence in EmpId descending (e.g. AP0010 before AP0001)
+    const numA = parseInt(String(a.EmpId || "").replace(/\D/g, ""), 10);
+    const numB = parseInt(String(b.EmpId || "").replace(/\D/g, ""), 10);
+    if (!isNaN(numA) && !isNaN(numB) && numA !== numB) {
+      return numB - numA;
+    }
+
+    return 0;
+  };
+
+  const filteredEmployees = employees
+    .filter((employee) => {
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
     const matchesSearch = Object.keys(employee).some((key) => {
       const value = employee[key];
@@ -1485,7 +1737,7 @@ const exportToExcel = () => {
       filterStatus === "" || (employee.IsActive ?? '').toString() === filterStatus;
 
     return matchesSearch && matchesRole && matchesStatus;
-  });
+  }).sort(sortEmployeesMostRecent);
 
   // Calculate stats
   const totalEmployees = employees.length;
@@ -1694,7 +1946,6 @@ const exportToExcel = () => {
               </Typography>
               <AnimatePresence>
                 {filteredEmployees
-                  .sort((a, b) => a.Name.localeCompare(b.Name))
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((employee) => (
                     <EmployeeCard
@@ -1704,6 +1955,7 @@ const exportToExcel = () => {
                       onToggleStatus={handleToggleEmployeeStatus}
                       onViewDetails={handleViewDetails}
                       theme={theme}
+                      isAdmin={isAdmin}
                     />
                   ))}
               </AnimatePresence>
@@ -1761,7 +2013,6 @@ const exportToExcel = () => {
                 <TableBody>
                   <AnimatePresence>
                     {filteredEmployees
-                      .sort((a, b) => a.Name.localeCompare(b.Name))
                       .slice(
                         page * rowsPerPage,
                         page * rowsPerPage + rowsPerPage
@@ -1834,11 +2085,44 @@ const exportToExcel = () => {
                             <Typography variant="body2">{employee.Shift}</Typography>
                           </TableCell> */}
                           <TableCell>
-                            <Chip
-                              label={employee.IsActive ? "Active" : "Inactive"}
-                              color={employee.IsActive ? "success" : "error"}
-                              size="small"
-                            />
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                              <Tooltip
+                                title={
+                                  !isAdmin
+                                    ? "Only Admin can change employee status"
+                                    : employee.IsActive
+                                    ? "Click to deactivate employee"
+                                    : "Click to activate employee"
+                                }
+                              >
+                                <span>
+                                  <Switch
+                                    size="small"
+                                    checked={Boolean(employee.IsActive)}
+                                    disabled={!isAdmin}
+                                    onChange={() => handleToggleEmployeeStatus(employee)}
+                                    sx={{
+                                      "& .MuiSwitch-switchBase.Mui-checked": {
+                                        color: "#10b981",
+                                      },
+                                      "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                                        backgroundColor: "#10b981",
+                                      },
+                                    }}
+                                  />
+                                </span>
+                              </Tooltip>
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  ml: 0.5,
+                                  fontWeight: "bold",
+                                  color: employee.IsActive ? "success.main" : "text.secondary",
+                                }}
+                              >
+                                {employee.IsActive ? "Active" : "Inactive"}
+                              </Typography>
+                            </Box>
                           </TableCell>
                           <TableCell>
                             <Box sx={{ display: "flex", gap: 0.5 }}>
@@ -2020,6 +2304,11 @@ const exportToExcel = () => {
           </DialogTitle>
 
           <DialogContent sx={{ p: 3 }}>
+            {formGeneralError && (
+              <Alert severity="error" sx={{ mb: 2 }} onClose={() => setFormGeneralError("")}>
+                {formGeneralError}
+              </Alert>
+            )}
             <form onSubmit={handleFormSubmit}>
               <Grid container spacing={3} sx={{ mt: 1 }}>
                 <Grid item xs={12}>
@@ -2039,13 +2328,14 @@ const exportToExcel = () => {
                     fullWidth
                     size="small"
                     label="Employee ID"
+                    name="EmpId"
+                    id="field-EmpId"
                     value={formData.EmpId}
-                    onChange={(e) =>
-                      setFormData({ ...formData, EmpId: e.target.value })
-                    }
+                    onChange={(e) => handleFieldChange("EmpId", e.target.value)}
                     required
                     disabled={formMode === "edit"}
-                    helperText={formMode === "add" ? "Auto-generated unique ID (you can also edit this)" : ""}
+                    error={Boolean(formErrors.EmpId)}
+                    helperText={formErrors.EmpId || (formMode === "add" ? "Auto-generated unique ID (you can also edit this)" : "")}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -2061,11 +2351,13 @@ const exportToExcel = () => {
                     fullWidth
                     size="small"
                     label="Full Name"
+                    name="Name"
+                    id="field-Name"
                     value={formData.Name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, Name: e.target.value })
-                    }
+                    onChange={(e) => handleFieldChange("Name", e.target.value)}
                     required
+                    error={Boolean(formErrors.Name)}
+                    helperText={formErrors.Name}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -2081,13 +2373,15 @@ const exportToExcel = () => {
                     fullWidth
                     size="small"
                     label="Password"
+                    name="Password"
+                    id="field-Password"
                     type="password"
                     value={formData.Password}
-                    onChange={(e) =>
-                      setFormData({ ...formData, Password: e.target.value })
-                    }
-                    required
+                    onChange={(e) => handleFieldChange("Password", e.target.value)}
+                    required={formMode === "add"}
                     disabled={formMode === "edit"}
+                    error={Boolean(formErrors.Password)}
+                    helperText={formErrors.Password}
                   />
                 </Grid>
 
@@ -2096,15 +2390,17 @@ const exportToExcel = () => {
                     fullWidth
                     size="small"
                     label="Mobile Number"
+                    name="Mobile"
+                    id="field-Mobile"
                     value={formData.Mobile}
                     onChange={(e) => {
-                      const value = e.target.value;
-                      if (value.length <= 10) {
-                        setFormData({ ...formData, Mobile: value });
-                      }
+                      const val = e.target.value.replace(/\D/g, "").slice(0, 10);
+                      handleFieldChange("Mobile", val);
                     }}
                     required
-                    type="number"
+                    type="tel"
+                    error={Boolean(formErrors.Mobile)}
+                    helperText={formErrors.Mobile}
                     inputProps={{ maxLength: 10 }}
                     InputProps={{
                       startAdornment: (
@@ -2121,12 +2417,14 @@ const exportToExcel = () => {
                     fullWidth
                     size="small"
                     label="Email Address"
+                    name="EmailId"
+                    id="field-EmailId"
                     type="email"
                     value={formData.EmailId}
-                    onChange={(e) =>
-                      setFormData({ ...formData, EmailId: e.target.value })
-                    }
+                    onChange={(e) => handleFieldChange("EmailId", e.target.value)}
                     required
+                    error={Boolean(formErrors.EmailId)}
+                    helperText={formErrors.EmailId}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -2140,12 +2438,15 @@ const exportToExcel = () => {
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
+                    size="small"
                     label="Designation"
+                    name="Designation"
+                    id="field-Designation"
                     value={formData.Designation}
-                    onChange={(e) =>
-                      setFormData({ ...formData, Designation: e.target.value })
-                    }
+                    onChange={(e) => handleFieldChange("Designation", e.target.value)}
                     required
+                    error={Boolean(formErrors.Designation)}
+                    helperText={formErrors.Designation}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -2159,12 +2460,17 @@ const exportToExcel = () => {
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
+                    size="small"
                     label="Date of Birth"
+                    name="DOB"
+                    id="field-DOB"
                     type="date"
                     value={formData.DOB}
-                    onChange={(e) =>
-                      setFormData({ ...formData, DOB: e.target.value })
-                    }
+                    onChange={(e) => handleFieldChange("DOB", e.target.value)}
+                    required
+                    error={Boolean(formErrors.DOB)}
+                    helperText={formErrors.DOB || "Must be at least 18 years old"}
+                    inputProps={{ max: maxAllowedDOB }}
                     InputLabelProps={{ shrink: true }}
                     InputProps={{
                       startAdornment: (
@@ -2179,12 +2485,16 @@ const exportToExcel = () => {
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
+                    size="small"
                     label="Date of Joining"
+                    name="JoinDate"
+                    id="field-JoinDate"
                     type="date"
                     value={formData.JoinDate}
-                    onChange={(e) =>
-                      setFormData({ ...formData, JoinDate: e.target.value })
-                    }
+                    onChange={(e) => handleFieldChange("JoinDate", e.target.value)}
+                    required
+                    error={Boolean(formErrors.JoinDate)}
+                    helperText={formErrors.JoinDate}
                     InputLabelProps={{ shrink: true }}
                     InputProps={{
                       startAdornment: (
@@ -2201,10 +2511,10 @@ const exportToExcel = () => {
                     fullWidth
                     size="small"
                     label="Father's Name"
+                    name="FatherName"
+                    id="field-FatherName"
                     value={formData.FatherName}
-                    onChange={(e) =>
-                      setFormData({ ...formData, FatherName: e.target.value })
-                    }
+                    onChange={(e) => handleFieldChange("FatherName", e.target.value)}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -2220,10 +2530,16 @@ const exportToExcel = () => {
                     fullWidth
                     size="small"
                     label="PAN / ID Number"
+                    name="PanNumber"
+                    id="field-PanNumber"
                     value={formData.PanNumber}
-                    onChange={(e) =>
-                      setFormData({ ...formData, PanNumber: e.target.value })
-                    }
+                    onChange={(e) => {
+                      const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10);
+                      handleFieldChange("PanNumber", val);
+                    }}
+                    error={Boolean(formErrors.PanNumber)}
+                    helperText={formErrors.PanNumber || "Format: 5 letters, 4 digits, 1 letter (e.g. ABCDE1234F)"}
+                    inputProps={{ maxLength: 10, style: { textTransform: "uppercase" } }}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -2247,39 +2563,29 @@ const exportToExcel = () => {
                   <Divider sx={{ mb: 2 }} />
                 </Grid>
 
-                {/* Grade */}
-                <Grid item xs={12} md={6}>
-                  <Autocomplete
-                    size="small"
-                    options={gradeOptions}
-                    value={
-                      gradeOptions.find((g) => g.value === formData.Grade) ||
-                      null
-                    }
-                    onChange={(_, newValue) =>
-                      setFormData({ ...formData, Grade: newValue?.value || "" })
-                    }
-                    getOptionLabel={(option) => option.label}
-                    renderInput={(params) => (
-                      <TextField {...params} size="small" label="Grade" required fullWidth />
-                    )}
-                  />
-                </Grid>
+                {/* Grade field intentionally disabled. */}
 
                 {/* Role */}
                 <Grid item xs={12} md={6}>
-                <Autocomplete
-  size="small"
-  options={roleOptions1}
-  value={selectedRole}
-  onChange={(_, newValue) =>
-    setFormData({ ...formData, Role: newValue || "" })
-  }
-  renderInput={(params) => (
-    <TextField {...params} size="small" label="Role" required fullWidth />
-  )}
-/>
-
+                  <Autocomplete
+                    size="small"
+                    options={roleOptions1}
+                    value={selectedRole}
+                    onChange={(_, newValue) => handleFieldChange("Role", newValue || "")}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        size="small"
+                        label="Role"
+                        name="Role"
+                        id="field-Role"
+                        required
+                        fullWidth
+                        error={Boolean(formErrors.Role)}
+                        helperText={formErrors.Role}
+                      />
+                    )}
+                  />
                 </Grid>
 
 
@@ -2344,9 +2650,7 @@ const exportToExcel = () => {
                     options={weekDays}
                     disableCloseOnSelect
                     value={formData.WeekOff ? formData.WeekOff.split(",") : []}
-                    onChange={(_, newValue) =>
-                      setFormData({ ...formData, WeekOff: newValue.join(",") })
-                    }
+                    onChange={(_, newValue) => handleFieldChange("WeekOff", newValue.join(","))}
                     renderOption={(props, option, { selected }) => (
                       <li {...props}>
                         <Checkbox checked={selected} sx={{ mr: 1 }} />
@@ -2358,65 +2662,20 @@ const exportToExcel = () => {
                         {...params}
                         size="small"
                         label="Week Off"
+                        name="WeekOff"
+                        id="field-WeekOff"
                         required
                         fullWidth
+                        error={Boolean(formErrors.WeekOff)}
+                        helperText={formErrors.WeekOff}
                       />
                     )}
                   />
                 </Grid>
 
-               {/* Office Selection - Single Select */}
-<Grid item xs={12} md={6}>
-  <FormControl fullWidth size="small" required>
-    <InputLabel>Office</InputLabel>
-    <Select
-      size="small"
-      value={formData.OfficeId?.toString() || ""}
-      onChange={(e) => {
-        const selectedOfficeId = e.target.value;
-        
-        if (!selectedOfficeId) {
-          setFormData({
-            ...formData,
-            OfficeId: "",
-            OfficeName: "",
-            LatLong: "",
-            Distance: "",
-          });
-          return;
-        }
-        
-        const selectedOffice = offices.find(o => ((o.Id || o.id) ?? '').toString() === selectedOfficeId);
-        
-        if (selectedOffice) {
-          const latLongParts = selectedOffice.LatLong?.split(",") || [];
-          const distance = latLongParts[2] || "0";
-          
-          setFormData({
-            ...formData,
-            OfficeId: selectedOffice.Id || selectedOffice.id,
-            OfficeName: selectedOffice.OfficeName,
-            LatLong: selectedOffice.LatLong,
-            Distance: distance,
-          });
-        }
-      }}
-      label="Office"
-    >
-      <MenuItem value="">
-        <em>Select an office</em>
-      </MenuItem>
-      {offices.map((office) => (
-        <MenuItem key={office.Id || office.id} value={((office.Id || office.id) ?? '').toString()}>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <LocationOn sx={{ mr: 1, color: "text.secondary" }} />
-            {office.OfficeName}
-          </Box>
-        </MenuItem>
-      ))}
-    </Select>
-  </FormControl>
-</Grid>
+
+
+                {/* Office field intentionally disabled. */}
 
                 {/* Salary Information Section */}
                 <Grid item xs={12}>
@@ -2436,11 +2695,14 @@ const exportToExcel = () => {
                     fullWidth
                     size="small"
                     label="Basic Salary"
+                    name="basic_salary"
+                    id="field-basic_salary"
                     type="number"
+                    required
                     value={formData.basic_salary}
-                    onChange={(e) =>
-                      setFormData({ ...formData, basic_salary: e.target.value })
-                    }
+                    onChange={(e) => handleFieldChange("basic_salary", e.target.value)}
+                    error={Boolean(formErrors.basic_salary)}
+                    helperText={formErrors.basic_salary}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -2456,11 +2718,14 @@ const exportToExcel = () => {
                     fullWidth
                     size="small"
                     label="HRA"
+                    name="hra"
+                    id="field-hra"
                     type="number"
+                    required
                     value={formData.hra}
-                    onChange={(e) =>
-                      setFormData({ ...formData, hra: e.target.value })
-                    }
+                    onChange={(e) => handleFieldChange("hra", e.target.value)}
+                    error={Boolean(formErrors.hra)}
+                    helperText={formErrors.hra}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -2476,11 +2741,14 @@ const exportToExcel = () => {
                     fullWidth
                     size="small"
                     label="Conveyance"
+                    name="conveyance"
+                    id="field-conveyance"
                     type="number"
+                    required
                     value={formData.conveyance}
-                    onChange={(e) =>
-                      setFormData({ ...formData, conveyance: e.target.value })
-                    }
+                    onChange={(e) => handleFieldChange("conveyance", e.target.value)}
+                    error={Boolean(formErrors.conveyance)}
+                    helperText={formErrors.conveyance}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -2496,14 +2764,14 @@ const exportToExcel = () => {
                     fullWidth
                     size="small"
                     label="Special Allowance"
+                    name="special_allowance"
+                    id="field-special_allowance"
                     type="number"
+                    required
                     value={formData.special_allowance}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        special_allowance: e.target.value,
-                      })
-                    }
+                    onChange={(e) => handleFieldChange("special_allowance", e.target.value)}
+                    error={Boolean(formErrors.special_allowance)}
+                    helperText={formErrors.special_allowance}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -2519,11 +2787,14 @@ const exportToExcel = () => {
                     fullWidth
                     size="small"
                     label="Day Allowance"
+                    name="da"
+                    id="field-da"
                     type="number"
+                    required
                     value={formData.da}
-                    onChange={(e) =>
-                      setFormData({ ...formData, da: e.target.value })
-                    }
+                    onChange={(e) => handleFieldChange("da", e.target.value)}
+                    error={Boolean(formErrors.da)}
+                    helperText={formErrors.da}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -2539,11 +2810,14 @@ const exportToExcel = () => {
                     fullWidth
                     size="small"
                     label="PF / EPF Deduction"
+                    name="pf_deduction"
+                    id="field-pf_deduction"
                     type="number"
+                    required
                     value={formData.pf_deduction}
-                    onChange={(e) =>
-                      setFormData({ ...formData, pf_deduction: e.target.value })
-                    }
+                    onChange={(e) => handleFieldChange("pf_deduction", e.target.value)}
+                    error={Boolean(formErrors.pf_deduction)}
+                    helperText={formErrors.pf_deduction}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -2559,11 +2833,14 @@ const exportToExcel = () => {
                     fullWidth
                     size="small"
                     label="ESI Deduction"
+                    name="esi_deduction"
+                    id="field-esi_deduction"
                     type="number"
+                    required
                     value={formData.esi_deduction}
-                    onChange={(e) =>
-                      setFormData({ ...formData, esi_deduction: e.target.value })
-                    }
+                    onChange={(e) => handleFieldChange("esi_deduction", e.target.value)}
+                    error={Boolean(formErrors.esi_deduction)}
+                    helperText={formErrors.esi_deduction}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -2588,12 +2865,19 @@ const exportToExcel = () => {
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
+                    size="small"
                     label="UAN"
+                    name="UAN"
+                    id="field-UAN"
                     value={formData.UAN}
-                    onChange={(e) =>
-                      setFormData({ ...formData, UAN: e.target.value })
-                    }
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, "").slice(0, 12);
+                      handleFieldChange("UAN", val);
+                    }}
                     required
+                    error={Boolean(formErrors.UAN)}
+                    helperText={formErrors.UAN || "12 numeric digits (or 0 if not applicable)"}
+                    inputProps={{ maxLength: 12 }}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -2606,12 +2890,19 @@ const exportToExcel = () => {
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
+                    size="small"
                     label="ESI"
+                    name="ESI"
+                    id="field-ESI"
                     value={formData.ESI}
-                    onChange={(e) =>
-                      setFormData({ ...formData, ESI: e.target.value })
-                    }
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, "").slice(0, 17);
+                      handleFieldChange("ESI", val);
+                    }}
                     required
+                    error={Boolean(formErrors.ESI)}
+                    helperText={formErrors.ESI || "17 digits (or 0 if not applicable)"}
+                    inputProps={{ maxLength: 17 }}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">

@@ -46,7 +46,8 @@ import { BASE_URL } from "../api/endpoints"
 
 // Import images - update paths as needed
 import logo from "../assets/aberdure_logo.png"
-import banner from "../assets/Login.png"
+import newLogo from "../assets/aberdure_logo_new.png"
+import banner from "../assets/pharma.avif"
 import playstore from "../assets/playstore.png"
 import appstore from "../assets/appstore.png"
 
@@ -350,7 +351,7 @@ export default function EnhancedLoginPage() {
             }}
           >
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               style={{ 
@@ -360,15 +361,21 @@ export default function EnhancedLoginPage() {
                 maxWidth: 600,
               }}
             >
+              {/* Aberdure Pharma Logo - Clean transparent logo without extra height/width */}
               <Box
                 component={motion.img}
-                src={logo}
+                src={newLogo}
                 alt="Aberdure Pharma Logo"
                 sx={{
-                  width: { xs: 60, md: 80, lg: 120 },
-                  height: { xs: 60, md: 80, lg: 120 },
-                  mb: { xs: 1, md: 2, lg: 4 },
-                  filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.3))',
+                  width: 'auto',
+                  maxWidth: { xs: 180, sm: 220, md: 260 },
+                  height: 'auto',
+                  maxHeight: { xs: 70, md: 85 },
+                  objectFit: 'contain',
+                  display: 'inline-block',
+                  mb: { xs: 1.5, md: 2 },
+                  mt: { xs: 0, md: -3, lg: -5 },
+                  filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.22))',
                 }}
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 300 }}
@@ -383,8 +390,8 @@ export default function EnhancedLoginPage() {
                 sx={{
                   color: 'white',
                   fontWeight: 800,
-                  mb: 2,
-                  fontSize: { xs: '1.5rem', md: '2rem', lg: '3.5rem' },
+                  mb: 1,
+                  fontSize: { xs: '1.5rem', md: '2.2rem', lg: '3.2rem' },
                   textShadow: '0 4px 8px rgba(0,0,0,0.3)',
                   lineHeight: 1.2,
                 }}
@@ -397,14 +404,14 @@ export default function EnhancedLoginPage() {
                 component={motion.p}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
+                transition={{ delay: 0.3 }}
                 sx={{
-                  color: 'rgba(255,255,255,0.9)',
+                  color: 'rgba(255,255,255,0.92)',
                   fontWeight: 400,
-                  mb: { xs: 2, md: 3, lg: 4 },
-                  maxWidth: 400,
-                  lineHeight: 1.5,
-                  fontSize: { xs: '0.875rem', md: '1rem', lg: '1.25rem' },
+                  mb: { xs: 2, md: 2.5 },
+                  maxWidth: 420,
+                  lineHeight: 1.45,
+                  fontSize: { xs: '0.85rem', md: '0.95rem', lg: '1.15rem' },
                   mx: 'auto',
                 }}
               >
@@ -414,7 +421,7 @@ export default function EnhancedLoginPage() {
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.6 }}
+                transition={{ delay: 0.5 }}
                 style={{ 
                   display: 'flex', 
                   justifyContent: 'center',
@@ -423,50 +430,16 @@ export default function EnhancedLoginPage() {
               >
                 <img
                   src={banner}
-                  alt="HR Platform Illustration"
+                  alt="Pharma Platform Illustration"
                   style={{
                     maxWidth: '100%',
                     height: 'auto',
-                    maxHeight: isMobile ? 150 : 250,
-                    filter: 'drop-shadow(0 12px 28px rgba(0,0,0,0.4))',
+                    maxHeight: isMobile ? 170 : 250,
+                    borderRadius: '12px',
+                    boxShadow: '0 12px 28px rgba(0,0,0,0.3)',
+                    objectFit: 'cover',
                   }}
                 />
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 }}
-                style={{ marginTop: 16 }}
-              >
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: 'rgba(255,255,255,0.8)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 1,
-                    fontSize: { xs: '0.7rem', md: '0.75rem', lg: '0.875rem' },
-                    flexWrap: 'wrap',
-                  }}
-                >
-                  <span>by</span>
-                  <Link
-                    to="https://namami-infotech.com/"
-                    target="_blank"
-                    style={{
-                      color: 'white',
-                      fontWeight: 600,
-                      textDecoration: 'none',
-                      transition: 'all 0.3s ease',
-                    }}
-                    onMouseOver={(e) => (e.currentTarget.style.color = '#FFD700')}
-                    onMouseOut={(e) => (e.currentTarget.style.color = 'white')}
-                  >
-                    Namami Infotech India Pvt. Ltd.
-                  </Link>
-                </Typography>
               </motion.div>
             </motion.div>
           </Grid>
@@ -519,13 +492,16 @@ export default function EnhancedLoginPage() {
                 {isSmallMobile && (
                   <Box
                     component={motion.img}
-                    src={logo}
+                    src={newLogo}
                     alt="Aberdure Pharma Logo"
                     sx={{
-                      width: 80,
-                      height: 80,
+                      width: "auto",
+                      maxWidth: 180,
+                      height: "auto",
+                      maxHeight: 70,
+                      objectFit: "contain",
                       mb: 2,
-                      filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.3))',
+                      filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.15))',
                     }}
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}

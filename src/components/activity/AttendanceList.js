@@ -1443,25 +1443,7 @@ const AttendanceList = () => {
 
             {/* Action Buttons Row */}
             <Stack direction="row" spacing={1} alignItems="center">
-              {(isAdmin || isRM) && (
-                <Tooltip title="Regularise">
-                  <IconButton
-                    onClick={regularise}
-                    size="small"
-                    sx={{
-                      bgcolor: "#ffffff",
-                      border: "1px solid #e2e8f0",
-                      color: "#64748b",
-                      width: 38,
-                      height: 38,
-                      borderRadius: 2,
-                      "&:hover": { bgcolor: "#f8fafc", color: "#0f172a" },
-                    }}
-                  >
-                    <Settings fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              )}
+{/* Regularise Settings button removed as requested */}
 
               <Tooltip
                 title={

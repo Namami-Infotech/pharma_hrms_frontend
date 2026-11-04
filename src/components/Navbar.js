@@ -16,8 +16,6 @@ import {
   Divider,
   useTheme,
   useMediaQuery,
-  TextField,
-  InputAdornment,
   ButtonBase,
 } from "@mui/material"
 import {
@@ -25,7 +23,6 @@ import {
   Person,
   ExitToApp,
   Receipt as ReceiptIcon,
-  Search,
   NotificationsOutlined,
   KeyboardArrowDown,
 } from "@mui/icons-material"
@@ -33,7 +30,6 @@ import {
 function Navbar({ onMenuClick }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const [notificationAnchor, setNotificationAnchor] = useState(null)
-  const [searchQuery, setSearchQuery] = useState("")
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const theme = useTheme()
@@ -45,23 +41,6 @@ function Navbar({ onMenuClick }) {
     { id: 3, title: "Advance Request Status Updated", unread: false },
   ]
   const hasUnread = notifications.some((n) => n.unread)
-
-  const handleSearchKeyDown = (e) => {
-    if (e.key === "Enter" && searchQuery.trim()) {
-      const q = searchQuery.toLowerCase().trim()
-      if (q.includes("advance")) navigate("/advance")
-      else if (q.includes("leave")) navigate("/leave")
-      else if (q.includes("expense")) navigate("/expense")
-      else if (q.includes("salary")) navigate("/salary")
-      else if (q.includes("employee")) navigate("/employees")
-      else if (q.includes("attendance")) navigate("/attendance")
-      else if (q.includes("quotation")) navigate("/quotation")
-      else if (q.includes("product")) navigate("/products")
-      else if (q.includes("holiday")) navigate("/holiday")
-      else if (q.includes("policy")) navigate("/policy")
-      else navigate("/dashboard")
-    }
-  }
 
   const displayName = user?.username || user?.Name || user?.emp_name || "Employee"
   const displayEmail = user?.email || user?.Email || (user?.role ? `${user.role} Portal` : "aberdure@pharma.com")
@@ -78,7 +57,7 @@ function Navbar({ onMenuClick }) {
           color: "text.primary",
           boxShadow: "none",
           borderBottom: "1px solid #e2e8f0",
-          height: 72,
+          height: 84,
           boxSizing: "border-box",
           width: { md: `calc(100% - 260px)` },
           ml: { md: `260px` },
@@ -90,15 +69,15 @@ function Navbar({ onMenuClick }) {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            height: 71,
-            minHeight: "71px !important",
-            maxHeight: 71,
+            height: 83,
+            minHeight: "83px !important",
+            maxHeight: 83,
             px: { xs: 2, sm: 3 },
             boxSizing: "border-box",
           }}
         >
-          {/* Left: Search Input & Mobile Drawer Toggle */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flex: 1, maxWidth: { xs: "100%", sm: 420, md: 480 } }}>
+          {/* Left: Mobile Drawer Toggle */}
+          <Box sx={{ display: "flex", alignItems: "center" }}>
             {isMobile && (
               <IconButton 
                 onClick={onMenuClick}
@@ -109,44 +88,6 @@ function Navbar({ onMenuClick }) {
                 <MenuIcon />
               </IconButton>
             )}
-
-            <TextField
-              size="small"
-              placeholder="Search patients, appointments, records..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search sx={{ color: "#94a3b8", fontSize: 20 }} />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{
-                width: "100%",
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: 3,
-                  bgcolor: "#f8fafc",
-                  fontSize: "0.85rem",
-                  height: 40,
-                  border: "1px solid #e2e8f0",
-                  transition: "all 0.2s ease-in-out",
-                  "&:hover": {
-                    bgcolor: "#ffffff",
-                    borderColor: "#cbd5e1",
-                  },
-                  "&.Mui-focused": {
-                    bgcolor: "#ffffff",
-                    borderColor: "#f37021",
-                    boxShadow: "0 0 0 3px rgba(243, 112, 33, 0.12)",
-                  },
-                },
-                "& fieldset": {
-                  border: "none",
-                },
-              }}
-            />
           </Box>
 
           {/* Right: User Profile (Notification Bell commented out for now) */}

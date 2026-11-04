@@ -59,12 +59,13 @@ const DEFAULT_TERMS =
 
 const EMPTY_ITEM = {
   description: "",
+  composition: "",
   hsn: "3004",
-  pack: "10x10 Strips",
-  qty: 10,
-  rate: 100,
+  qty: 1,
+  rate: 0,
   discount: 0,
-  amount: 1000,
+  gst: 5,
+  amount: 0,
 };
 
 const numberToWords = (num) => {
@@ -111,8 +112,8 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
     valid_until: "",
     prepared_by: "",
     status: "Sent",
-    tax_type: "GST",
-    tax_percent: 12,
+    tax_type: "CGST/SGST",
+    tax_percent: 0,
     discount_percent: 0,
     terms_conditions: DEFAULT_TERMS,
     notes: "",
@@ -120,13 +121,14 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
 
   const [items, setItems] = useState([
     {
-      description: "Paracetamol 650mg Tablets",
+      description: "Amoxicillin & Potassium Clavulanate 625mg",
+      composition: "Amoxicillin IP 500mg + Potassium Clavulanate IP 125mg",
       hsn: "3004",
-      pack: "10x10 Strips",
-      qty: 50,
-      rate: 180,
-      discount: 0,
-      amount: 9000,
+      qty: 25,
+      rate: 420,
+      discount: 5,
+      gst: 5,
+      amount: 10473.75,
     },
   ]);
 
@@ -184,6 +186,12 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
     const loggedInName = user?.username || user?.Name || user?.name || user?.EmpName || user?.emp_name || user?.emp_id || user?.EmpId || "";
 
     if (quotation) {
+      const qTaxType = quotation.tax_type || (
+        quotation.client_gst && !quotation.client_gst.trim().startsWith("07") && quotation.client_address && !quotation.client_address.toLowerCase().includes("delhi")
+          ? "IGST"
+          : "CGST/SGST"
+      );
+
       setFormData({
         client_name: quotation.client_name || "",
         client_email: quotation.client_email || "",
@@ -195,8 +203,8 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
         valid_until: quotation.valid_until ? quotation.valid_until.slice(0, 10) : "",
         prepared_by: quotation.prepared_by || loggedInName,
         status: quotation.status || "Sent",
-        tax_type: quotation.tax_type || "GST",
-        tax_percent: quotation.tax_percent !== undefined ? parseFloat(quotation.tax_percent) : 12,
+        tax_type: qTaxType,
+        tax_percent: quotation.tax_percent !== undefined ? parseFloat(quotation.tax_percent) : 0,
         discount_percent: quotation.discount_percent !== undefined ? parseFloat(quotation.discount_percent) : 0,
         terms_conditions: quotation.terms_conditions || DEFAULT_TERMS,
         notes: quotation.notes || "",
@@ -206,7 +214,26 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
       try {
         parsed = typeof quotation.items === "string" ? JSON.parse(quotation.items) : (quotation.items || []);
       } catch (_) {}
-      setItems(parsed.length > 0 ? parsed : [{ ...EMPTY_ITEM }]);
+
+      const formattedLoadedItems = (parsed.length > 0 ? parsed : [{ ...EMPTY_ITEM }]).map(it => {
+        const qty = parseFloat(it.qty) || 0;
+        const rate = parseFloat(it.rate) || 0;
+        const disc = parseFloat(it.discount) || 0;
+        const gst = it.gst !== undefined ? parseFloat(it.gst) : 5;
+        const raw = qty * rate;
+        const taxable = raw - (raw * disc) / 100;
+        const gstAmt = (taxable * gst) / 100;
+        const amt = it.amount !== undefined ? parseFloat(it.amount) : Math.round((taxable + gstAmt) * 100) / 100;
+
+        return {
+          ...it,
+          composition: it.composition || "",
+          gst: gst,
+          amount: amt
+        };
+      });
+
+      setItems(formattedLoadedItems);
 
       // Match client in dropdown if available
       if (clients.length > 0 && quotation.client_name) {
@@ -230,9 +257,9 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
         quotation_date: new Date().toISOString().slice(0, 10),
         valid_until: v.toISOString().slice(0, 10),
         prepared_by: loggedInName,
-        status: "Sent", // Always default to "Sent" as requested
-        tax_type: "GST",
-        tax_percent: 12,
+        status: "Sent",
+        tax_type: "CGST/SGST",
+        tax_percent: 0,
         discount_percent: 0,
         terms_conditions: DEFAULT_TERMS,
         notes: "",
@@ -241,12 +268,13 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
       setItems([
         {
           description: "Amoxicillin & Potassium Clavulanate 625mg",
+          composition: "Amoxicillin IP 500mg + Potassium Clavulanate IP 125mg",
           hsn: "3004",
-          pack: "10x10 Strips",
           qty: 25,
           rate: 420,
           discount: 5,
-          amount: 9975,
+          gst: 5,
+          amount: 10473.75,
         },
       ]);
     }
@@ -254,10 +282,16 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
     setShowPreview(false);
   }, [quotation, open, user, clients]);
 
-  // When a client is chosen from dropdown, auto-populate client details
+  // When a client is chosen from dropdown, auto-populate client details & detect Delhi vs outside
   const handleClientSelect = (clientObj) => {
     setSelectedClient(clientObj);
     if (clientObj) {
+      const clientGst = (clientObj.gst || "").trim();
+      const clientAddr = (clientObj.address || "").toLowerCase();
+      // Auto-detect if same state (Delhi: 07) or out of state (IGST)
+      const isSameState = clientGst.startsWith("07") || clientAddr.includes("delhi");
+      const detectedTaxType = isSameState ? "CGST/SGST" : "IGST";
+
       setFormData((prev) => ({
         ...prev,
         client_name: clientObj.name,
@@ -265,6 +299,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
         client_email: clientObj.email,
         client_address: clientObj.address,
         client_gst: clientObj.gst || prev.client_gst,
+        tax_type: detectedTaxType,
       }));
     } else {
       setFormData((prev) => ({
@@ -274,11 +309,12 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
         client_email: "",
         client_address: "",
         client_gst: "",
+        tax_type: "CGST/SGST",
       }));
     }
   };
 
-  // Line item change
+  // Line item change with per-product GST calculation
   const handleItemChange = (index, field, value) => {
     const updated = [...items];
     updated[index][field] = value;
@@ -286,9 +322,12 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
     const qty = parseFloat(updated[index].qty) || 0;
     const rate = parseFloat(updated[index].rate) || 0;
     const disc = parseFloat(updated[index].discount) || 0;
+    const gst = parseFloat(updated[index].gst !== undefined ? updated[index].gst : 5);
+
     const raw = qty * rate;
-    const net = raw - (raw * disc) / 100;
-    updated[index].amount = Math.round(net * 100) / 100;
+    const taxable = raw - (raw * disc) / 100;
+    const gstAmt = (taxable * gst) / 100;
+    updated[index].amount = Math.round((taxable + gstAmt) * 100) / 100;
 
     setItems(updated);
   };
@@ -297,23 +336,28 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
   const handleProductSelect = (index, productObj) => {
     const updated = [...items];
     if (productObj) {
-      updated[index].description = productObj.name;
+      updated[index].description = productObj.name || "";
+      updated[index].composition = productObj.composition || "";
       updated[index].hsn = productObj.hsn || "3004";
-      updated[index].pack = productObj.packaging || productObj.unit || "Pack";
       updated[index].rate = parseFloat(productObj.price || 0);
+      updated[index].gst = productObj.gst !== undefined ? parseFloat(productObj.gst) : 5;
     } else {
       updated[index].description = "";
-      updated[index].hsn = "";
-      updated[index].pack = "";
+      updated[index].composition = "";
+      updated[index].hsn = "3004";
       updated[index].rate = 0;
+      updated[index].gst = 5;
     }
 
     const qty = parseFloat(updated[index].qty) || 0;
     const rate = parseFloat(updated[index].rate) || 0;
     const disc = parseFloat(updated[index].discount) || 0;
+    const gst = parseFloat(updated[index].gst !== undefined ? updated[index].gst : 5);
+
     const raw = qty * rate;
-    const net = raw - (raw * disc) / 100;
-    updated[index].amount = Math.round(net * 100) / 100;
+    const taxable = raw - (raw * disc) / 100;
+    const gstAmt = (taxable * gst) / 100;
+    updated[index].amount = Math.round((taxable + gstAmt) * 100) / 100;
 
     setItems(updated);
   };
@@ -323,11 +367,12 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
       ...items,
       {
         description: "",
-        hsn: "",
-        pack: "",
+        composition: "",
+        hsn: "3004",
         qty: 1,
         rate: 0,
         discount: 0,
+        gst: 5,
         amount: 0,
       },
     ]);
@@ -342,24 +387,26 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
   };
 
   // Financial calculations
-  const subtotal = items.reduce((acc, curr) => acc + (parseFloat(curr.amount) || 0), 0);
-  const discountPercent = parseFloat(formData.discount_percent) || 0;
-  const discountAmount = Math.round(((subtotal * discountPercent) / 100) * 100) / 100;
-  const afterDiscount = Math.max(0, subtotal - discountAmount);
-  const taxPercent = parseFloat(formData.tax_percent) || 0;
-  const taxAmount = Math.round(((afterDiscount * taxPercent) / 100) * 100) / 100;
-  const grandTotal = Math.round((afterDiscount + taxAmount) * 100) / 100;
+  const isInterState = formData.tax_type === "IGST";
+  const grandTotal = Math.round(
+    items.reduce((acc, curr) => acc + (parseFloat(curr.amount) || 0), 0) * 100
+  ) / 100;
+  const totalTaxable = Math.round(
+    items.reduce((acc, curr) => {
+      const qty = parseFloat(curr.qty) || 0;
+      const rate = parseFloat(curr.rate) || 0;
+      const disc = parseFloat(curr.discount) || 0;
+      const raw = qty * rate;
+      return acc + (raw - (raw * disc) / 100);
+    }, 0) * 100
+  ) / 100;
+  const totalTaxAmount = Math.max(0, Math.round((grandTotal - totalTaxable) * 100) / 100);
 
   // Build payload for preview or submission
   const buildQuotationPayload = () => {
     const loggedInName = user?.username || user?.Name || user?.name || user?.EmpName || user?.emp_name || user?.emp_id || user?.EmpId || "";
-    const isInterState = formData.tax_type === "IGST";
-    const cgstPercent = isInterState ? 0 : taxPercent / 2;
-    const sgstPercent = isInterState ? 0 : taxPercent / 2;
-    const cgstAmount = isInterState ? 0 : Math.round((taxAmount / 2) * 100) / 100;
-    const sgstAmount = isInterState ? 0 : Math.round((taxAmount / 2) * 100) / 100;
     const thresholdLimit = parseFloat(approvalThreshold) || 35;
-    const hasHighDiscount = items.some((it) => (parseFloat(it.discount) || 0) > thresholdLimit) || (parseFloat(formData.discount_percent) || 0) > thresholdLimit;
+    const hasHighDiscount = items.some((it) => (parseFloat(it.discount) || 0) > thresholdLimit);
 
     return {
       ...formData,
@@ -367,16 +414,12 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
       prepared_by: quotation?.prepared_by || loggedInName,
       status: quotation?.status || (hasHighDiscount ? "Pending Approval" : "Sent"),
       items,
-      subtotal,
-      discount_amount: discountAmount,
-      tax_amount: taxAmount,
+      subtotal: totalTaxable,
+      discount_percent: 0,
+      discount_amount: 0,
+      tax_amount: totalTaxAmount,
       total_amount: grandTotal,
-      cgstPercent,
-      sgstPercent,
-      cgstAmount,
-      sgstAmount,
-      igstPercent: isInterState ? taxPercent : 0,
-      igstAmount: isInterState ? taxAmount : 0,
+      tax_type: isInterState ? "IGST" : "CGST/SGST",
       totalInWords: numberToWords(grandTotal),
       quotation_no: quotation?.quotation_no || "AP/QT/PREVIEW",
       company: {
@@ -660,46 +703,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
             )}
           </Grid>
 
-          {/* 2. Quotation Validity */}
-          <Typography
-            variant="subtitle2"
-            sx={{
-              fontWeight: 800,
-              color: "#f37021",
-              textTransform: "uppercase",
-              letterSpacing: 0.5,
-              mb: 1.5,
-            }}
-          >
-            2. Dates
-          </Typography>
-
-          <Grid container spacing={2} sx={{ mb: 3 }}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                size="small"
-                type="date"
-                label="Date"
-                InputLabelProps={{ shrink: true }}
-                value={formData.quotation_date}
-                onChange={(e) => setFormData({ ...formData, quotation_date: e.target.value })}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                size="small"
-                type="date"
-                label="Valid Until"
-                InputLabelProps={{ shrink: true }}
-                value={formData.valid_until}
-                onChange={(e) => setFormData({ ...formData, valid_until: e.target.value })}
-              />
-            </Grid>
-          </Grid>
-
-          {/* 3. Product Line Items */}
+          {/* 2. Product Line Items */}
           <Box
             sx={{
               display: "flex",
@@ -739,11 +743,19 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
             <Table size="small">
               <TableHead sx={{ bgcolor: "#f9fafb" }}>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 800, width: "42%", color: "#1e293b" }}>Product *</TableCell>
-                  <TableCell sx={{ fontWeight: 800, width: "12%", color: "#1e293b", textAlign: "center" }}>HSN</TableCell>
-                  <TableCell sx={{ fontWeight: 800, width: "12%", color: "#1e293b", textAlign: "center" }}>Qty</TableCell>
-                  <TableCell sx={{ fontWeight: 800, width: "14%", color: "#1e293b", textAlign: "right" }}>Rate (₹)</TableCell>
-                  <TableCell sx={{ fontWeight: 800, width: "10%", color: "#1e293b", textAlign: "center" }}>Disc %</TableCell>
+                  <TableCell sx={{ fontWeight: 800, width: isInterState ? "34%" : "30%", color: "#1e293b" }}>Product *</TableCell>
+                  <TableCell sx={{ fontWeight: 800, width: "9%", color: "#1e293b", textAlign: "center" }}>HSN</TableCell>
+                  <TableCell sx={{ fontWeight: 800, width: "9%", color: "#1e293b", textAlign: "center" }}>Qty</TableCell>
+                  <TableCell sx={{ fontWeight: 800, width: "12%", color: "#1e293b", textAlign: "right" }}>Rate (₹)</TableCell>
+                  <TableCell sx={{ fontWeight: 800, width: "8%", color: "#1e293b", textAlign: "center" }}>Disc %</TableCell>
+                  {!isInterState ? (
+                    <>
+                      <TableCell sx={{ fontWeight: 800, width: "9%", color: "#1e293b", textAlign: "center" }}>CGST %</TableCell>
+                      <TableCell sx={{ fontWeight: 800, width: "9%", color: "#1e293b", textAlign: "center" }}>SGST %</TableCell>
+                    </>
+                  ) : (
+                    <TableCell sx={{ fontWeight: 800, width: "12%", color: "#1e293b", textAlign: "center" }}>IGST %</TableCell>
+                  )}
                   <TableCell sx={{ fontWeight: 800, width: "14%", color: "#1e293b", textAlign: "right" }}>
                     Total (₹)
                   </TableCell>
@@ -758,11 +770,18 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
                       <Autocomplete
                         size="small"
                         options={productsList}
-                        getOptionLabel={(opt) => (typeof opt === "string" ? opt : opt.name || "")}
+                        getOptionLabel={(opt) => {
+                          if (!opt) return "";
+                          if (typeof opt === "string") return opt;
+                          return opt.composition ? `${opt.name} (${opt.composition})` : opt.name || "";
+                        }}
                         isOptionEqualToValue={(option, val) =>
                           option.name === (typeof val === "string" ? val : val?.name)
                         }
-                        value={productsList.find((p) => p.name === it.description) || null}
+                        value={
+                          productsList.find((p) => p.name === it.description) ||
+                          (it.description ? { name: it.description, composition: it.composition } : null)
+                        }
                         onChange={(_, selectedPrd) => handleProductSelect(idx, selectedPrd)}
                         renderInput={(params) => (
                           <TextField
@@ -772,16 +791,23 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
                           />
                         )}
                         renderOption={(props, option) => (
-                          <li {...props} key={option.id || option.product_code}>
+                          <li {...props} key={option.id || option.product_code || option.name}>
                             <Box sx={{ width: "100%" }}>
-                              <Typography variant="body2" fontWeight="600">{option.name}</Typography>
+                              <Typography variant="body2" fontWeight="600">
+                                {option.name} {option.composition ? `(${option.composition})` : ""}
+                              </Typography>
                               <Typography variant="caption" color="text.secondary">
-                                {option.composition ? `${option.composition} • ` : ""}{option.unit ? `${option.unit} • ` : ""}₹{parseFloat(option.price || 0).toFixed(2)}
+                                GST: {option.gst !== undefined ? option.gst : 5}% • {option.unit ? `${option.unit} • ` : ""}₹{parseFloat(option.price || 0).toFixed(2)}
                               </Typography>
                             </Box>
                           </li>
                         )}
                       />
+                      {it.composition && (
+                        <Typography variant="caption" sx={{ color: "#64748b", display: "block", mt: 0.3, pl: 0.5 }}>
+                          ({it.composition})
+                        </Typography>
+                      )}
                     </TableCell>
 
                     {/* HSN (Auto from Product, Read-only) */}
@@ -793,7 +819,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
                       />
                     </TableCell>
 
-                    {/* Qty (Text field accepting only numbers, visible without spinners) */}
+                    {/* Qty */}
                     <TableCell sx={{ textAlign: "center" }}>
                       <TextField
                         size="small"
@@ -803,7 +829,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
                           handleItemChange(idx, "qty", val === "" ? "" : parseInt(val, 10));
                         }}
                         sx={{
-                          width: 70,
+                          width: 65,
                           "& .MuiInputBase-input": {
                             textAlign: "center",
                             fontWeight: 800,
@@ -822,7 +848,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
                       </Typography>
                     </TableCell>
 
-                    {/* Disc % (Text field accepting only numbers, visible without spinners) */}
+                    {/* Disc % */}
                     <TableCell sx={{ textAlign: "center" }}>
                       <TextField
                         size="small"
@@ -833,7 +859,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
                           handleItemChange(idx, "discount", val);
                         }}
                         sx={{
-                          width: 65,
+                          width: 60,
                           "& .MuiInputBase-input": {
                             textAlign: "center",
                             fontWeight: 800,
@@ -844,6 +870,34 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
                         }}
                       />
                     </TableCell>
+
+                    {/* Dynamic GST Columns */}
+                    {!isInterState ? (
+                      <>
+                        <TableCell sx={{ textAlign: "center" }}>
+                          <Chip
+                            size="small"
+                            label={`${((parseFloat(it.gst !== undefined ? it.gst : 5)) / 2).toFixed(1).replace(/\.0$/, "")}%`}
+                            sx={{ bgcolor: "#eff6ff", color: "#1d4ed8", fontWeight: 700, fontSize: "11px" }}
+                          />
+                        </TableCell>
+                        <TableCell sx={{ textAlign: "center" }}>
+                          <Chip
+                            size="small"
+                            label={`${((parseFloat(it.gst !== undefined ? it.gst : 5)) / 2).toFixed(1).replace(/\.0$/, "")}%`}
+                            sx={{ bgcolor: "#eff6ff", color: "#1d4ed8", fontWeight: 700, fontSize: "11px" }}
+                          />
+                        </TableCell>
+                      </>
+                    ) : (
+                      <TableCell sx={{ textAlign: "center" }}>
+                        <Chip
+                          size="small"
+                          label={`${parseFloat(it.gst !== undefined ? it.gst : 5)}%`}
+                          sx={{ bgcolor: "#eff6ff", color: "#1d4ed8", fontWeight: 700, fontSize: "11px" }}
+                        />
+                      </TableCell>
+                    )}
 
                     {/* Line Total */}
                     <TableCell sx={{ textAlign: "right", fontWeight: 800, color: "#f37021" }}>
@@ -893,87 +947,34 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
             </Grid>
 
             <Grid item xs={12} sm={6}>
-              <Paper variant="outlined" sx={{ p: 2, bgcolor: "#f9fafb", borderRadius: 2 }}>
-                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1.5 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Subtotal:
-                  </Typography>
-                  <Typography variant="body2" fontWeight="bold">
-                    ₹{subtotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-                  </Typography>
-                </Box>
-
-                <Grid container spacing={1} alignItems="center" sx={{ mb: 1.5 }}>
-                  <Grid item xs={6}>
-                    <TextField
-                      fullWidth
-                      size="small"
-                      label="Discount %"
-                      value={
-                        formData.discount_percent !== undefined && formData.discount_percent !== null
-                          ? formData.discount_percent
-                          : 0
-                      }
-                      onChange={(e) => {
-                        let val = e.target.value.replace(/[^0-9.]/g, "");
-                        if (parseFloat(val) > 100) val = "100";
-                        setFormData({ ...formData, discount_percent: val });
-                      }}
-                      sx={{
-                        "& .MuiInputBase-input": {
-                          fontWeight: 800,
-                          fontSize: "14px",
-                          color: "#0f172a",
-                        },
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={6} sx={{ textAlign: "right" }}>
-                    <Typography variant="body2" color="error">
-                      -₹{discountAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-                    </Typography>
-                  </Grid>
-                </Grid>
-
-                <Grid container spacing={1} alignItems="center" sx={{ mb: 1.5 }}>
-                  <Grid item xs={6}>
-                    <FormControl fullWidth size="small">
-                      <InputLabel>GST</InputLabel>
-                      <Select
-                        value={formData.tax_percent}
-                        label="GST"
-                        onChange={(e) =>
-                          setFormData({ ...formData, tax_percent: Number(e.target.value) })
-                        }
-                      >
-                        <MenuItem value={0}>0%</MenuItem>
-                        <MenuItem value={5}>5%</MenuItem>
-                        <MenuItem value={12}>12%</MenuItem>
-                        <MenuItem value={18}>18%</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  <Grid item xs={6} sx={{ textAlign: "right" }}>
-                    <Typography variant="body2" color="text.secondary">
-                      +₹{taxAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-                    </Typography>
-                  </Grid>
-                </Grid>
-
-                <Divider sx={{ my: 1.5, borderColor: "#000000" }} />
-
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <Paper variant="outlined" sx={{ p: 2.5, bgcolor: "#f9fafb", borderRadius: 2 }}>
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
                   <Typography variant="subtitle1" fontWeight="bold" color="#f37021">
-                    Grand Total:
+                    GRAND TOTAL:
                   </Typography>
-                  <Typography variant="h6" fontWeight="bold" color="#f37021">
+                  <Typography variant="h5" fontWeight="900" color="#f37021">
                     ₹{grandTotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                   </Typography>
                 </Box>
 
+                <Divider sx={{ my: 1.5, borderColor: "#e2e8f0" }} />
+
+                <Box sx={{ fontSize: "12px", color: "#64748b" }}>
+                  <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.8 }}>
+                    <span>Tax Regime:</span>
+                    <strong style={{ color: "#0f172a" }}>
+                      {!isInterState ? "Intrastate (Delhi: CGST + SGST)" : "Interstate (Outside Delhi: IGST)"}
+                    </strong>
+                  </Box>
+                  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                    <span>Total Products:</span>
+                    <strong style={{ color: "#0f172a" }}>{items.length} Item(s)</strong>
+                  </Box>
+                </Box>
+
                 {!quotation && (
-                  <Box sx={{ mt: 1.5, textAlign: "right" }}>
-                    {items.some((it) => (parseFloat(it.discount) || 0) > 35) || (parseFloat(formData.discount_percent) || 0) > 35 ? (
+                  <Box sx={{ mt: 2, textAlign: "right" }}>
+                    {items.some((it) => (parseFloat(it.discount) || 0) > 35) ? (
                       <Chip
                         size="small"
                         icon={<Schedule sx={{ fontSize: "14px !important" }} />}

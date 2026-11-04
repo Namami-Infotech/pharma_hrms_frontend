@@ -47,6 +47,14 @@ function QuotationSlip({ quotation, onBack, onEdit }) {
 
   const items = Array.isArray(quotation.items) ? quotation.items : [];
 
+  // Determine GST Tax Type: Delhi (07) = Same State (CGST + SGST), Outside Delhi = Interstate (IGST)
+  const isInterState =
+    quotation.tax_type === "IGST" ||
+    (quotation.client_gst &&
+      !quotation.client_gst.trim().startsWith("07") &&
+      quotation.client_address &&
+      !quotation.client_address.toLowerCase().includes("delhi"));
+
   const handleDownloadPDF = async () => {
     if (!slipRef.current) return;
     setDownloading(true);
@@ -382,97 +390,175 @@ function QuotationSlip({ quotation, onBack, onEdit }) {
         </Box>
 
         {/* Line Items Table */}
-        <Box sx={{ border: "1px solid #000000", mb: 1.5 }}>
-          {/* Table Header */}
-          <Box
-            sx={{
-              display: "flex",
-              bgcolor: "#e5e7eb",
-              fontWeight: 800,
-              fontSize: "10.5px",
-              borderBottom: "1px solid #000000",
-              textAlign: "center",
-              py: 0.6,
+        <Box sx={{ border: "1px solid #000000", mb: 1.5, overflow: "hidden" }}>
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              tableLayout: "fixed",
+              fontFamily: "inherit",
+              margin: 0,
+              padding: 0,
             }}
           >
-            <Box sx={{ width: "6%", borderRight: "1px solid #000000" }}>S.N.</Box>
-            <Box sx={{ width: "40%", borderRight: "1px solid #000000", textAlign: "left", pl: 1 }}>
-              Product Description
-            </Box>
-            <Box sx={{ width: "10%", borderRight: "1px solid #000000" }}>HSN</Box>
-            <Box sx={{ width: "12%", borderRight: "1px solid #000000" }}>Packing</Box>
-            <Box sx={{ width: "8%", borderRight: "1px solid #000000" }}>Qty</Box>
-            <Box sx={{ width: "12%", borderRight: "1px solid #000000" }}>Rate (₹)</Box>
-            <Box sx={{ width: "12%" }}>Amount (₹)</Box>
-          </Box>
-
-          {/* Table Rows */}
-          {items.map((item, idx) => (
-            <Box
-              key={idx}
-              sx={{
-                display: "flex",
-                fontSize: "10.5px",
-                borderBottom: idx !== items.length - 1 ? "1px solid #e5e7eb" : "none",
-                py: 0.6,
-                alignItems: "center",
-                "&:nth-of-type(even)": { bgcolor: "#f9fafb" },
-              }}
-            >
-              <Box sx={{ width: "6%", textAlign: "center", borderRight: "1px solid #e5e7eb" }}>
-                {idx + 1}
-              </Box>
-              <Box
-                sx={{
-                  width: "40%",
-                  pl: 1,
-                  pr: 0.5,
-                  fontWeight: 600,
-                  borderRight: "1px solid #e5e7eb",
+            <colgroup>
+              <col style={{ width: "5%" }} />
+              <col style={{ width: isInterState ? "41%" : "37%" }} />
+              <col style={{ width: "9%" }} />
+              <col style={{ width: isInterState ? "8%" : "7%" }} />
+              <col style={{ width: isInterState ? "13%" : "12%" }} />
+              <col style={{ width: isInterState ? "7%" : "6%" }} />
+              {!isInterState ? (
+                <>
+                  <col style={{ width: "6%" }} />
+                  <col style={{ width: "6%" }} />
+                </>
+              ) : (
+                <col style={{ width: "7%" }} />
+              )}
+              <col style={{ width: isInterState ? "14%" : "13%" }} />
+            </colgroup>
+            <thead>
+              <tr
+                style={{
+                  backgroundColor: "#e5e7eb",
+                  fontWeight: 800,
+                  fontSize: "10.5px",
+                  borderBottom: "1px solid #000000",
                 }}
               >
-                {item.description}
-                {item.discount > 0 && (
-                  <span style={{ fontSize: "9px", color: "#16a34a", marginLeft: "6px" }}>
-                    ({item.discount}% off)
-                  </span>
+                <th style={{ padding: "6px 2px", textAlign: "center", borderRight: "1px solid #000000", fontWeight: 800 }}>
+                  S.N.
+                </th>
+                <th style={{ padding: "6px 8px", textAlign: "left", borderRight: "1px solid #000000", fontWeight: 800 }}>
+                  Product Description
+                </th>
+                <th style={{ padding: "6px 2px", textAlign: "center", borderRight: "1px solid #000000", fontWeight: 800 }}>
+                  HSN
+                </th>
+                <th style={{ padding: "6px 2px", textAlign: "center", borderRight: "1px solid #000000", fontWeight: 800 }}>
+                  Qty
+                </th>
+                <th style={{ padding: "6px 8px", textAlign: "right", borderRight: "1px solid #000000", fontWeight: 800 }}>
+                  Rate (₹)
+                </th>
+                <th style={{ padding: "6px 2px", textAlign: "center", borderRight: "1px solid #000000", fontWeight: 800 }}>
+                  Disc %
+                </th>
+                {!isInterState ? (
+                  <>
+                    <th style={{ padding: "6px 2px", textAlign: "center", borderRight: "1px solid #000000", fontWeight: 800 }}>
+                      CGST %
+                    </th>
+                    <th style={{ padding: "6px 2px", textAlign: "center", borderRight: "1px solid #000000", fontWeight: 800 }}>
+                      SGST %
+                    </th>
+                  </>
+                ) : (
+                  <th style={{ padding: "6px 2px", textAlign: "center", borderRight: "1px solid #000000", fontWeight: 800 }}>
+                    IGST %
+                  </th>
                 )}
-              </Box>
-              <Box sx={{ width: "10%", textAlign: "center", borderRight: "1px solid #e5e7eb" }}>
-                {item.hsn || "3004"}
-              </Box>
-              <Box sx={{ width: "12%", textAlign: "center", borderRight: "1px solid #e5e7eb" }}>
-                {item.pack || "Box"}
-              </Box>
-              <Box
-                sx={{
-                  width: "8%",
-                  textAlign: "center",
-                  fontWeight: 600,
-                  borderRight: "1px solid #e5e7eb",
-                }}
-              >
-                {item.qty}
-              </Box>
-              <Box
-                sx={{
-                  width: "12%",
-                  textAlign: "right",
-                  pr: 1,
-                  borderRight: "1px solid #e5e7eb",
-                }}
-              >
-                {parseFloat(item.rate || 0).toLocaleString("en-IN", {
-                  minimumFractionDigits: 2,
-                })}
-              </Box>
-              <Box sx={{ width: "12%", textAlign: "right", pr: 1, fontWeight: 700 }}>
-                {parseFloat(item.amount || 0).toLocaleString("en-IN", {
-                  minimumFractionDigits: 2,
-                })}
-              </Box>
-            </Box>
-          ))}
+                <th style={{ padding: "6px 8px", textAlign: "right", fontWeight: 800 }}>
+                  Amount (₹)
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item, idx) => {
+                const gstVal = parseFloat(item.gst !== undefined ? item.gst : 5);
+                const cgstVal = (gstVal / 2).toFixed(1).replace(/\.0$/, "");
+                const sgstVal = (gstVal / 2).toFixed(1).replace(/\.0$/, "");
+
+                return (
+                  <tr
+                    key={idx}
+                    style={{
+                      fontSize: "10.5px",
+                      borderBottom: idx !== items.length - 1 ? "1px solid #000000" : "none",
+                      backgroundColor: idx % 2 === 1 ? "#f9fafb" : "#ffffff",
+                    }}
+                  >
+                    <td style={{ padding: "6px 2px", textAlign: "center", borderRight: "1px solid #000000" }}>
+                      {idx + 1}
+                    </td>
+                    <td style={{ padding: "6px 8px", textAlign: "left", borderRight: "1px solid #000000" }}>
+                      <span style={{ fontWeight: 600, color: "#111827" }}>
+                        {item.description || item.name}
+                      </span>
+                      {item.composition ? (
+                        <span style={{ fontWeight: 500, color: "#4b5563", marginLeft: "4px" }}>
+                          ({item.composition})
+                        </span>
+                      ) : null}
+                      {parseFloat(item.discount || 0) > 0 && (
+                        <span style={{ fontSize: "9px", color: "#16a34a", marginLeft: "6px", fontWeight: 600 }}>
+                          ({item.discount}% off)
+                        </span>
+                      )}
+                    </td>
+                    <td style={{ padding: "6px 2px", textAlign: "center", borderRight: "1px solid #000000" }}>
+                      {item.hsn || "3004"}
+                    </td>
+                    <td style={{ padding: "6px 2px", textAlign: "center", fontWeight: 600, borderRight: "1px solid #000000" }}>
+                      {item.qty}
+                    </td>
+                    <td style={{ padding: "6px 8px", textAlign: "right", borderRight: "1px solid #000000" }}>
+                      {parseFloat(item.rate || 0).toLocaleString("en-IN", {
+                        minimumFractionDigits: 2,
+                      })}
+                    </td>
+                    <td style={{ padding: "6px 2px", textAlign: "center", borderRight: "1px solid #000000" }}>
+                      {item.discount ? `${item.discount}%` : "—"}
+                    </td>
+                    {!isInterState ? (
+                      <>
+                        <td
+                          style={{
+                            padding: "6px 2px",
+                            textAlign: "center",
+                            borderRight: "1px solid #000000",
+                            color: "#1e40af",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {`${cgstVal}%`}
+                        </td>
+                        <td
+                          style={{
+                            padding: "6px 2px",
+                            textAlign: "center",
+                            borderRight: "1px solid #000000",
+                            color: "#1e40af",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {`${sgstVal}%`}
+                        </td>
+                      </>
+                    ) : (
+                      <td
+                        style={{
+                          padding: "6px 2px",
+                          textAlign: "center",
+                          borderRight: "1px solid #000000",
+                          color: "#1e40af",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {`${gstVal}%`}
+                      </td>
+                    )}
+                    <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700 }}>
+                      {parseFloat(item.amount || 0).toLocaleString("en-IN", {
+                        minimumFractionDigits: 2,
+                      })}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </Box>
 
         {/* Totals & Summary Calculation */}
@@ -533,84 +619,38 @@ function QuotationSlip({ quotation, onBack, onEdit }) {
             </Box>
           </Box>
 
-          {/* Right: Financial Breakdown */}
-          <Box sx={{ width: { xs: "100%", sm: "45%" }, p: 1.2 }}>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, fontSize: "11px" }}>
-              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                <span>Subtotal:</span>
-                <span style={{ fontWeight: 600 }}>
-                  ₹
-                  {parseFloat(quotation.subtotal || 0).toLocaleString("en-IN", {
-                    minimumFractionDigits: 2,
-                  })}
-                </span>
-              </Box>
-
-              {parseFloat(quotation.discount_amount || 0) > 0 && (
-                <Box sx={{ display: "flex", justifyContent: "space-between", color: "#16a34a" }}>
-                  <span>Discount ({quotation.discount_percent}%):</span>
-                  <span>
-                    -₹
-                    {parseFloat(quotation.discount_amount || 0).toLocaleString("en-IN", {
-                      minimumFractionDigits: 2,
-                    })}
-                  </span>
-                </Box>
-              )}
-
-              {/* GST Breakdown */}
-              {quotation.tax_type === "IGST" ? (
-                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                  <span>IGST ({quotation.tax_percent}%):</span>
-                  <span>
-                    ₹
-                    {parseFloat(quotation.tax_amount || 0).toLocaleString("en-IN", {
-                      minimumFractionDigits: 2,
-                    })}
-                  </span>
-                </Box>
-              ) : (
-                <>
-                  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>CGST ({quotation.cgstPercent || (parseFloat(quotation.tax_percent || 12) / 2)}%):</span>
-                    <span>
-                      ₹
-                      {parseFloat(
-                        quotation.cgstAmount || (parseFloat(quotation.tax_amount || 0) / 2)
-                      ).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-                    </span>
-                  </Box>
-                  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>SGST ({quotation.sgstPercent || (parseFloat(quotation.tax_percent || 12) / 2)}%):</span>
-                    <span>
-                      ₹
-                      {parseFloat(
-                        quotation.sgstAmount || (parseFloat(quotation.tax_amount || 0) / 2)
-                      ).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-                    </span>
-                  </Box>
-                </>
-              )}
-
-              <Divider sx={{ my: 0.4, borderColor: "#000000" }} />
-
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  fontSize: "14px",
-                  fontWeight: 900,
-                  color: "#f37021",
-                }}
-              >
-                <span>GRAND TOTAL:</span>
-                <span>
-                  ₹
-                  {parseFloat(quotation.total_amount || 0).toLocaleString("en-IN", {
-                    minimumFractionDigits: 2,
-                  })}
-                </span>
-              </Box>
+          {/* Right: Financial Breakdown (Subtotal & GST removed, only Grand Total displayed) */}
+          <Box
+            sx={{
+              width: { xs: "100%", sm: "45%" },
+              p: 1.5,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%",
+                fontSize: "14px",
+                fontWeight: 900,
+                color: "#f37021",
+                p: 1,
+                bgcolor: "#fff7ed",
+                borderRadius: 1,
+                border: "1px solid #fed7aa",
+              }}
+            >
+              <span style={{ fontSize: "13px", fontWeight: 800 }}>GRAND TOTAL:</span>
+              <span style={{ fontSize: "16px", fontWeight: 900 }}>
+                ₹
+                {parseFloat(quotation.total_amount || 0).toLocaleString("en-IN", {
+                  minimumFractionDigits: 2,
+                })}
+              </span>
             </Box>
           </Box>
         </Box>

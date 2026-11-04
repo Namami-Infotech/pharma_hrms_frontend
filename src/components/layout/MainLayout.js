@@ -27,9 +27,9 @@ const MainLayout = ({ children }) => {
         component="main"
         sx={{
           flexGrow: 1,
-          marginTop: '72px', // Navbar height
+          marginTop: '84px', // Navbar height
           width: { md: `calc(100% - 260px)` },
-          height: 'calc(100vh - 72px)', // Full height minus navbar
+          height: 'calc(100vh - 84px)', // Full height minus navbar
           overflow: 'hidden', // Prevent double scrolling
         }}
       >

@@ -54,6 +54,7 @@ function ProductModal({ open, onClose, product, onSuccess }) {
     unit: "Strip",
     price: "",
     product_code: "",
+    gst: 5,
     hsn: "3004",
     composition: "",
     status: "Active",
@@ -69,6 +70,7 @@ function ProductModal({ open, onClose, product, onSuccess }) {
         unit: product.unit || "Strip",
         price: product.price !== undefined ? product.price : "",
         product_code: product.product_code || "",
+        gst: product.gst !== undefined ? Number(product.gst) : 5,
         hsn: product.hsn || "3004",
         composition: product.composition || "",
         status: product.status || "Active",
@@ -79,6 +81,7 @@ function ProductModal({ open, onClose, product, onSuccess }) {
         unit: "Strip",
         price: "",
         product_code: "",
+        gst: 5,
         hsn: "3004",
         composition: "",
         status: "Active",
@@ -117,6 +120,7 @@ function ProductModal({ open, onClose, product, onSuccess }) {
     try {
       const payload = {
         ...formData,
+        gst: formData.gst === "" || isNaN(parseFloat(formData.gst)) ? 5 : parseFloat(formData.gst),
         packaging: product?.packaging || formData.unit,
         category: product?.category || "General",
         description: product?.description || "",
@@ -278,6 +282,27 @@ function ProductModal({ open, onClose, product, onSuccess }) {
                 placeholder="3004"
                 value={formData.hsn}
                 onChange={(e) => handleChange("hsn", e.target.value)}
+              />
+            </Grid>
+
+            {/* GST Rate (%) */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="GST Rate (%) *"
+                placeholder="e.g. 5"
+                type="number"
+                inputProps={{ min: 0, max: 100, step: "0.1" }}
+                value={formData.gst !== undefined ? formData.gst : 5}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  handleChange("gst", val === "" ? "" : parseFloat(val));
+                }}
+                InputProps={{
+                  endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                }}
+                helperText="Enter GST percentage (e.g. 5 for 5%)"
+                required
               />
             </Grid>
 
