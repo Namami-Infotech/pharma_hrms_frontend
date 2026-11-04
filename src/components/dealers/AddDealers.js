@@ -18,7 +18,6 @@ import {
     Typography,
     Alert,
     IconButton,
-    Autocomplete,
 } from '@mui/material';
 import { LocationOn, CloudUpload, Delete, Close } from '@mui/icons-material';
 import axios from 'axios';
@@ -70,7 +69,7 @@ function AddDealers({ open, onClose, onDealerAdded }) {
         try {
             const res = await axios.get(`${BASE_URL}/dealer/get_dealer_fields.php`);
             if (res.data && res.data.success) {
-                const fetchedFields = res.data.data || [];
+                let fetchedFields = res.data.data || [];
                 // Ensure State field is always present as mandatory field
                 if (!fetchedFields.some(f => (f.Description || '').toLowerCase().includes('state'))) {
                     fetchedFields.push({
@@ -81,6 +80,21 @@ function AddDealers({ open, onClose, onDealerAdded }) {
                         TypeId: 1
                     });
                 }
+
+                // Logical ordering: Company -> Address -> Doctor Name -> Contact -> Email -> State -> Remarks
+                const getFieldOrderScore = (f) => {
+                    const desc = (f.Description || '').toLowerCase();
+                    if (desc.includes('company')) return 10;
+                    if (desc.includes('address')) return 20;
+                    if (desc.includes('dealer name') || desc.includes('doctor')) return 30;
+                    if (desc.includes('contact') || desc.includes('phone') || desc.includes('mobile')) return 40;
+                    if (desc.includes('mail') || desc.includes('email')) return 50;
+                    if (desc.includes('state')) return 60;
+                    if (desc.includes('remark')) return 1000;
+                    return 70;
+                };
+
+                fetchedFields = [...fetchedFields].sort((a, b) => getFieldOrderScore(a) - getFieldOrderScore(b));
                 setFields(fetchedFields);
 
                 // Initialize form values
@@ -249,35 +263,93 @@ function AddDealers({ open, onClose, onDealerAdded }) {
             );
         }
 
-        // 1b. State / Doctor State (Autocomplete with all Indian States)
+        // 1b. State / Doctor State (Select Dropdown with Indian States, opens at bottom with scroll)
         if (isState) {
             const INDIAN_STATES = [
-                "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat",
-                "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh",
-                "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
-                "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh",
-                "Uttarakhand", "West Bengal", "Delhi", "Jammu and Kashmir", "Ladakh", "Puducherry", "Chandigarh"
+                "Andaman and Nicobar Islands",
+                "Andhra Pradesh",
+                "Arunachal Pradesh",
+                "Assam",
+                "Bihar",
+                "Chandigarh",
+                "Chhattisgarh",
+                "Dadra and Nagar Haveli and Daman and Diu",
+                "Delhi",
+                "Goa",
+                "Gujarat",
+                "Haryana",
+                "Himachal Pradesh",
+                "Jammu and Kashmir",
+                "Jharkhand",
+                "Karnataka",
+                "Kerala",
+                "Ladakh",
+                "Lakshadweep",
+                "Madhya Pradesh",
+                "Maharashtra",
+                "Manipur",
+                "Meghalaya",
+                "Mizoram",
+                "Nagaland",
+                "Odisha",
+                "Puducherry",
+                "Punjab",
+                "Rajasthan",
+                "Sikkim",
+                "Tamil Nadu",
+                "Telangana",
+                "Tripura",
+                "Uttar Pradesh",
+                "Uttarakhand",
+                "West Bengal"
             ];
             return (
-                <Autocomplete
-                    key={field.Id}
-                    freeSolo
-                    options={INDIAN_STATES}
-                    value={value || ''}
-                    onChange={(event, newValue) => handleInputChange(field.Id, newValue || '')}
-                    onInputChange={(event, newInputValue) => handleInputChange(field.Id, newInputValue || '')}
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            fullWidth
-                            size="small"
-                            label={uiLabel}
-                            required={true}
-                            error={hasError}
-                            helperText={helperText}
-                        />
+                <FormControl key={field.Id} fullWidth size="small" required={isRequired} error={hasError}>
+                    <InputLabel id={`label-state-${field.Id}`}>{uiLabel} *</InputLabel>
+                    <Select
+                        labelId={`label-state-${field.Id}`}
+                        label={`${uiLabel} *`}
+                        value={value || ''}
+                        onChange={(e) => handleInputChange(field.Id, e.target.value)}
+                        MenuProps={{
+                            PaperProps: {
+                                sx: {
+                                    maxHeight: 250,
+                                    overflowY: 'auto',
+                                    '&::-webkit-scrollbar': {
+                                        width: '6px',
+                                    },
+                                    '&::-webkit-scrollbar-thumb': {
+                                        backgroundColor: '#ccc',
+                                        borderRadius: '4px',
+                                    },
+                                },
+                            },
+                            anchorOrigin: {
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            },
+                            transformOrigin: {
+                                vertical: 'top',
+                                horizontal: 'left',
+                            },
+                        }}
+                    >
+                        <MenuItem value="" disabled>
+                            <em>Select State</em>
+                        </MenuItem>
+                        {INDIAN_STATES.map((st) => (
+                            <MenuItem key={st} value={st}>
+                                {st}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                    {hasError && (
+                        <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>
+                            {helperText}
+                        </Typography>
                     )}
-                />
+                </FormControl>
             );
         }
 
@@ -394,6 +466,29 @@ function AddDealers({ open, onClose, onDealerAdded }) {
                             label={field.Description}
                             value={value}
                             onChange={(e) => handleInputChange(field.Id, e.target.value)}
+                            MenuProps={{
+                                PaperProps: {
+                                    sx: {
+                                        maxHeight: 250,
+                                        overflowY: 'auto',
+                                        '&::-webkit-scrollbar': {
+                                            width: '6px',
+                                        },
+                                        '&::-webkit-scrollbar-thumb': {
+                                            backgroundColor: '#ccc',
+                                            borderRadius: '4px',
+                                        },
+                                    },
+                                },
+                                anchorOrigin: {
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                },
+                                transformOrigin: {
+                                    vertical: 'top',
+                                    horizontal: 'left',
+                                },
+                            }}
                         >
                             {options.map((opt, idx) => (
                                 <MenuItem key={idx} value={opt}>
@@ -500,7 +595,7 @@ function AddDealers({ open, onClose, onDealerAdded }) {
                 </IconButton>
             </DialogTitle>
 
-            <DialogContent dividers sx={{ p: 3, pt: 3 }}>
+            <DialogContent dividers sx={{ p: 3, pt: 3, minHeight: 360 }}>
                 {errorMsg && (
                     <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }} onClose={() => setErrorMsg('')}>
                         {errorMsg}
