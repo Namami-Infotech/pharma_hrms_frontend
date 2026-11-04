@@ -71,7 +71,12 @@ function AddDealers({ open, onClose, onDealerAdded }) {
             if (res.data && res.data.success) {
                 let fetchedFields = res.data.data || [];
                 // Ensure State field is always present as mandatory field
-                if (!fetchedFields.some(f => (f.Description || '').toLowerCase().includes('state'))) {
+                const hasStateField = fetchedFields.some(f => 
+                    (f.Description || '').toLowerCase().includes('state') ||
+                    (f.Caption || '').toLowerCase().includes('state') ||
+                    String(f.Id) === '7'
+                );
+                if (!hasStateField) {
                     fetchedFields.push({
                         Id: 7,
                         Description: 'Dealer State',
@@ -84,13 +89,14 @@ function AddDealers({ open, onClose, onDealerAdded }) {
                 // Logical ordering: Company -> Address -> Doctor Name -> Contact -> Email -> State -> Remarks
                 const getFieldOrderScore = (f) => {
                     const desc = (f.Description || '').toLowerCase();
-                    if (desc.includes('company')) return 10;
-                    if (desc.includes('address')) return 20;
-                    if (desc.includes('dealer name') || desc.includes('doctor')) return 30;
-                    if (desc.includes('contact') || desc.includes('phone') || desc.includes('mobile')) return 40;
-                    if (desc.includes('mail') || desc.includes('email')) return 50;
-                    if (desc.includes('state')) return 60;
-                    if (desc.includes('remark')) return 1000;
+                    const caption = (f.Caption || '').toLowerCase();
+                    if (desc.includes('company') || caption.includes('company')) return 10;
+                    if (desc.includes('address') || caption.includes('address')) return 20;
+                    if (desc.includes('dealer name') || desc.includes('doctor') || caption.includes('doctor')) return 30;
+                    if (desc.includes('contact') || desc.includes('phone') || desc.includes('mobile') || caption.includes('phone')) return 40;
+                    if (desc.includes('mail') || desc.includes('email') || caption.includes('email')) return 50;
+                    if (desc.includes('state') || caption.includes('state') || String(f.Id) === '7') return 60;
+                    if (desc.includes('remark') || caption.includes('remark')) return 1000;
                     return 70;
                 };
 
@@ -143,11 +149,12 @@ function AddDealers({ open, onClose, onDealerAdded }) {
         const errors = {};
         for (const field of fields) {
             const descLower = (field.Description || '').toLowerCase();
+            const captionLower = (field.Caption || '').toLowerCase();
             const val = formData[field.Id];
             const strVal = val !== undefined && val !== null ? String(val).trim() : '';
 
             // 1. Mandatory check (including State as mandatory)
-            const isState = descLower.includes('state');
+            const isState = descLower.includes('state') || captionLower.includes('state') || String(field.Id) === '7';
             const isMandatory = field.Mandatory || isState;
 
             if (isMandatory) {
@@ -219,9 +226,11 @@ function AddDealers({ open, onClose, onDealerAdded }) {
     // Helper to render individual dynamic input based on field metadata
     const renderFieldInput = (field) => {
         const descLower = (field.Description || '').toLowerCase();
+        const captionLower = (field.Caption || '').toLowerCase();
+        const nameLower = (field.Name || '').toLowerCase();
         const validationLower = (field.Validation || '').toLowerCase();
         const typeNameLower = (field.TypeName || '').toLowerCase();
-        const isState = descLower.includes('state');
+        const isState = descLower.includes('state') || captionLower.includes('state') || nameLower.includes('state') || String(field.Id) === '7';
         const isRequired = !!field.Mandatory || isState;
         const hasError = !!formErrors[field.Id];
         const helperText = formErrors[field.Id] || '';
