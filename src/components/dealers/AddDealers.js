@@ -248,33 +248,8 @@ function AddDealers({ open, onClose, onDealerAdded }) {
             uiLabel = 'Email ID';
         }
 
-        // 1. Address & Remarks (ALWAYS Text, multiline)
-        if (
-            descLower.includes('address') ||
-            descLower.includes('remark') ||
-            validationLower.includes('long text')
-        ) {
-            return (
-                <TextField
-                    key={field.Id}
-                    fullWidth
-                    size="small"
-                    type="text"
-                    label={uiLabel}
-                    required={isRequired}
-                    error={hasError}
-                    helperText={helperText}
-                    value={value}
-                    multiline
-                    rows={2}
-                    onChange={(e) => handleInputChange(field.Id, e.target.value)}
-                />
-            );
-        }
-
-        console.log("stateeeee", isState);
-
-        // 1b. State / Doctor State (Select Dropdown with Indian States, opens at bottom with scroll)
+        // 1. State / Doctor State (Select Dropdown with Indian States, opens at bottom with scroll)
+        // Checked FIRST to prevent Checkpoint 7 with 'Long Text' validation from being hijacked by textarea
         if (isState) {
             const INDIAN_STATES = [
                 "Andaman and Nicobar Islands",
@@ -361,6 +336,30 @@ function AddDealers({ open, onClose, onDealerAdded }) {
                         </Typography>
                     )}
                 </FormControl>
+            );
+        }
+
+        // 2. Address & Remarks (ALWAYS Text, multiline)
+        if (
+            descLower.includes('address') ||
+            descLower.includes('remark') ||
+            validationLower.includes('long text')
+        ) {
+            return (
+                <TextField
+                    key={field.Id}
+                    fullWidth
+                    size="small"
+                    type="text"
+                    label={uiLabel}
+                    required={isRequired}
+                    error={hasError}
+                    helperText={helperText}
+                    value={value}
+                    multiline
+                    rows={2}
+                    onChange={(e) => handleInputChange(field.Id, e.target.value)}
+                />
             );
         }
 
