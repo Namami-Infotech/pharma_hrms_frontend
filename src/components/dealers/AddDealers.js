@@ -23,7 +23,7 @@ import { LocationOn, CloudUpload, Delete, Close } from '@mui/icons-material';
 import axios from 'axios';
 import { useAuth } from '../auth/AuthContext';
 import { useGeolocated } from 'react-geolocated';
-
+   
 const BRAND_COLOR = '#f37021';
 
 function AddDealers({ open, onClose, onDealerAdded }) {

@@ -198,6 +198,8 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
         client_email: quotation.client_email || "",
         client_phone: quotation.client_phone || "",
         client_address: quotation.client_address || "",
+        client_state: quotation.State || quotation.client_state || "",
+        State: quotation.State || quotation.client_state || "",
         client_gst: quotation.client_gst || "",
         subject: quotation.subject || "Quotation for Supply of Pharmaceutical Products",
         quotation_date: quotation.quotation_date ? quotation.quotation_date.slice(0, 10) : "",
@@ -433,6 +435,8 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
       tax_amount: totalTaxAmount,
       total_amount: grandTotal,
       tax_type: isInterState ? "IGST" : "CGST/SGST",
+      State: formData.client_state || formData.State || "",
+      client_state: formData.client_state || formData.State || "",
       totalInWords: numberToWords(grandTotal),
       quotation_no: quotation?.quotation_no || "QT-PREVIEW",
       company: {

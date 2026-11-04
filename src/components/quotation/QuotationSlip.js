@@ -48,8 +48,10 @@ function QuotationSlip({ quotation, onBack, onEdit }) {
   const items = Array.isArray(quotation.items) ? quotation.items : [];
 
   // Determine GST Tax Type: Delhi (07) = Same State (CGST + SGST), Outside Delhi = Interstate (IGST)
+  const clientState = (quotation.State || quotation.client_state || "").trim().toLowerCase();
   const isInterState =
     quotation.tax_type === "IGST" ||
+    (clientState && !clientState.includes("delhi") && clientState !== "dl") ||
     (quotation.client_gst &&
       !quotation.client_gst.trim().startsWith("07") &&
       quotation.client_address &&
@@ -306,6 +308,11 @@ function QuotationSlip({ quotation, onBack, onEdit }) {
             {quotation.client_address && (
               <Typography sx={{ fontSize: "10.5px", color: "#374151", mt: 0.3 }}>
                 {quotation.client_address}
+              </Typography>
+            )}
+            {(quotation.State || quotation.client_state) && (
+              <Typography sx={{ fontSize: "10.5px", color: "#374151", mt: 0.2 }}>
+                <strong>State:</strong> {quotation.State || quotation.client_state}
               </Typography>
             )}
             <Box sx={{ mt: 0.6, fontSize: "10.5px", color: "#374151" }}>

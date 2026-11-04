@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.3d9ee8ca.css",
-    "main.js": "/static/js/main.060910f3.js",
+    "main.js": "/static/js/main.cb3f1e18.js",
     "static/js/977.0c8c3ad5.chunk.js": "/static/js/977.0c8c3ad5.chunk.js",
     "static/js/455.4480f2b0.chunk.js": "/static/js/455.4480f2b0.chunk.js",
     "static/js/453.424ae33a.chunk.js": "/static/js/453.424ae33a.chunk.js",
@@ -10,13 +10,13 @@
     "static/media/aberdure_logo.png": "/static/media/aberdure_logo.e08b6ef96e37a9d6fe03.png",
     "index.html": "/index.html",
     "main.3d9ee8ca.css.map": "/static/css/main.3d9ee8ca.css.map",
-    "main.060910f3.js.map": "/static/js/main.060910f3.js.map",
+    "main.cb3f1e18.js.map": "/static/js/main.cb3f1e18.js.map",
     "977.0c8c3ad5.chunk.js.map": "/static/js/977.0c8c3ad5.chunk.js.map",
     "455.4480f2b0.chunk.js.map": "/static/js/455.4480f2b0.chunk.js.map",
     "453.424ae33a.chunk.js.map": "/static/js/453.424ae33a.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.3d9ee8ca.css",
-    "static/js/main.060910f3.js"
+    "static/js/main.cb3f1e18.js"
   ]
 }

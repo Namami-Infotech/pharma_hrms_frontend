@@ -629,11 +629,18 @@ function QuotationList() {
                         <Typography variant="body2" fontWeight="600">
                           {row.client_name}
                         </Typography>
-                        {row.client_phone && (
-                          <Typography variant="caption" color="text.secondary">
-                            {row.client_phone}
-                          </Typography>
-                        )}
+                        <Box sx={{ display: "flex", gap: 0.8, alignItems: "center", flexWrap: "wrap" }}>
+                          {row.client_phone && (
+                            <Typography variant="caption" color="text.secondary">
+                              {row.client_phone}
+                            </Typography>
+                          )}
+                          {(row.State || row.client_state) && (
+                            <Typography variant="caption" sx={{ color: "#f37021", fontWeight: 700 }}>
+                              • {row.State || row.client_state}
+                            </Typography>
+                          )}
+                        </Box>
                       </TableCell>
                       <TableCell>
                         {row.quotation_date ? row.quotation_date.slice(0, 10) : "NA"}
