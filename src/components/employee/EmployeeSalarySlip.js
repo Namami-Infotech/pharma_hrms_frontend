@@ -22,7 +22,7 @@ import {
 import GetAppIcon from "@mui/icons-material/GetApp";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import logo from "../../assets/NamamiInfotech.jpeg"
+import logo from "../../assets/aberdure_logo.png";
 import { useParams } from "react-router-dom";
 function EmployeeSalarySlip() {
   const [salarySlip, setSalarySlip] = useState(null);
@@ -134,6 +134,7 @@ function EmployeeSalarySlip() {
   const deductions = [
     ["EPF", "0"],
     ["ESI", "0"],
+    ["Other Deduction", salarySlip?.deductions?.otherDeduction ? String(salarySlip.deductions.otherDeduction) : "0"],
     ["Professional Tax", "0"],
   ];
   const months = [
@@ -210,15 +211,21 @@ function EmployeeSalarySlip() {
 
       <Container maxWidth="md" sx={{ mt: 4 }}>
         <Paper elevation={3} sx={{ p: 3 }} ref={salarySlipRef}>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <img src={logo} alt="Namami Infotech" style={{ width: "100%", maxWidth: "80px", height: "auto" }} />
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <img
+              src={logo}
+              alt="Aberdure Pharma"
+              style={{ maxHeight: "65px", maxWidth: "140px", objectFit: "contain", display: "block" }}
+            />
 
-            <div>
+            <div style={{ textAlign: "right", maxWidth: "480px" }}>
               <Typography variant="h6" align="right" fontWeight="bold">
-                Namami Infotech India Pvt. Ltd.
+                M/S ABERDURE PHARMA
               </Typography>
-              <Typography variant="p" align="right" fontWeight="bold">
-                DPT-303, DLF Prime Towers, Okhla Phase 1, New Delhi - 110020
+              <Typography variant="body2" component="div" align="right" fontWeight="bold" sx={{ fontSize: "10.5px", lineHeight: 1.4, my: 0.5 }}>
+                <div>1ST FLOOR, SHOP 28 PROP.NO 920-21 WARD NO 07 KH NO 1151/3,</div>
+                <div>BISHAN SWAROOP COMPLEX, MEHRAULI MAIN MARKET,</div>
+                <div>MEHRAULI, NEW DELHI - 110030</div>
               </Typography>
               <Typography variant="subtitle1" align="right">
                 Pay Slip for {months[selectedMonth - 1]} {selectedYear}

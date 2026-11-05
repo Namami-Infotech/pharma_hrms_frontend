@@ -42,6 +42,7 @@ import {
 } from '@mui/material';
 import {
   Check,
+  Close,
   Cancel,
   Search,
   FilterList,
@@ -77,7 +78,6 @@ function EnhancedViewExpense() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
-  const [viewMode, setViewMode] = useState(isMobile ? 'card' : 'table');
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const [createExpenseOpen, setCreateExpenseOpen] = useState(false);
@@ -508,7 +508,7 @@ function EnhancedViewExpense() {
         <Card elevation={3} sx={{ mb: 3, borderRadius: 3 }}>
           <CardContent>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={8}>
                 <TextField
                   fullWidth
                   placeholder="Search by employee name or expense type..."
@@ -524,7 +524,7 @@ function EnhancedViewExpense() {
                   sx={{ borderRadius: 2 }}
                 />
               </Grid>
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={4}>
                 <TextField
                   select
                   fullWidth
@@ -538,17 +538,6 @@ function EnhancedViewExpense() {
                   <MenuItem value="Rejected">Rejected</MenuItem>
                 </TextField>
               </Grid>
-              <Grid item xs={12} md={3}>
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  startIcon={<FilterList />}
-                  onClick={() => setViewMode(viewMode === 'table' ? 'card' : 'table')}
-                  sx={{ borderRadius: 2, py: 1.5 }}
-                >
-                  {viewMode === 'table' ? 'Card View' : 'Table View'}
-                </Button>
-              </Grid>
             </Grid>
           </CardContent>
         </Card>
@@ -560,8 +549,7 @@ function EnhancedViewExpense() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.3 }}
       >
-        {viewMode === 'table' ? (
-          <TableContainer component={Paper} elevation={4} sx={{ borderRadius: 3 }}>
+        <TableContainer component={Paper} elevation={4} sx={{ borderRadius: 3 }}>
             <Table>
               <TableHead>
                 <TableRow sx={{ bgcolor: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
@@ -630,37 +618,48 @@ function EnhancedViewExpense() {
                         </TableCell>
                         <TableCell>
                           <Chip
-                            icon={getStatusIcon(expense.Status)}
                             label={expense.Status}
                             color={getStatusColor(expense.Status)}
-                            variant="outlined"
-                            sx={{ borderRadius: 2, fontWeight: 'bold' }}
+                            size="small"
+                            sx={{ height: 22, fontSize: '0.75rem', fontWeight: 600 }}
                           />
                         </TableCell>
                         {canApproveOrReject && (
                           <TableCell sx={{ textAlign: 'center' }}>
                             {expense.Status === 'Pending' ? (
-                              <Box display="flex" gap={1} justifyContent="center">
-                                <Button
-                                  variant="contained"
-                                  color="success"
-                                  size="small"
-                                  startIcon={<Check />}
-                                  onClick={() => handleStatusChange(expense.detailId, 'Approved')}
-                                  sx={{ borderRadius: 2, textTransform: 'none', px: 1.5 }}
-                                >
-                                  Approve
-                                </Button>
-                                <Button
-                                  variant="contained"
-                                  color="error"
-                                  size="small"
-                                  startIcon={<Cancel />}
-                                  onClick={() => handleStatusChange(expense.detailId, 'Rejected')}
-                                  sx={{ borderRadius: 2, textTransform: 'none', px: 1.5 }}
-                                >
-                                  Reject
-                                </Button>
+                              <Box display="flex" gap={1} justifyContent="center" alignItems="center">
+                                <Tooltip title="Approve">
+                                  <IconButton
+                                    size="small"
+                                    onClick={() => handleStatusChange(expense.detailId, 'Approved')}
+                                    sx={{
+                                      color: '#16a34a',
+                                      bgcolor: 'rgba(22, 163, 74, 0.12)',
+                                      border: '1px solid rgba(22, 163, 74, 0.3)',
+                                      '&:hover': {
+                                        bgcolor: 'rgba(22, 163, 74, 0.25)',
+                                      },
+                                    }}
+                                  >
+                                    <Check fontSize="small" />
+                                  </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Reject">
+                                  <IconButton
+                                    size="small"
+                                    onClick={() => handleStatusChange(expense.detailId, 'Rejected')}
+                                    sx={{
+                                      color: '#dc2626',
+                                      bgcolor: 'rgba(220, 38, 38, 0.12)',
+                                      border: '1px solid rgba(220, 38, 38, 0.3)',
+                                      '&:hover': {
+                                        bgcolor: 'rgba(220, 38, 38, 0.25)',
+                                      },
+                                    }}
+                                  >
+                                    <Close fontSize="small" />
+                                  </IconButton>
+                                </Tooltip>
                               </Box>
                             ) : (
                               <Typography variant="caption" color="textSecondary" sx={{ fontStyle: 'italic' }}>
@@ -690,127 +689,6 @@ function EnhancedViewExpense() {
               </TableFooter>
             </Table>
           </TableContainer>
-        ) : (
-          <Grid container spacing={3}>
-            <AnimatePresence>
-              {filteredExpenses
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((expense, index) => (
-                  <Grid item xs={12} sm={6} md={4} key={expense.detailId}>
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      transition={{ duration: 0.3, delay: index * 0.05 }}
-                    >
-                      <Card
-                        elevation={4}
-                        sx={{
-                          borderRadius: 3,
-                          background: 'rgba(255, 255, 255, 0.9)',
-                          backdropFilter: 'blur(10px)',
-                          border: '1px solid rgba(255, 255, 255, 0.2)',
-                          '&:hover': {
-                            transform: 'translateY(-4px)',
-                            transition: 'transform 0.3s ease'
-                          }
-                        }}
-                      >
-                        <CardContent>
-                          <Box display="flex" justifyContent="space-between" alignItems="start" mb={2}>
-                            <Box display="flex" alignItems="center">
-                              <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
-                                {expense.employeeName.charAt(0)}
-                              </Avatar>
-                              <Box>
-                                <Typography variant="h6" fontWeight="bold">
-                                  {expense.employeeName}
-                                </Typography>
-                                <Typography variant="body2" color="textSecondary">
-                                  {formatDate(expense.expenseDate)}
-                                </Typography>
-                              </Box>
-                            </Box>
-                            <Chip
-                              icon={getStatusIcon(expense.Status)}
-                              label={expense.Status}
-                              color={getStatusColor(expense.Status)}
-                              size="small"
-                              sx={{ borderRadius: 2 }}
-                            />
-                          </Box>
-
-                          <Box mb={2}>
-                            <Typography variant="body2" color="textSecondary" gutterBottom>
-                              Category
-                            </Typography>
-                            <Chip
-                              label={expense.expenseType}
-                              variant="outlined"
-                              size="small"
-                              sx={{ borderRadius: 2 }}
-                            />
-                          </Box>
-
-                          <Box mb={2}>
-                            <Typography variant="body2" color="textSecondary" gutterBottom>
-                              Amount
-                            </Typography>
-                            <Typography variant="h5" fontWeight="bold" sx={{ color: "#f37021" }}>
-                              {formatCurrency(expense.expenseAmount)}
-                            </Typography>
-                          </Box>
-
-                          <Box display="flex" justifyContent="space-between" alignItems="center">
-                            {expense.image ? (
-                              <Button
-                                variant="outlined"
-                                size="small"
-                                startIcon={<Visibility />}
-                                onClick={() => handleViewImage(expense.image)}
-                                sx={{ borderRadius: 2 }}
-                              >
-                                View Receipt
-                              </Button>
-                            ) : (
-                              <Typography variant="body2" color="textSecondary">
-                                No Receipt
-                              </Typography>
-                            )}
-
-                            {canApproveOrReject && expense.Status === 'Pending' && (
-                              <Box display="flex" gap={1}>
-                                <Button
-                                  variant="contained"
-                                  color="success"
-                                  size="small"
-                                  startIcon={<Check />}
-                                  onClick={() => handleStatusChange(expense.detailId, 'Approved')}
-                                  sx={{ borderRadius: 2, textTransform: 'none' }}
-                                >
-                                  Approve
-                                </Button>
-                                <Button
-                                  variant="contained"
-                                  color="error"
-                                  size="small"
-                                  startIcon={<Cancel />}
-                                  onClick={() => handleStatusChange(expense.detailId, 'Rejected')}
-                                  sx={{ borderRadius: 2, textTransform: 'none' }}
-                                >
-                                  Reject
-                                </Button>
-                              </Box>
-                            )}
-                          </Box>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  </Grid>
-                ))}
-            </AnimatePresence>
-          </Grid>
-        )}
       </motion.div>
 
       {/* Image Dialog */}

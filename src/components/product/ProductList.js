@@ -35,6 +35,7 @@ import {
   DialogContentText,
   DialogActions,
   InputAdornment,
+  Switch,
 } from "@mui/material";
 import {
   Add,
@@ -150,11 +151,6 @@ function ProductList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
 
-  // Delete Confirm Dialog
-  const [deleteId, setDeleteId] = useState(null);
-  const [deletingProduct, setDeletingProduct] = useState(null);
-  const [deleting, setDeleting] = useState(false);
-
   const fetchProducts = async () => {
     setLoading(true);
     setError("");
@@ -163,7 +159,6 @@ function ProductList() {
       if (statusFilter !== "All") url += `&status=${statusFilter}`;
       if (categoryFilter !== "All") url += `&category=${encodeURIComponent(categoryFilter)}`;
       if (unitFilter !== "All") url += `&unit=${encodeURIComponent(unitFilter)}`;
-      if (search.trim()) url += `&search=${encodeURIComponent(search.trim())}`;
 
       const res = await axios.get(url);
       if (res.data.success) {
@@ -182,11 +177,14 @@ function ProductList() {
 
   useEffect(() => {
     fetchProducts();
-  }, [unitFilter, statusFilter]);
+  }, [unitFilter, statusFilter, categoryFilter]);
+
+  useEffect(() => {
+    setPage(0);
+  }, [search, statusFilter, unitFilter, categoryFilter]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    fetchProducts();
   };
 
   const handleOpenCreate = () => {
@@ -197,35 +195,6 @@ function ProductList() {
   const handleOpenEdit = (prd) => {
     setEditingProduct(prd);
     setIsModalOpen(true);
-  };
-
-  const handleDeletePrompt = (prd) => {
-    setDeletingProduct(prd);
-    setDeleteId(prd.id);
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!deleteId) return;
-    setDeleting(true);
-    try {
-      const res = await axios.post(
-        `${BASE_URL}/product/delete_product.php`,
-        { id: deleteId }
-      );
-      if (res.data.success) {
-        setSuccessMsg(res.data.message || "Product marked as Inactive successfully.");
-        setDeleteId(null);
-        setDeletingProduct(null);
-        fetchProducts();
-      } else {
-        setError(res.data.message || "Failed to update product status.");
-      }
-    } catch (err) {
-      console.error("Error deactivating product:", err);
-      setError("Failed to deactivate product.");
-    } finally {
-      setDeleting(false);
-    }
   };
 
   const handleStatusToggle = async (prd) => {
@@ -244,6 +213,38 @@ function ProductList() {
       setError("Failed to update status.");
     }
   };
+
+  const searchWords = search.toLowerCase().trim().split(/\s+/).filter(Boolean);
+
+  const filteredProducts = products
+    .filter((prd) => {
+      if (statusFilter !== "All" && prd.status !== statusFilter) return false;
+      if (unitFilter !== "All" && prd.unit !== unitFilter) return false;
+      if (categoryFilter !== "All" && prd.category !== categoryFilter) return false;
+
+      if (searchWords.length === 0) return true;
+
+      const searchable = [
+        prd.name,
+        prd.product_code,
+        prd.composition,
+        prd.packaging,
+        prd.unit,
+        prd.category,
+        prd.description,
+        prd.hsn,
+        prd.price ? String(prd.price) : "",
+        prd.status,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return searchWords.every((word) => searchable.includes(word));
+    })
+    .sort((a, b) =>
+      (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" })
+    );
 
   return (
     <Box sx={{ p: { xs: 1.5, sm: 2.5 } }}>
@@ -467,7 +468,7 @@ function ProductList() {
                     </Typography>
                   </TableCell>
                 </TableRow>
-              ) : products.length === 0 ? (
+              ) : filteredProducts.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={9} sx={{ textAlign: "center", py: 5 }}>
                     <LocalPharmacy sx={{ fontSize: 44, color: "#cbd5e1", mb: 1 }} />
@@ -489,7 +490,7 @@ function ProductList() {
                   </TableCell>
                 </TableRow>
               ) : (
-                products
+                filteredProducts
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((prd) => (
                     <TableRow
@@ -607,7 +608,7 @@ function ProductList() {
 
                       {/* Actions */}
                       <TableCell sx={{ textAlign: "center" }}>
-                        <Box sx={{ display: "flex", justifyContent: "center", gap: 0.5 }}>
+                        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 1 }}>
                           <Tooltip title="Edit Product">
                             <IconButton
                               size="small"
@@ -618,14 +619,13 @@ function ProductList() {
                             </IconButton>
                           </Tooltip>
 
-                          <Tooltip title="Deactivate (Mark Inactive)">
-                            <IconButton
+                          <Tooltip title={prd.status === "Active" ? "Active (Click to deactivate)" : "Inactive (Click to activate)"}>
+                            <Switch
                               size="small"
-                              onClick={() => handleDeletePrompt(prd)}
-                              sx={{ color: "#ef4444" }}
-                            >
-                              <Delete fontSize="small" />
-                            </IconButton>
+                              color="success"
+                              checked={prd.status === "Active"}
+                              onChange={() => handleStatusToggle(prd)}
+                            />
                           </Tooltip>
                         </Box>
                       </TableCell>
@@ -639,7 +639,7 @@ function ProductList() {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25, 50]}
           component="div"
-          count={products.length}
+          count={filteredProducts.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={(_, newPage) => setPage(newPage)}
@@ -665,35 +665,6 @@ function ProductList() {
           }}
         />
       )}
-
-      {/* Deactivate / Inactive Confirmation Dialog */}
-      <Dialog open={Boolean(deleteId)} onClose={() => setDeleteId(null)}>
-        <DialogTitle sx={{ color: "#b91c1c", fontWeight: "bold" }}>
-          Deactivate Product
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to mark{" "}
-            <strong>{deletingProduct?.name}</strong> ({deletingProduct?.product_code}) as{" "}
-            <span style={{ color: "#b91c1c", fontWeight: "bold" }}>Inactive</span>?
-            <br />
-            The product will not be deleted from the database.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button onClick={() => setDeleteId(null)} color="inherit" disabled={deleting}>
-            Cancel
-          </Button>
-          <Button
-            onClick={handleDeleteConfirm}
-            color="error"
-            variant="contained"
-            disabled={deleting}
-          >
-            {deleting ? "Updating..." : "Mark as Inactive"}
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 }

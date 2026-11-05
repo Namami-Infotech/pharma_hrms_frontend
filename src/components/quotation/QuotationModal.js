@@ -51,11 +51,10 @@ import { useAuth } from "../auth/AuthContext";
 import QuotationSlip from "./QuotationSlip";
 
 const DEFAULT_TERMS =
-  "1. Prices are valid for 30 days from the date of quotation.\n" +
-  "2. Goods delivery within 3-5 business days upon order confirmation.\n" +
-  "3. GST as applicable at the time of invoicing.\n" +
-  "4. Payment terms: 30 days credit from invoice date / advance as agreed.\n" +
-  "5. Subject to Delhi jurisdiction.";
+  "1. Goods delivery within 3-5 business days upon order confirmation.\n" +
+  "2. GST as applicable at the time of invoicing.\n" +
+  "3. Payment terms: credit / advance as agreed.\n" +
+  "4. Subject to Delhi jurisdiction.";
 
 const EMPTY_ITEM = {
   description: "",

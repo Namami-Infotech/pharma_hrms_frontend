@@ -357,16 +357,6 @@ function QuotationSlip({ quotation, onBack, onEdit }) {
                 </span>
               </Box>
               <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                <span style={{ fontWeight: 600 }}>Date of Issue:</span>
-                <span>{formatDate(quotation.quotation_date)}</span>
-              </Box>
-              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                <span style={{ fontWeight: 600 }}>Valid Until:</span>
-                <span style={{ fontWeight: 600, color: "#dc2626" }}>
-                  {formatDate(quotation.valid_until)}
-                </span>
-              </Box>
-              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                 <span style={{ fontWeight: 600 }}>Prepared By:</span>
                 <span>{quotation.prepared_by || "Sales Executive"}</span>
               </Box>
@@ -678,7 +668,7 @@ function QuotationSlip({ quotation, onBack, onEdit }) {
               }}
             >
               {quotation.terms_conditions ||
-                "1. Prices are valid for 30 days from date of issue.\n2. Goods delivery within 3-5 business days upon PO receipt.\n3. GST as applicable at the time of supply.\n4. Subject to Delhi jurisdiction."}
+                "1. Goods delivery within 3-5 business days upon PO receipt.\n2. GST as applicable at the time of supply.\n3. Subject to Delhi jurisdiction."}
             </Typography>
             {quotation.notes && (
               <Box sx={{ mt: 1, p: 0.6, bgcolor: "#fef3c7", borderRadius: 1, fontSize: "9px" }}>

@@ -217,7 +217,6 @@ function QuotationList() {
       if (empId) url += `&empId=${encodeURIComponent(empId)}`;
       if (userRole) url += `&role=${encodeURIComponent(userRole)}`;
       if (statusFilter !== "All") url += `&status=${statusFilter}`;
-      if (search.trim()) url += `&search=${encodeURIComponent(search.trim())}`;
 
       const res = await axios.get(url);
       if (res.data.success) {
@@ -239,10 +238,46 @@ function QuotationList() {
     fetchThreshold();
   }, [statusFilter, user?.emp_id, user?.EmpId, user?.role]);
 
+  useEffect(() => {
+    setPage(0);
+  }, [search, statusFilter]);
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    fetchQuotations();
   };
+
+  const searchWords = search.toLowerCase().trim().split(/\s+/).filter(Boolean);
+
+  const filteredQuotations = quotations.filter((quote) => {
+    if (statusFilter !== "All" && (quote.status || "").toLowerCase() !== statusFilter.toLowerCase()) {
+      return false;
+    }
+    if (searchWords.length === 0) return true;
+
+    const itemsText = Array.isArray(quote.items)
+      ? quote.items.map((i) => `${i.product_name || i.name || ""} ${i.packaging || ""} ${i.unit || ""}`).join(" ")
+      : "";
+
+    const searchable = [
+      quote.quotation_no,
+      quote.client_name,
+      quote.client_phone,
+      quote.client_email,
+      quote.client_address,
+      quote.subject,
+      quote.prepared_by,
+      quote.created_by_name,
+      quote.approved_by,
+      quote.status,
+      quote.total_amount ? String(quote.total_amount) : "",
+      itemsText,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    return searchWords.every((word) => searchable.includes(word));
+  });
 
   const handleOpenCreate = () => {
     setEditingQuotation(null);
@@ -566,7 +601,7 @@ function QuotationList() {
           <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
             <CircularProgress sx={{ color: "#f37021" }} />
           </Box>
-        ) : quotations.length === 0 ? (
+        ) : filteredQuotations.length === 0 ? (
           <Box sx={{ p: 6, textAlign: "center" }}>
             <Typography variant="body1" color="text.secondary">
               No quotations found matching your criteria.
@@ -592,8 +627,7 @@ function QuotationList() {
                 <TableRow>
                   <TableCell sx={{ fontWeight: 800 }}>Quotation No</TableCell>
                   <TableCell sx={{ fontWeight: 800 }}>Doctor / Hospital</TableCell>
-                  <TableCell sx={{ fontWeight: 800 }}>Issue Date</TableCell>
-                  <TableCell sx={{ fontWeight: 800 }}>Valid Till</TableCell>
+                  <TableCell sx={{ fontWeight: 800 }}>Date</TableCell>
                   <TableCell sx={{ fontWeight: 800 }}>Items</TableCell>
                   <TableCell sx={{ fontWeight: 800, textAlign: "right" }}>Total (₹)</TableCell>
                   <TableCell sx={{ fontWeight: 800 }}>Created By</TableCell>
@@ -603,7 +637,7 @@ function QuotationList() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {quotations
+                {filteredQuotations
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
                     const currentEmpId = String(user?.emp_id || user?.EmpId || "").trim();
@@ -644,9 +678,6 @@ function QuotationList() {
                       </TableCell>
                       <TableCell>
                         {row.quotation_date ? row.quotation_date.slice(0, 10) : "NA"}
-                      </TableCell>
-                      <TableCell>
-                        {row.valid_until ? row.valid_until.slice(0, 10) : "NA"}
                       </TableCell>
                       <TableCell>
                         <Chip
@@ -800,7 +831,7 @@ function QuotationList() {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={quotations.length}
+              count={filteredQuotations.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={(_, newPage) => setPage(newPage)}

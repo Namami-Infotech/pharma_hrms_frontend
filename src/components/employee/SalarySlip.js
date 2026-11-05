@@ -53,6 +53,7 @@ import {
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useAuth } from "../auth/AuthContext";
+import logo from "../../assets/aberdure_logo.png";
 
 const MONTHS = [
   { value: 1, label: "January" },
@@ -70,6 +71,29 @@ const MONTHS = [
 ];
 
 const YEARS = [2024, 2025, 2026, 2027];
+
+/**
+ * Helper to split long address into balanced, readable lines
+ */
+const formatAddressLines = (addr) => {
+  if (!addr) return [];
+  if (typeof addr !== "string") return [addr];
+  if (addr.includes("\n")) return addr.split("\n").map((s) => s.trim()).filter(Boolean);
+
+  if (addr.includes("BISHAN SWAROOP COMPLEX")) {
+    const idxBishan = addr.indexOf("BISHAN SWAROOP COMPLEX");
+    const p1 = addr.substring(0, idxBishan).replace(/,\s*$/, "").trim() + ",";
+    const rest = addr.substring(idxBishan);
+    if (rest.includes("MEHRAULI,")) {
+      const idxMehrauli = rest.indexOf("MEHRAULI,");
+      const p2 = rest.substring(0, idxMehrauli).replace(/,\s*$/, "").trim() + ",";
+      const p3 = rest.substring(idxMehrauli).trim();
+      return [p1, p2, p3];
+    }
+    return [p1, rest];
+  }
+  return [addr];
+};
 
 /**
  * Aberdure Pharma Standard Salary Slip Paper View
@@ -92,30 +116,56 @@ function AberdureSalarySlipPaper({ comp, emp, rate, earn, ded, summary, paperRef
     >
       {/* Main Outer Border Box */}
       <Box sx={{ border: "2px solid #000000" }}>
-        {/* 1. Header Section */}
-        <Box sx={{ textAlign: "center", p: 1.5, borderBottom: "2px solid #000000" }}>
-          <Typography
-            sx={{
-              fontSize: "20px",
-              fontWeight: "bold",
-              letterSpacing: "0.5px",
-              textTransform: "uppercase",
-            }}
-          >
-            {comp.name}
-          </Typography>
-          <Typography
-            sx={{
-              fontSize: "9.5px",
-              fontWeight: "bold",
-              mt: 0.5,
-              px: 2,
-              lineHeight: 1.3,
-              color: "#111827",
-            }}
-          >
-            {comp.address}
-          </Typography>
+        {/* 1. Header Section: Logo on Left, Company Info on Right */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            p: 1.5,
+            borderBottom: "2px solid #000000",
+          }}
+        >
+          {/* Left: Company Logo */}
+          <Box sx={{ maxWidth: "170px", flexShrink: 0, pl: 0.5 }}>
+            <img
+              src={logo}
+              alt="Aberdure Pharma Logo"
+              style={{
+                maxHeight: "65px",
+                maxWidth: "160px",
+                objectFit: "contain",
+                display: "block",
+              }}
+            />
+          </Box>
+
+          {/* Right: Company Name & Address */}
+          <Box sx={{ textAlign: "right", maxWidth: "480px", pr: 0.5 }}>
+            <Typography
+              sx={{
+                fontSize: "20px",
+                fontWeight: "bold",
+                letterSpacing: "0.5px",
+                textTransform: "uppercase",
+              }}
+            >
+              {comp.name}
+            </Typography>
+            <Box
+              sx={{
+                fontSize: "9.5px",
+                fontWeight: "bold",
+                mt: 0.5,
+                lineHeight: 1.4,
+                color: "#111827",
+              }}
+            >
+              {formatAddressLines(comp.address).map((line, idx) => (
+                <div key={idx}>{line}</div>
+              ))}
+            </Box>
+          </Box>
         </Box>
 
         {/* 2. Month Title Bar */}
@@ -276,14 +326,6 @@ function AberdureSalarySlipPaper({ comp, emp, rate, earn, ded, summary, paperRef
               <span>SPECIAL ALLOW.</span>
               <span style={{ fontWeight: 600 }}>{earn.specialAllow}</span>
             </Box>
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <span>GWR/INC.</span>
-              <span style={{ fontWeight: 600 }}>{earn.gwrInc}</span>
-            </Box>
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <span>PERFORMANCE BONUS</span>
-              <span style={{ fontWeight: 600 }}>{earn.performanceBonus}</span>
-            </Box>
           </Box>
 
           {/* 3. DEDUCTIONS Column */}
@@ -304,6 +346,10 @@ function AberdureSalarySlipPaper({ comp, emp, rate, earn, ded, summary, paperRef
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
               <span>PF</span>
               <span style={{ fontWeight: 600 }}>{ded.pf}</span>
+            </Box>
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <span>OTHER DEDUCTION</span>
+              <span style={{ fontWeight: 600 }}>{ded.otherDeduction ?? ded.other_deduction ?? 0}</span>
             </Box>
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
               <span>LWF</span>
@@ -676,7 +722,7 @@ function SalarySlip() {
   const comp = salarySlip?.company || {
     name: "M/S ABERDURE PHARMA",
     address:
-      "1ST FLOOR, SHOP 28 PROP.NO 920-21 WARD NO 07 KH NO 1151/3, BISHAN SWAROOP COMPLEX, MEHRAULI MAIN MARKET, MEHRAULI, NEW DELHI, SOUTH DELHI, DELHI, 110030",
+      "1ST FLOOR, SHOP 28 PROP.NO 920-21 WARD NO 07 KH NO 1151/3,\nBISHAN SWAROOP COMPLEX, MEHRAULI MAIN MARKET,\nMEHRAULI, NEW DELHI, SOUTH DELHI, DELHI, 110030",
     title: `PAY SLIP FOR THE MONTH OF: ${MONTHS.find((m) => m.value === selectedMonth)?.label?.toUpperCase()} ${selectedYear}`,
   };
 
@@ -719,6 +765,7 @@ function SalarySlip() {
   const ded = salarySlip?.deductions || {
     esi: 0,
     pf: 0,
+    otherDeduction: 0,
     lwf: 0,
     tds: 0,
     advance: 0,

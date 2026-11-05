@@ -193,7 +193,9 @@ const EmployeeCard = ({
                   fontSize="small"
                   sx={{ mr: 1, color: theme.palette.secondary.main }}
                 />
-                <Typography variant="body2">{employee.Role}</Typography>
+                <Typography variant="body2">
+                  {['Admin', 'admin', 'superadmin', 'SuperAdmin'].includes(employee.Role || employee.new_role || employee.actual_role) ? 'Admin' : 'Employee'}
+                </Typography>
               </Box>
             </Grid>
             <Grid item xs={6}>
@@ -555,7 +557,7 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
             <DetailRow
               icon={<Badge sx={{ color: theme.palette.secondary.main }} />}
               label="Role"
-              value={employee.Role}
+              value={['Admin', 'admin', 'superadmin', 'SuperAdmin'].includes(employee.Role || employee.new_role || employee.actual_role) ? 'Admin' : 'Employee'}
             />
             <DetailRow
               icon={<Work sx={{ color: theme.palette.info.main }} />}
@@ -564,9 +566,10 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
               value={employee.Designation}
             />
             <DetailRow
-              icon={<Schedule sx={{ color: theme.palette.warning.main }} />}
-              label="Shift"
-              value={employee.Shift}
+              icon={<Work sx={{ color: theme.palette.success.main }} />}
+              size="small"
+                    label="Department"
+              value={employee.Department || employee.department || "-"}
             />
             <DetailRow
               icon={<Schedule sx={{ color: theme.palette.info.main }} />}
@@ -588,21 +591,16 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
             <Divider sx={{ mb: 2 }} />
 
             <DetailRow
-              icon={<Badge sx={{ color: theme.palette.secondary.main }} />}
-              label="Grade"
-              value={employee.Grade}
-            />
-            <DetailRow
               icon={<AccountBalance sx={{ color: theme.palette.success.main }} />}
               size="small"
                     label="UAN"
-              value={employee.UAN}
+              value={employee.UAN || "-"}
             />
             <DetailRow
               icon={<AccountBalance sx={{ color: theme.palette.info.main }} />}
               size="small"
                     label="ESI"
-              value={employee.ESI}
+              value={employee.ESI || "-"}
             />
             <DetailRow
               icon={<CalendarToday sx={{ color: theme.palette.success.main }} />}
@@ -689,6 +687,14 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
 
                 <Grid item xs={12} sm={6} md={3}>
                   <DetailRow
+                    icon={<AccountBalanceWallet sx={{ color: theme.palette.error.main }} />}
+                    label="Other Deduction"
+                    value={`₹${parseFloat(employeeSalary.other_deduction || employee?.other_deduction || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month`}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={3}>
+                  <DetailRow
                     icon={<TrendingUp sx={{ color: theme.palette.primary.main }} />}
                     label="Monthly Gross Salary"
                     value={`₹${parseFloat(employeeSalary.gross_salary || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })} / month`}
@@ -758,7 +764,7 @@ function EmployeeList() {
     }
   };
   const [filterRole, setFilterRole] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
+  const [filterStatus, setFilterStatus] = useState("1");
   const [salary, setSalary] = useState([]);
   const [formData, setFormData] = useState({
     EmpId: "",
@@ -782,6 +788,7 @@ function EmployeeList() {
     Shift: "9:00 AM - 6:00 PM",
     WeekOff: "",
     Designation: "",
+    Department: "",
     DOB: "",
     JoinDate: "",
     Grade: "",
@@ -790,9 +797,13 @@ function EmployeeList() {
     ProbationPeriod: "", // Added Probation Period field
     // Salary fields
     basic_salary: "",
+    da: "",
     hra: "",
     conveyance: "",
     special_allowance: "",
+    pf_deduction: "",
+    esi_deduction: "",
+    other_deduction: "",
   });
 
   // NEW: State for disable dialog
@@ -1048,6 +1059,7 @@ function EmployeeList() {
         JoinDate: employee.JoinDate || "",
         WeekOff: employee.WeekOff || "Sunday",
         Designation: employee.Designation || "",
+        Department: employee.Department || employee.department || "",
         Grade: employee.Grade || "",
         UAN: employee.UAN || "",
         ESI: employee.ESI || "",
@@ -1062,6 +1074,7 @@ function EmployeeList() {
         special_allowance: employee.special_allowance ? String(parseFloat(employee.special_allowance)) : (empSalary?.special_allowance ? String(parseFloat(empSalary.special_allowance)) : ""),
         pf_deduction: employee.pf_deduction ? String(parseFloat(employee.pf_deduction)) : (empSalary?.epf ? String(parseFloat(empSalary.epf)) : ""),
         esi_deduction: employee.esi_deduction ? String(parseFloat(employee.esi_deduction)) : (empSalary?.esi ? String(parseFloat(empSalary.esi)) : ""),
+        other_deduction: employee.other_deduction ? String(parseFloat(employee.other_deduction)) : (empSalary?.other_deduction ? String(parseFloat(empSalary.other_deduction)) : ""),
         tds: employee.tds ? String(parseFloat(employee.tds)) : "",
         advance: employee.advance ? String(parseFloat(employee.advance)) : "",
         lwf: employee.lwf ? String(parseFloat(employee.lwf)) : "",
@@ -1104,6 +1117,7 @@ function EmployeeList() {
         JoinDate: "",
         WeekOff: "",
         Designation: "",
+        Department: "",
         Grade: "",
         UAN: "",
         ESI: "",
@@ -1118,6 +1132,7 @@ function EmployeeList() {
         special_allowance: "",
         pf_deduction: "",
         esi_deduction: "",
+        other_deduction: "",
         tds: "",
         advance: "",
         lwf: "",
@@ -1217,17 +1232,14 @@ function EmployeeList() {
       errs.WeekOff = "Week Off is required.";
     }
 
-    // 13. Salary fields
-    const salaryKeys = [
+    // 13. Salary fields (Mandatory and Optional)
+    const mandatorySalaryKeys = [
       { key: "basic_salary", label: "Basic Salary" },
       { key: "hra", label: "HRA" },
       { key: "conveyance", label: "Conveyance" },
-      { key: "special_allowance", label: "Special Allowance" },
       { key: "da", label: "Day Allowance" },
-      { key: "pf_deduction", label: "PF / EPF Deduction" },
-      { key: "esi_deduction", label: "ESI Deduction" },
     ];
-    salaryKeys.forEach(({ key, label }) => {
+    mandatorySalaryKeys.forEach(({ key, label }) => {
       const val = formData[key];
       if (val === "" || val === undefined || val === null) {
         errs[key] = `${label} is required.`;
@@ -1236,19 +1248,31 @@ function EmployeeList() {
       }
     });
 
-    // 14. UAN & ESI (Strict Length & Digits)
+    // Optional salary fields: Special Allowance, PF, ESI, Other Deduction (Not Mandatory)
+    const optionalSalaryKeys = [
+      { key: "special_allowance", label: "Special Allowance" },
+      { key: "pf_deduction", label: "PF / EPF Deduction" },
+      { key: "esi_deduction", label: "ESI Deduction" },
+      { key: "other_deduction", label: "Other Deduction" },
+    ];
+    optionalSalaryKeys.forEach(({ key, label }) => {
+      const val = formData[key];
+      if (val !== "" && val !== undefined && val !== null) {
+        if (isNaN(Number(val)) || Number(val) < 0) {
+          errs[key] = `${label} must be a valid non-negative number.`;
+        }
+      }
+    });
+
+    // 14. UAN & ESI (Optional, validated only if provided)
     const uanVal = String(formData.UAN || "").trim();
-    if (!uanVal) {
-      errs.UAN = "UAN is required.";
-    } else if (uanVal !== "0" && !/^\d{12}$/.test(uanVal)) {
-      errs.UAN = "UAN must be exactly 12 numeric digits (or 0 if not applicable).";
+    if (uanVal && uanVal !== "0" && !/^\d{12}$/.test(uanVal)) {
+      errs.UAN = "UAN must be exactly 12 numeric digits.";
     }
 
     const esiVal = String(formData.ESI || "").trim();
-    if (!esiVal && esiVal !== "0") {
-      errs.ESI = "ESI is required.";
-    } else if (esiVal !== "0" && !/^\d{10,17}$/.test(esiVal)) {
-      errs.ESI = "ESI must be a 17-digit number (or 0 if not applicable).";
+    if (esiVal && esiVal !== "0" && !/^\d{10,17}$/.test(esiVal)) {
+      errs.ESI = "ESI must be a 10 to 17-digit number.";
     }
 
     return errs;
@@ -1290,6 +1314,7 @@ function EmployeeList() {
       Password: formData.Password,
       Mobile: formData.Mobile,
       EmailId: formData.EmailId,
+      Role: formData.Role,
       new_role: formData.Role,
       OTP: formData.OTP || "123456",
       IsOTPExpired: formData.IsOTPExpired || 1,
@@ -1302,6 +1327,7 @@ function EmployeeList() {
       JoinDate: formData.JoinDate || "",
       WeekOff: formData.WeekOff || "Sunday",
       Designation: formData.Designation,
+      Department: formData.Department || "",
       Grade: formData.Grade,
       UAN: formData.UAN,
       ESI: formData.ESI,
@@ -1316,6 +1342,7 @@ function EmployeeList() {
       special_allowance: parseFloat(formData.special_allowance) || 0,
       pf_deduction: parseFloat(formData.pf_deduction) || 0,
       esi_deduction: parseFloat(formData.esi_deduction) || 0,
+      other_deduction: parseFloat(formData.other_deduction) || 0,
       tds: parseFloat(formData.tds) || 0,
       advance: parseFloat(formData.advance) || 0,
       lwf: parseFloat(formData.lwf) || 0,
@@ -1389,12 +1416,13 @@ function EmployeeList() {
     const specialAllowance = parseFloat(employeeData.special_allowance) || 0;
     const pf = parseFloat(employeeData.pf_deduction) || 0;
     const esi = parseFloat(employeeData.esi_deduction) || 0;
+    const otherDeduction = parseFloat(employeeData.other_deduction) || 0;
     const tds = parseFloat(employeeData.tds) || 0;
     const advance = parseFloat(employeeData.advance) || 0;
     const lwf = parseFloat(employeeData.lwf) || 0;
 
     const grossSalary = basic + da + hra + conveyance + specialAllowance;
-    const totalDeductions = pf + esi + tds + advance + lwf;
+    const totalDeductions = pf + esi + otherDeduction + tds + advance + lwf;
     const netTakeHome = grossSalary - totalDeductions;
 
     const salaryPayload = {
@@ -1418,6 +1446,8 @@ function EmployeeList() {
       epf_per_annum: pf * 12,
       esi: esi,
       esi_per_annum: esi * 12,
+      other_deduction: otherDeduction,
+      other_deduction_per_annum: otherDeduction * 12,
       total_benefits: 0,
       total_benefits_per_annum: 0,
       total_cost_of_company: grossSalary,
@@ -1618,6 +1648,7 @@ const exportToExcel = () => {
       const daVal = parseFloat(employee.da !== undefined && employee.da !== null && employee.da !== "" ? employee.da : 0);
       const pfVal = parseFloat(employee.pf_deduction !== undefined && employee.pf_deduction !== null && employee.pf_deduction !== "" ? employee.pf_deduction : (sal?.epf || 0));
       const esiVal = parseFloat(employee.esi_deduction !== undefined && employee.esi_deduction !== null && employee.esi_deduction !== "" ? employee.esi_deduction : (sal?.esi || 0));
+      const otherVal = parseFloat(employee.other_deduction !== undefined && employee.other_deduction !== null && employee.other_deduction !== "" ? employee.other_deduction : (sal?.other_deduction || 0));
 
       return {
         // 1. Personal Information (Password & Father's Name excluded)
@@ -1643,6 +1674,7 @@ const exportToExcel = () => {
         "Day Allowance": daVal,
         "PF / EPF Deduction": pfVal,
         "ESI Deduction": esiVal,
+        "Other Deduction": otherVal,
 
         // 4. UAN/ESI Information
         "UAN": employee.UAN || "N/A",
@@ -1739,7 +1771,8 @@ const exportToExcel = () => {
 
     const matchesRole = filterRole === "" || employee.Role === filterRole;
     const matchesStatus =
-      filterStatus === "" || (employee.IsActive ?? '').toString() === filterStatus;
+      filterStatus === "" ||
+      (Number(employee.IsActive) === 1 ? "1" : "0") === filterStatus;
 
     return matchesSearch && matchesRole && matchesStatus;
   }).sort(sortEmployeesMostRecent);
@@ -1921,16 +1954,16 @@ const exportToExcel = () => {
             </Grid>
 
             <Grid item xs={6} md={3}>
-              <FormControl fullWidth sx={{ bgcolor: "#fff", borderRadius: 2 }}>
-                <InputLabel>Filter by Status</InputLabel>
+              <FormControl fullWidth size="small" sx={{ bgcolor: "#fff", borderRadius: 2 }}>
+                <InputLabel>Employee Status</InputLabel>
                 <Select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  label="Filter by Status"
+                  label="Employee Status"
                 >
-                  <MenuItem value="">All Status</MenuItem>
-                  <MenuItem value="1">Active</MenuItem>
-                  <MenuItem value="0">Inactive</MenuItem>
+                  <MenuItem value="1">Active Only</MenuItem>
+                  <MenuItem value="0">Inactive Only</MenuItem>
+                  <MenuItem value="">All Employees</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -2082,8 +2115,8 @@ const exportToExcel = () => {
                             </Typography>
                           </TableCell>
                           <TableCell>
-                            <Typography variant="body2">
-                              {employee.Role}
+                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                              {['Admin', 'admin', 'superadmin', 'SuperAdmin'].includes(employee.Role || employee.new_role || employee.actual_role) ? 'Admin' : 'Employee'}
                             </Typography>
                           </TableCell>
                           {/* <TableCell>
@@ -2660,6 +2693,26 @@ const exportToExcel = () => {
                   />
                 </Grid>
 
+                {/* Department */}
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Department"
+                    name="Department"
+                    id="field-Department"
+                    value={formData.Department || ""}
+                    onChange={(e) => handleFieldChange("Department", e.target.value)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Work color="action" />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+
 
 
                 {/* Office field intentionally disabled. */}
@@ -2750,11 +2803,10 @@ const exportToExcel = () => {
                   <TextField
                     fullWidth
                     size="small"
-                    label="Special Allowance"
+                    label="Special Allowance (Optional)"
                     name="special_allowance"
                     id="field-special_allowance"
                     type="number"
-                    required
                     value={formData.special_allowance}
                     onChange={(e) => handleFieldChange("special_allowance", e.target.value)}
                     error={Boolean(formErrors.special_allowance)}
@@ -2796,11 +2848,10 @@ const exportToExcel = () => {
                   <TextField
                     fullWidth
                     size="small"
-                    label="PF / EPF Deduction"
+                    label="PF / EPF Deduction (Optional)"
                     name="pf_deduction"
                     id="field-pf_deduction"
                     type="number"
-                    required
                     value={formData.pf_deduction}
                     onChange={(e) => handleFieldChange("pf_deduction", e.target.value)}
                     error={Boolean(formErrors.pf_deduction)}
@@ -2819,15 +2870,36 @@ const exportToExcel = () => {
                   <TextField
                     fullWidth
                     size="small"
-                    label="ESI Deduction"
+                    label="ESI Deduction (Optional)"
                     name="esi_deduction"
                     id="field-esi_deduction"
                     type="number"
-                    required
                     value={formData.esi_deduction}
                     onChange={(e) => handleFieldChange("esi_deduction", e.target.value)}
                     error={Boolean(formErrors.esi_deduction)}
                     helperText={formErrors.esi_deduction}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <AccountBalanceWallet color="action" />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Other Deduction (Optional)"
+                    name="other_deduction"
+                    id="field-other_deduction"
+                    type="number"
+                    value={formData.other_deduction}
+                    onChange={(e) => handleFieldChange("other_deduction", e.target.value)}
+                    error={Boolean(formErrors.other_deduction)}
+                    helperText={formErrors.other_deduction}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -2861,9 +2933,8 @@ const exportToExcel = () => {
                       const val = e.target.value.replace(/\D/g, "").slice(0, 12);
                       handleFieldChange("UAN", val);
                     }}
-                    required
                     error={Boolean(formErrors.UAN)}
-                    helperText={formErrors.UAN || "12 numeric digits (or 0 if not applicable)"}
+                    helperText={formErrors.UAN || "12 numeric digits (optional)"}
                     inputProps={{ maxLength: 12 }}
                     InputProps={{
                       startAdornment: (
@@ -2886,9 +2957,8 @@ const exportToExcel = () => {
                       const val = e.target.value.replace(/\D/g, "").slice(0, 17);
                       handleFieldChange("ESI", val);
                     }}
-                    required
                     error={Boolean(formErrors.ESI)}
-                    helperText={formErrors.ESI || "17 digits (or 0 if not applicable)"}
+                    helperText={formErrors.ESI || "10-17 digits (optional)"}
                     inputProps={{ maxLength: 17 }}
                     InputProps={{
                       startAdornment: (
