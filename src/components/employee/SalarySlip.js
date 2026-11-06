@@ -193,7 +193,7 @@ function AberdureSalarySlipPaper({ comp, emp, rate, earn, ded, summary, paperRef
               ["DESIGNATION", emp.designation],
               ["DEPARTMENT", emp.department],
               ["LOCATION", emp.location],
-            ].map(([label, val], idx, arr) => (
+            ].map(([label, val]) => (
               <Box
                 key={label}
                 sx={{
@@ -201,7 +201,6 @@ function AberdureSalarySlipPaper({ comp, emp, rate, earn, ded, summary, paperRef
                   fontSize: "11px",
                   px: 1,
                   py: 0.35,
-                  borderBottom: idx !== arr.length - 1 ? "1px solid #d1d5db" : "none",
                 }}
               >
                 <Box sx={{ width: "42%", fontWeight: 600 }}>{label}</Box>
@@ -217,9 +216,9 @@ function AberdureSalarySlipPaper({ comp, emp, rate, earn, ded, summary, paperRef
               ["PF/UAN Number", emp.uanNo],
               ["D.O.B", emp.dob],
               ["D.O.J", emp.doj],
-              ["ID NO.", emp.idNo],
+              // ["ID NO.", emp.idNo],
               ["Payable Days", emp.payableDays],
-            ].map(([label, val], idx, arr) => (
+            ].map(([label, val]) => (
               <Box
                 key={label}
                 sx={{
@@ -227,7 +226,6 @@ function AberdureSalarySlipPaper({ comp, emp, rate, earn, ded, summary, paperRef
                   fontSize: "11px",
                   px: 1,
                   py: 0.35,
-                  borderBottom: idx !== arr.length - 1 ? "1px solid #d1d5db" : "none",
                 }}
               >
                 <Box sx={{ width: "42%", fontWeight: 600 }}>{label}</Box>

@@ -399,8 +399,8 @@ const TodayAttendanceCard = ({ attendance, isMobile, employees }) => {
       sx={{
         mb: 2,
         borderLeft: `4px solid ${status === "present"
-            ? theme.palette.success.main
-            : theme.palette.error.main
+          ? theme.palette.success.main
+          : theme.palette.error.main
           }`,
         "&:hover": {
           boxShadow: theme.shadows[4],
@@ -1443,7 +1443,7 @@ const AttendanceList = () => {
 
             {/* Action Buttons Row */}
             <Stack direction="row" spacing={1} alignItems="center">
-{/* Regularise Settings button removed as requested */}
+              {/* Regularise Settings button removed as requested */}
 
               <Tooltip
                 title={
@@ -1550,7 +1550,7 @@ const AttendanceList = () => {
                     </Box>
                   )}
 
-                  {isAdmin && (
+                  {/* {isAdmin && (
                     <Box sx={{ minWidth: 150 }}>
                       <FormControl fullWidth size="small">
                         <InputLabel>Employee Status</InputLabel>
@@ -1565,7 +1565,7 @@ const AttendanceList = () => {
                         </Select>
                       </FormControl>
                     </Box>
-                  )}
+                  )} */}
 
                   <Box flex={{ xs: 1, sm: 1 }}>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -1964,14 +1964,14 @@ const AttendanceList = () => {
                                         theme.palette.action.hover,
                                     },
                                     borderLeft: `4px solid ${activity.type === "attendance"
-                                        ? activity.color === "green"
-                                          ? theme.palette.success.main
-                                          : theme.palette.error.main
-                                        : activity.type === "holiday"
-                                          ? theme.palette.warning.main
-                                          : activity.type === "weekoff"
-                                            ? theme.palette.secondary.main
-                                            : theme.palette.info.main
+                                      ? activity.color === "green"
+                                        ? theme.palette.success.main
+                                        : theme.palette.error.main
+                                      : activity.type === "holiday"
+                                        ? theme.palette.warning.main
+                                        : activity.type === "weekoff"
+                                          ? theme.palette.secondary.main
+                                          : theme.palette.info.main
                                       }`,
                                     transition: "background 0.3s",
                                   }}
@@ -2401,8 +2401,8 @@ const AttendanceList = () => {
                                         theme.palette.action.hover,
                                     },
                                     borderLeft: `4px solid ${status === "present"
-                                        ? theme.palette.success.main
-                                        : theme.palette.error.main
+                                      ? theme.palette.success.main
+                                      : theme.palette.error.main
                                       }`,
                                     transition: "background 0.3s",
                                   }}

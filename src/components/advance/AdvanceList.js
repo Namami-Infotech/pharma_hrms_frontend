@@ -77,7 +77,7 @@ const MONTH_NAMES = [
 
 const AdvanceList = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState(0); // 0: My Requests, 1: Team Approvals
+  const [activeTab, setActiveTab] = useState("team"); // "team" | "my"
 
   const [myRequests, setMyRequests] = useState([]);
   const [teamRequests, setTeamRequests] = useState([]);
@@ -275,8 +275,12 @@ const AdvanceList = () => {
     }
   };
 
+  const canViewApprovals = isAdmin || teamRequests.length > 0;
+  const isTeamTab = Boolean(canViewApprovals && activeTab === "team");
+  const currentTab = isTeamTab ? "team" : "my";
+
   // Determine current list to display based on active tab
-  const currentList = activeTab === 0 ? myRequests : teamRequests;
+  const currentList = isTeamTab ? teamRequests : myRequests;
 
   // Filter list
   const filteredList = currentList.filter((item) => {
@@ -300,11 +304,9 @@ const AdvanceList = () => {
   const pendingApprovalsCount = teamRequests.filter(
     (r) => String(r.status).toLowerCase() === "pending"
   ).length;
-  const approvedAdvancesTotal = (activeTab === 0 ? myRequests : teamRequests)
+  const approvedAdvancesTotal = (isTeamTab ? teamRequests : myRequests)
     .filter((r) => String(r.status).toLowerCase() === "approved")
     .reduce((sum, r) => sum + (parseFloat(r.amount) || 0), 0);
-
-  const canViewApprovals = isAdmin || teamRequests.length > 0;
 
   return (
     <Box sx={{ p: { xs: 2, sm: 3 }, width: "100%", boxSizing: "border-box" }}>
@@ -503,7 +505,7 @@ const AdvanceList = () => {
         >
           {/* Tabs */}
           <Tabs
-            value={activeTab}
+            value={currentTab}
             onChange={(e, val) => setActiveTab(val)}
             indicatorColor="primary"
             textColor="primary"
@@ -527,14 +529,9 @@ const AdvanceList = () => {
               },
             }}
           >
-            <Tab
-              icon={<Person sx={{ fontSize: 18 }} />}
-              iconPosition="start"
-              label={`My Requests (${myRequests.length})`}
-            />
-
             {canViewApprovals && (
               <Tab
+                value="team"
                 icon={<AssignmentTurnedIn sx={{ fontSize: 18 }} />}
                 iconPosition="start"
                 label={
@@ -557,6 +554,13 @@ const AdvanceList = () => {
                 }
               />
             )}
+
+            <Tab
+              value="my"
+              icon={<Person sx={{ fontSize: 18 }} />}
+              iconPosition="start"
+              label={`My Requests (${myRequests.length})`}
+            />
           </Tabs>
 
           {/* Clean Search and Filter Controls */}
@@ -660,7 +664,7 @@ const AdvanceList = () => {
             <TableHead sx={{ bgcolor: "#f9fafb" }}>
               <TableRow>
                 <TableCell sx={{ fontWeight: 700, color: "#374151", py: 1.8 }}>#</TableCell>
-                {activeTab === 1 && (
+                {isTeamTab && (
                   <TableCell sx={{ fontWeight: 700, color: "#374151" }}>Employee</TableCell>
                 )}
                 <TableCell sx={{ fontWeight: 700, color: "#374151" }}>Amount</TableCell>
@@ -668,8 +672,8 @@ const AdvanceList = () => {
                 <TableCell sx={{ fontWeight: 700, color: "#374151" }}>Reason</TableCell>
                 <TableCell sx={{ fontWeight: 700, color: "#374151" }}>Applied On</TableCell>
                 <TableCell sx={{ fontWeight: 700, color: "#374151" }}>Status</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: "#374151" }}>
-                  {activeTab === 1 ? "RM Action" : "Approval Details"}
+                <TableCell sx={{ fontWeight: 700, color: "#374151", textAlign: isTeamTab ? "center" : "left" }}>
+                  {isTeamTab ? "RM Action" : "Approval Details"}
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -677,7 +681,7 @@ const AdvanceList = () => {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={activeTab === 1 ? 8 : 7} align="center" sx={{ py: 6 }}>
+                  <TableCell colSpan={isTeamTab ? 8 : 7} align="center" sx={{ py: 6 }}>
                     <CircularProgress size={36} sx={{ color: "#f37021", mb: 1 }} />
                     <Typography variant="body2" sx={{ color: "#6b7280" }}>
                       Loading advance requests...
@@ -686,15 +690,15 @@ const AdvanceList = () => {
                 </TableRow>
               ) : filteredList.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={activeTab === 1 ? 8 : 7} align="center" sx={{ py: 6 }}>
+                  <TableCell colSpan={isTeamTab ? 8 : 7} align="center" sx={{ py: 6 }}>
                     <InfoOutlined sx={{ fontSize: 44, color: "#9ca3af", mb: 1 }} />
                     <Typography variant="body1" sx={{ fontWeight: 600, color: "#4b5563" }}>
                       No advance requests found
                     </Typography>
                     <Typography variant="body2" sx={{ color: "#6b7280" }}>
-                      {activeTab === 0
-                        ? "You haven't submitted any advance payment requests yet."
-                        : "No subordinate advance requests awaiting your action."}
+                      {isTeamTab
+                        ? "No subordinate advance requests awaiting your action."
+                        : "You haven't submitted any advance payment requests yet."}
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -717,13 +721,13 @@ const AdvanceList = () => {
                       </TableCell>
 
                       {/* Employee details (Only in Team Approvals Tab) */}
-                      {activeTab === 1 && (
+                      {isTeamTab && (
                         <TableCell>
                           <Typography variant="body2" sx={{ fontWeight: 600, color: "#111827" }}>
                             {row.employee_name || row.EmpId}
                           </Typography>
                           <Typography variant="caption" sx={{ color: "#6b7280", display: "block" }}>
-                            ID: {row.EmpId} {row.designation ? `• ${row.designation}` : ""}
+                            ID: {row.EmpId} {row.designation ? `• ${row.designation}` : (row.department ? `• ${row.department}` : "")}
                           </Typography>
                         </TableCell>
                       )}
@@ -772,10 +776,10 @@ const AdvanceList = () => {
                       <TableCell>{renderStatusChip(row.status)}</TableCell>
 
                       {/* Action / Approval Details Column */}
-                      <TableCell>
-                        {activeTab === 1 ? (
+                      <TableCell sx={{ textAlign: isTeamTab ? "center" : "left" }}>
+                        {isTeamTab ? (
                           isPending ? (
-                            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                            <Box sx={{ display: "flex", gap: 1, alignItems: "center", justifyContent: "center" }}>
                               <Tooltip title="Approve Request" arrow>
                                 <IconButton
                                   size="small"

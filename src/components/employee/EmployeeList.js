@@ -2353,10 +2353,11 @@ const exportToExcel = () => {
                     value={formData.EmpId}
                     onChange={(e) => handleFieldChange("EmpId", e.target.value)}
                     required
-                    disabled={formMode === "edit"}
+                    disabled
                     error={Boolean(formErrors.EmpId)}
-                    helperText={formErrors.EmpId || (formMode === "add" ? "Auto-generated unique ID (you can also edit this)" : "")}
+                    helperText={formErrors.EmpId || (formMode === "add" ? "Auto-generated unique ID" : "")}
                     InputProps={{
+                      readOnly: true,
                       startAdornment: (
                         <InputAdornment position="start">
                           <Badge color="action" />
