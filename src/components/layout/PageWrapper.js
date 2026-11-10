@@ -13,7 +13,7 @@ const PageWrapper = ({
 }) => {
 
   return (
-    <Box sx={{ height: "100%", overflow: "auto", bgcolor: "#f5f7fa" }}>
+    <Box sx={{ height: "100%", overflowX: "hidden", overflowY: "auto", bgcolor: "#f5f7fa" }}>
       {/* Header Section */}
       
 

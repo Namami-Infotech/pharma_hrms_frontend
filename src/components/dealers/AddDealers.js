@@ -580,7 +580,20 @@ function AddDealers({ open, onClose, onDealerAdded }) {
     };
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+        <Dialog
+            open={open}
+            onClose={onClose}
+            maxWidth="md"
+            fullWidth
+            PaperProps={{
+                sx: {
+                    borderRadius: { xs: 2, sm: 2.5 },
+                    width: { xs: "calc(100% - 24px)", sm: "auto" },
+                    m: { xs: 1.5, sm: 2 },
+                    overflow: "hidden",
+                },
+            }}
+        >
             <DialogTitle
                 sx={{
                     backgroundColor: BRAND_COLOR,
@@ -589,7 +602,7 @@ function AddDealers({ open, onClose, onDealerAdded }) {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     py: 1.5,
-                    px: 3,
+                    px: { xs: 2, sm: 3 },
                 }}
             >
                 <Box>
@@ -605,7 +618,7 @@ function AddDealers({ open, onClose, onDealerAdded }) {
                 </IconButton>
             </DialogTitle>
 
-            <DialogContent dividers sx={{ p: 3, pt: 3, minHeight: 360 }}>
+            <DialogContent dividers sx={{ p: { xs: 2, sm: 3 }, minHeight: 360, overflowX: "hidden" }}>
                 {errorMsg && (
                     <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }} onClose={() => setErrorMsg('')}>
                         {errorMsg}
@@ -630,7 +643,7 @@ function AddDealers({ open, onClose, onDealerAdded }) {
                         No active dealer checkpoint fields found in the database. Please configure checkpoints first.
                     </Alert>
                 ) : (
-                    <Grid container spacing={2.5}>
+                    <Grid container spacing={2.5} sx={{ width: "100%", m: 0 }}>
                         {fields.map((field) => {
                             const descLower = (field.Description || '').toLowerCase();
                             const isWide = descLower.includes('address') || descLower.includes('remark') || field.TypeId === 4;
@@ -644,15 +657,25 @@ function AddDealers({ open, onClose, onDealerAdded }) {
                 )}
             </DialogContent>
 
-            <DialogActions sx={{ px: 3, py: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <DialogActions
+                sx={{
+                    px: { xs: 2, sm: 3 },
+                    py: { xs: 1.5, sm: 2 },
+                    display: 'flex',
+                    flexDirection: { xs: 'column-reverse', sm: 'row' },
+                    justifyContent: 'space-between',
+                    alignItems: { xs: 'stretch', sm: 'center' },
+                    gap: 1.5,
+                }}
+            >
                 <Box sx={{ display: 'flex', alignItems: 'center', color: 'text.secondary' }}>
                     <LocationOn sx={{ fontSize: 16, mr: 0.5, color: latLong ? '#10b981' : 'text.disabled' }} />
                     <Typography variant="caption" color="text.secondary">
                         {latLong ? `GPS: ${latLong} ` : "Acquiring GPS..."}
                     </Typography>
                 </Box>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Button onClick={onClose} color="inherit" disabled={submitting}>
+                <Box sx={{ display: 'flex', gap: 1, width: { xs: '100%', sm: 'auto' } }}>
+                    <Button onClick={onClose} color="inherit" disabled={submitting} sx={{ flex: { xs: 1, sm: 'none' } }}>
                         Cancel
                     </Button>
                     <Button
@@ -664,6 +687,7 @@ function AddDealers({ open, onClose, onDealerAdded }) {
                             color: "white",
                             px: 3,
                             fontWeight: 600,
+                            flex: { xs: 1, sm: 'none' },
                             "&:hover": {
                                 backgroundColor: '#d85d13',
                             }

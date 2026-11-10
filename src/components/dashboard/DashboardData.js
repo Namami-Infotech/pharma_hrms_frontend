@@ -288,7 +288,7 @@ const DashboardData = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: 1400, mx: 'auto', p: { xs: 2, md: 3 }, bgcolor: '#f5f7fa', minHeight: '100%' }}>
+    <Box sx={{ maxWidth: 1400, mx: 'auto', p: { xs: 1.5, md: 3 }, bgcolor: '#f5f7fa', minHeight: '100%', boxSizing: 'border-box' }}>
       {/* Employee Header Banner */}
       <Paper
         elevation={4}
@@ -301,7 +301,7 @@ const DashboardData = () => {
           color: '#ffffff',
         }}
       >
-        <Grid container spacing={2} alignItems="center">
+        <Grid container spacing={2} alignItems="center" sx={{ width: "100%", m: 0 }}>
           <Grid item>
             <Avatar
               sx={{
@@ -386,7 +386,7 @@ const DashboardData = () => {
 
         {/* TAB 0: DASHBOARD OVERVIEW */}
         <TabPanel value={activeTab} index={0}>
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 2, md: 3 }} sx={{ width: "100%", m: 0 }}>
             {/* Attendance Chart */}
             <Grid item xs={12} md={7}>
               <HoverCard>
@@ -635,7 +635,7 @@ const DashboardData = () => {
 
         {/* TAB 2: LEAVE WITH ALL/TEAM/OWN RECORDS */}
         <TabPanel value={activeTab} index={2}>
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 2, md: 3 }} sx={{ width: "100%", m: 0 }}>
             {/* Personal Leave Balance */}
             <Grid item xs={12} md={4}>
               <HoverCard>

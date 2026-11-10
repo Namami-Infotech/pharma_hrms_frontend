@@ -309,7 +309,7 @@ const AdvanceList = () => {
     .reduce((sum, r) => sum + (parseFloat(r.amount) || 0), 0);
 
   return (
-    <Box sx={{ p: { xs: 2, sm: 3 }, width: "100%", boxSizing: "border-box" }}>
+    <Box sx={{ p: { xs: 1.5, sm: 3 }, width: "100%", boxSizing: "border-box" }}>
       {/* Top Banner / Actions Bar */}
       <Box
         sx={{
@@ -330,7 +330,7 @@ const AdvanceList = () => {
           </Typography>
         </Box>
 
-        <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
+        <Box sx={{ display: "flex", gap: 1.5, alignItems: "center", width: { xs: "100%", sm: "auto" } }}>
           <Tooltip title="Refresh list">
             <IconButton
               onClick={fetchAdvances}
@@ -366,6 +366,7 @@ const AdvanceList = () => {
               borderRadius: 2,
               px: 2.5,
               py: 1,
+              flex: { xs: 1, sm: "none" },
               boxShadow: "0 2px 8px rgba(243, 112, 33, 0.25)",
               transition: "all 0.2s ease-in-out",
             }}
@@ -376,109 +377,111 @@ const AdvanceList = () => {
       </Box>
 
       {/* Stats Cards - Clean Minimal Style */}
-      <Grid container spacing={2.5} sx={{ mb: 3 }}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr" },
+          gap: { xs: 1.5, sm: 2.5 },
+          mb: 3,
+          width: "100%",
+        }}
+      >
         {/* Card 1: My Advance Requests */}
-        <Grid item xs={12} sm={4}>
-          <Card
-            sx={{
-              borderRadius: 3,
-              boxShadow: "0 1px 3px rgba(0,0,0,0.02), 0 2px 8px rgba(0,0,0,0.03)",
-              border: "1px solid #eef2f6",
-              bgcolor: "#ffffff",
-              p: 2.5,
-              transition: "transform 0.2s, box-shadow 0.2s",
-              "&:hover": {
-                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
-              },
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "#64748b" }}>
-              <AccountBalanceWallet sx={{ fontSize: 18, color: "#f37021" }} />
-              <Typography sx={{ fontSize: "0.85rem", fontWeight: 600, color: "#64748b" }}>
-                My Advance Requests
-              </Typography>
-            </Box>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: "#0f172a", mt: 1.5, mb: 0.8, fontSize: "1.85rem" }}>
-              {totalMyCount}
+        <Card
+          sx={{
+            borderRadius: 3,
+            boxShadow: "0 1px 3px rgba(0,0,0,0.02), 0 2px 8px rgba(0,0,0,0.03)",
+            border: "1px solid #eef2f6",
+            bgcolor: "#ffffff",
+            p: 2.5,
+            transition: "transform 0.2s, box-shadow 0.2s",
+            "&:hover": {
+              boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
+            },
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "#64748b" }}>
+            <AccountBalanceWallet sx={{ fontSize: 18, color: "#f37021" }} />
+            <Typography sx={{ fontSize: "0.85rem", fontWeight: 600, color: "#64748b" }}>
+              My Advance Requests
             </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.6, fontSize: "0.78rem", fontWeight: 600, color: "#10b981" }}>
-              <TrendingUp sx={{ fontSize: 15 }} />
-              <span>Active requests in system</span>
-            </Box>
-          </Card>
-        </Grid>
+          </Box>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: "#0f172a", mt: 1.5, mb: 0.8, fontSize: "1.85rem" }}>
+            {totalMyCount}
+          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.6, fontSize: "0.78rem", fontWeight: 600, color: "#10b981" }}>
+            <TrendingUp sx={{ fontSize: 15 }} />
+            <span>Active requests in system</span>
+          </Box>
+        </Card>
 
         {/* Card 2: Pending RM Approvals */}
-        <Grid item xs={12} sm={4}>
-          <Card
-            sx={{
-              borderRadius: 3,
-              boxShadow: "0 1px 3px rgba(0,0,0,0.02), 0 2px 8px rgba(0,0,0,0.03)",
-              border: "1px solid #eef2f6",
-              bgcolor: "#ffffff",
-              p: 2.5,
-              transition: "transform 0.2s, box-shadow 0.2s",
-              "&:hover": {
-                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
-              },
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "#64748b" }}>
-              <AssignmentTurnedIn sx={{ fontSize: 18, color: "#d97706" }} />
-              <Typography sx={{ fontSize: "0.85rem", fontWeight: 600, color: "#64748b" }}>
-                Pending RM Approvals
-              </Typography>
-            </Box>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: "#0f172a", mt: 1.5, mb: 0.8, fontSize: "1.85rem" }}>
-              {pendingApprovalsCount}
+        <Card
+          sx={{
+            borderRadius: 3,
+            boxShadow: "0 1px 3px rgba(0,0,0,0.02), 0 2px 8px rgba(0,0,0,0.03)",
+            border: "1px solid #eef2f6",
+            bgcolor: "#ffffff",
+            p: 2.5,
+            transition: "transform 0.2s, box-shadow 0.2s",
+            "&:hover": {
+              boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
+            },
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "#64748b" }}>
+            <AssignmentTurnedIn sx={{ fontSize: 18, color: "#d97706" }} />
+            <Typography sx={{ fontSize: "0.85rem", fontWeight: 600, color: "#64748b" }}>
+              Pending RM Approvals
             </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.6, fontSize: "0.78rem", fontWeight: 600, color: pendingApprovalsCount > 0 ? "#f59e0b" : "#10b981" }}>
-              {pendingApprovalsCount > 0 ? (
-                <>
-                  <InfoOutlined sx={{ fontSize: 15 }} />
-                  <span>Requires your attention</span>
-                </>
-              ) : (
-                <>
-                  <CheckCircle sx={{ fontSize: 15 }} />
-                  <span>All caught up</span>
-                </>
-              )}
-            </Box>
-          </Card>
-        </Grid>
+          </Box>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: "#0f172a", mt: 1.5, mb: 0.8, fontSize: "1.85rem" }}>
+            {pendingApprovalsCount}
+          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.6, fontSize: "0.78rem", fontWeight: 600, color: pendingApprovalsCount > 0 ? "#f59e0b" : "#10b981" }}>
+            {pendingApprovalsCount > 0 ? (
+              <>
+                <InfoOutlined sx={{ fontSize: 15 }} />
+                <span>Requires your attention</span>
+              </>
+            ) : (
+              <>
+                <CheckCircle sx={{ fontSize: 15 }} />
+                <span>All caught up</span>
+              </>
+            )}
+          </Box>
+        </Card>
 
         {/* Card 3: Total Approved Amount */}
-        <Grid item xs={12} sm={4}>
-          <Card
-            sx={{
-              borderRadius: 3,
-              boxShadow: "0 1px 3px rgba(0,0,0,0.02), 0 2px 8px rgba(0,0,0,0.03)",
-              border: "1px solid #eef2f6",
-              bgcolor: "#ffffff",
-              p: 2.5,
-              transition: "transform 0.2s, box-shadow 0.2s",
-              "&:hover": {
-                boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
-              },
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "#64748b" }}>
-              <Paid sx={{ fontSize: 18, color: "#10b981" }} />
-              <Typography sx={{ fontSize: "0.85rem", fontWeight: 600, color: "#64748b" }}>
-                Total Approved Amount
-              </Typography>
-            </Box>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: "#0f172a", mt: 1.5, mb: 0.8, fontSize: "1.85rem" }}>
-              ₹{approvedAdvancesTotal.toLocaleString("en-IN")}
+        <Card
+          sx={{
+            borderRadius: 3,
+            boxShadow: "0 1px 3px rgba(0,0,0,0.02), 0 2px 8px rgba(0,0,0,0.03)",
+            border: "1px solid #eef2f6",
+            bgcolor: "#ffffff",
+            p: 2.5,
+            transition: "transform 0.2s, box-shadow 0.2s",
+            "&:hover": {
+              boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
+            },
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "#64748b" }}>
+            <Paid sx={{ fontSize: 18, color: "#10b981" }} />
+            <Typography sx={{ fontSize: "0.85rem", fontWeight: 600, color: "#64748b" }}>
+              Total Approved Amount
             </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.6, fontSize: "0.78rem", fontWeight: 600, color: "#0ea5e9" }}>
-              <TrendingUp sx={{ fontSize: 15 }} />
-              <span>Deducted via salary slip</span>
-            </Box>
-          </Card>
-        </Grid>
-      </Grid>
+          </Box>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: "#0f172a", mt: 1.5, mb: 0.8, fontSize: "1.85rem" }}>
+            ₹{approvedAdvancesTotal.toLocaleString("en-IN")}
+          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.6, fontSize: "0.78rem", fontWeight: 600, color: "#0ea5e9" }}>
+            <TrendingUp sx={{ fontSize: 15 }} />
+            <span>Deducted via salary slip</span>
+          </Box>
+        </Card>
+      </Box>
 
       {/* Main Content Card */}
       <Card
@@ -570,6 +573,7 @@ const AdvanceList = () => {
               alignItems: "center",
               gap: 1.5,
               flexWrap: "wrap",
+              width: { xs: "100%", md: "auto" },
             }}
           >
             {/* Search Input */}
@@ -619,6 +623,8 @@ const AdvanceList = () => {
                 borderRadius: 2,
                 px: 1.2,
                 height: 38,
+                width: { xs: "100%", sm: "auto" },
+                justifyContent: { xs: "space-between", sm: "flex-start" },
                 transition: "all 0.2s",
                 "&:hover": {
                   bgcolor: "#ffffff",

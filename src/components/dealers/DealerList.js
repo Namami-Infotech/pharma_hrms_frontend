@@ -193,58 +193,97 @@ function DealerList() {
   }
 
   return (
-    <Container maxWidth="xl" sx={{ py: 3, background: COLORS.background, minHeight: '100vh' }}>
+    <Container maxWidth="xl" sx={{ py: { xs: 1.5, sm: 3 }, px: { xs: 1.5, sm: 3 }, background: COLORS.background, minHeight: '100vh', overflowX: 'hidden' }}>
       {/* Header Section */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box
+          sx={{
+            mb: 3,
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            justifyContent: "space-between",
+            alignItems: { xs: "stretch", sm: "center" },
+            gap: 2,
+          }}
+        >
+          {/* Title & Avatar */}
+          <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>
             <Avatar
               sx={{
                 bgcolor: `${COLORS.primary}15`,
                 color: COLORS.primary,
-                mr: 2,
-                width: 56,
-                height: 56
+                mr: { xs: 1.5, sm: 2 },
+                width: { xs: 46, sm: 56 },
+                height: { xs: 46, sm: 56 },
+                flexShrink: 0,
               }}
             >
-              <Store sx={{ fontSize: 28 }} />
+              <Store sx={{ fontSize: { xs: 24, sm: 28 } }} />
             </Avatar>
-            <Box>
-              <Typography
-                variant="h5"
-                sx={{
-                  fontWeight: 700,
-                  color: "#0f172a",
-                  letterSpacing: -0.3,
-                  mb: 0.3,
-                }}
-              >
-                Leads & Dealer Management
-              </Typography>
-              <Typography variant="body2" sx={{ color: "#64748b", fontSize: "0.85rem" }}>
+            <Box sx={{ minWidth: 0 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontWeight: 700,
+                    color: "#0f172a",
+                    letterSpacing: -0.3,
+                    fontSize: { xs: "1.2rem", sm: "1.5rem" },
+                  }}
+                >
+                  Leads & Dealer Management
+                </Typography>
+                <Chip
+                  label={`Total: ${dealers.length} Dealers`}
+                  size="small"
+                  sx={{
+                    display: { xs: "inline-flex", sm: "none" },
+                    bgcolor: `${COLORS.primary}15`,
+                    color: COLORS.primary,
+                    fontWeight: 700,
+                    fontSize: "0.75rem",
+                    height: 24,
+                    borderRadius: 1.5,
+                    border: `1px solid ${COLORS.primary}30`,
+                  }}
+                />
+              </Box>
+              <Typography variant="body2" sx={{ color: "#64748b", fontSize: "0.82rem", mt: 0.3 }}>
                 Register, manage and track all leads and dealer records in one place
               </Typography>
             </Box>
           </Box>
           
-          <Stack direction="row" spacing={1.5} alignItems="center" sx={{ flexWrap: 'wrap' }}>
+          {/* Action Buttons Row */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.2,
+              width: { xs: "100%", sm: "auto" },
+            }}
+          >
+            {/* Desktop Total Chip */}
             <Chip
               label={`Total: ${dealers.length} Dealers`}
               sx={{
+                display: { xs: "none", sm: "inline-flex" },
                 bgcolor: `${COLORS.primary}15`,
                 color: COLORS.primary,
                 fontWeight: 700,
                 fontSize: "0.85rem",
-                py: 2,
-                px: 0.5,
+                height: 40,
+                px: 0.8,
                 borderRadius: 2,
                 border: `1px solid ${COLORS.primary}30`,
               }}
             />
+
+            {/* Export CSV Button */}
             <Button
               variant="outlined"
               onClick={exportToCsv}
@@ -253,20 +292,25 @@ function DealerList() {
                 borderColor: COLORS.secondary,
                 color: COLORS.secondary,
                 borderRadius: 2,
-                px: 2.5,
-                py: 1,
+                px: { xs: 1.5, sm: 2.5 },
+                height: 40,
                 fontWeight: 600,
-                textTransform: 'none',
+                fontSize: { xs: "0.82rem", sm: "0.875rem" },
+                textTransform: "none",
+                whiteSpace: "nowrap",
+                flex: { xs: 1, sm: "none" },
                 "&:hover": { 
-                  borderColor: '#5a6fd8',
+                  borderColor: "#5a6fd8",
                   bgcolor: `${COLORS.secondary}10`,
-                  transform: 'translateY(-1px)',
+                  transform: "translateY(-1px)",
                 },
-                transition: 'all 0.2s ease',
+                transition: "all 0.2s ease",
               }}
             >
               Export CSV
             </Button>
+
+            {/* Add Doctor Button */}
             <Button
               variant="contained"
               onClick={() => setOpenAddModal(true)}
@@ -274,23 +318,26 @@ function DealerList() {
               sx={{
                 bgcolor: COLORS.primary,
                 borderRadius: 2,
-                px: 2.5,
-                py: 1,
+                px: { xs: 1.8, sm: 2.5 },
+                height: 40,
                 fontWeight: 600,
-                color: '#fff',
-                textTransform: 'none',
+                fontSize: { xs: "0.82rem", sm: "0.875rem" },
+                color: "#fff",
+                textTransform: "none",
+                whiteSpace: "nowrap",
+                flex: { xs: 1, sm: "none" },
                 boxShadow: `0 4px 14px ${COLORS.primary}40`,
                 "&:hover": {
-                  bgcolor: '#d95300',
-                  transform: 'translateY(-1px)',
-                  boxShadow: `0 6px 20px ${COLORS.primary}60`
+                  bgcolor: "#d95300",
+                  transform: "translateY(-1px)",
+                  boxShadow: `0 6px 20px ${COLORS.primary}60`,
                 },
-                transition: 'all 0.2s ease',
+                transition: "all 0.2s ease",
               }}
             >
               Add Doctor
             </Button>
-          </Stack>
+          </Box>
         </Box>
       </motion.div>
 
@@ -305,30 +352,32 @@ function DealerList() {
           border: `1px solid ${theme.palette.divider}`,
           background: COLORS.surface,
           boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          width: '100%',
         }}>
-          <TableContainer>
-            <Table>
+          <TableContainer sx={{ maxWidth: '100%', overflowX: 'auto' }}>
+            <Table size="small" sx={{ minWidth: 850 }}>
               <TableHead>
                 <TableRow sx={{ 
                   bgcolor: 'grey.50',
                   '& th': {
-                    fontWeight: 600,
+                    fontWeight: 700,
                     color: COLORS.text.primary,
-                    fontSize: '0.875rem',
-                    py: 2,
+                    fontSize: '0.82rem',
+                    py: 1.5,
+                    whiteSpace: 'nowrap',
                     borderBottom: `2px solid ${theme.palette.divider}`
                   }
                 }}>
-                  <TableCell>Dealer ID</TableCell>
-                  <TableCell>Company</TableCell>
-                  <TableCell>Contact Person</TableCell>
-                  <TableCell>State</TableCell>
-                  <TableCell>Address</TableCell>
-                  <TableCell>Contact</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>Dealer ID</TableCell>
+                  <TableCell sx={{ minWidth: 150 }}>Company</TableCell>
+                  <TableCell sx={{ minWidth: 150 }}>Contact Person</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>State</TableCell>
+                  <TableCell sx={{ minWidth: 180 }}>Address</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>Contact</TableCell>
                   <TableCell>Email</TableCell>
                   <TableCell>Remarks</TableCell>
-                  <TableCell>Added By</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>Added By</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -344,7 +393,7 @@ function DealerList() {
                       '&:last-child td': { borderBottom: 0 }
                     }}
                   >
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: "nowrap" }}>
                       <Chip 
                         label={dealer.DealerID} 
                         size="small" 
@@ -376,7 +425,7 @@ function DealerList() {
                         </Typography>
                       </Box>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: "nowrap" }}>
                       <Typography variant="body2" fontWeight={500}>
                         {dealer.State || dealer['Dealer State'] || '-'}
                       </Typography>
@@ -393,7 +442,7 @@ function DealerList() {
                         </Typography>
                       </Tooltip>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: "nowrap" }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Phone fontSize="small" sx={{ color: 'text.secondary' }} />
                         <Typography variant="body2">
@@ -425,7 +474,7 @@ function DealerList() {
                         </Typography>
                       </Tooltip>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ whiteSpace: "nowrap" }}>
                       <Chip 
                         label={dealer.AddedByName || dealer.AddedByEmpId || 'Admin'} 
                         size="small" 

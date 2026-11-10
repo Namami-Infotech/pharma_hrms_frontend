@@ -1839,40 +1839,51 @@ const AttendanceList = () => {
               {/* Main Content for History View */}
               {viewMode === "calendar" ? (
                 <Paper
-                  sx={{ p: { xs: 1.5, md: 2 }, borderRadius: 2, boxShadow: 1 }}
+                  sx={{ p: { xs: 1.5, md: 2 }, borderRadius: 2, boxShadow: 1, overflow: "hidden" }}
                 >
                   <Typography
                     variant="h6"
                     gutterBottom
-                    sx={{ fontWeight: 500 }}
+                    sx={{ fontWeight: 500, fontSize: { xs: "0.95rem", sm: "1.25rem" } }}
                   >
                     Attendance Calendar - {format(selectedDate, "MMMM yyyy")}
                   </Typography>
 
-                  <Calendar
-                    localizer={localizer}
-                    events={filteredActivities}
-                    startAccessor="start"
-                    endAccessor="end"
-                    style={{
-                      height: 450,
-                      backgroundColor: "#fff",
-                      borderRadius: 8,
-                      padding: 4,
+                  <Box
+                    sx={{
+                      width: "100%",
+                      overflowX: "auto",
+                      WebkitOverflowScrolling: "touch",
+                      "& .rbc-calendar": {
+                        minWidth: { xs: 480, sm: "100%" },
+                      },
                     }}
-                    eventPropGetter={eventStyleGetter}
-                    views={["month", "week", "day"]}
-                    popup
-                    date={selectedDate}
-                    onNavigate={(date) => {
-                      setSelectedDate(date);
-                    }}
-                    tooltipAccessor={(event) =>
-                      event.type === "attendance"
-                        ? `${event.title}\nWorking Hours: ${event.workingHours}`
-                        : event.title
-                    }
-                  />
+                  >
+                    <Calendar
+                      localizer={localizer}
+                      events={filteredActivities}
+                      startAccessor="start"
+                      endAccessor="end"
+                      style={{
+                        height: 450,
+                        backgroundColor: "#fff",
+                        borderRadius: 8,
+                        padding: 4,
+                      }}
+                      eventPropGetter={eventStyleGetter}
+                      views={["month", "week", "day"]}
+                      popup
+                      date={selectedDate}
+                      onNavigate={(date) => {
+                        setSelectedDate(date);
+                      }}
+                      tooltipAccessor={(event) =>
+                        event.type === "attendance"
+                          ? `${event.title}\nWorking Hours: ${event.workingHours}`
+                          : event.title
+                      }
+                    />
+                  </Box>
                 </Paper>
               ) : (
                 <Paper sx={{ borderRadius: 2, boxShadow: 1 }}>

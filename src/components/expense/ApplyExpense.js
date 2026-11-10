@@ -229,23 +229,25 @@ function ApplyExpense({ open, onClose, onExpenseApplied }) {
         fullWidth
         PaperProps={{
           sx: {
-            borderRadius: 2.5,
-            overflow: 'hidden',
+            borderRadius: { xs: 2, sm: 2.5 },
+            width: { xs: "calc(100% - 24px)", sm: "auto" },
+            m: { xs: 1.5, sm: 2 },
+            overflow: "hidden",
           }
         }}
       >
         <DialogTitle sx={{ 
           bgcolor: '#f37021',
           color: '#ffffff',
-          py: 2,
-          px: 3,
+          py: { xs: 1.5, sm: 2 },
+          px: { xs: 2, sm: 3 },
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
-            <Receipt sx={{ fontSize: 24 }} />
-            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            <Receipt sx={{ fontSize: { xs: 22, sm: 24 } }} />
+            <Typography variant="h6" sx={{ fontWeight: 600, fontSize: { xs: "1.05rem", sm: "1.25rem" } }}>
               Apply Expense
             </Typography>
           </Box>
@@ -258,7 +260,14 @@ function ApplyExpense({ open, onClose, onExpenseApplied }) {
           </IconButton>
         </DialogTitle>
 
-        <DialogContent sx={{ p: 3, bgcolor: '#ffffff' }}>
+        <DialogContent
+          sx={{
+            p: { xs: 2, sm: 3 },
+            pt: { xs: "20px !important", sm: "24px !important" },
+            bgcolor: '#ffffff',
+            overflowX: "hidden",
+          }}
+        >
           {loading && <LinearProgress sx={{ mb: 2 }} />}
 
           <AnimatePresence>
@@ -266,8 +275,9 @@ function ApplyExpense({ open, onClose, onExpenseApplied }) {
               <Box
                 key={index}
                 sx={{
+                  mt: index === 0 ? 0.5 : 0,
                   mb: index < expenseEntries.length - 1 ? 2.5 : 1,
-                  p: 2.5,
+                  p: { xs: 1.5, sm: 2.5 },
                   borderRadius: 2,
                   bgcolor: '#fafafa',
                   border: '1px solid #e5e7eb',
@@ -287,84 +297,83 @@ function ApplyExpense({ open, onClose, onExpenseApplied }) {
                   </Box>
                 )}
 
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="Expense Date"
-                      type="date"
-                      value={entry.expenseDate}
-                      onChange={(e) => handleChange(index, 'expenseDate', e.target.value)}
-                      InputLabelProps={{ shrink: true }}
-                      variant="outlined"
-                      size="small"
-                      fullWidth
-                      error={!!errors[`${index}-expenseDate`]}
-                      helperText={errors[`${index}-expenseDate`]}
-                      InputProps={{
-                        startAdornment: <CalendarToday sx={{ mr: 1, fontSize: 18, color: 'action.active' }} />
-                      }}
-                    />
-                  </Grid>
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+                    gap: 2,
+                    width: "100%",
+                  }}
+                >
+                  <TextField
+                    label="Expense Date"
+                    type="date"
+                    value={entry.expenseDate}
+                    onChange={(e) => handleChange(index, 'expenseDate', e.target.value)}
+                    InputLabelProps={{ shrink: true }}
+                    variant="outlined"
+                    size="small"
+                    fullWidth
+                    error={!!errors[`${index}-expenseDate`]}
+                    helperText={errors[`${index}-expenseDate`]}
+                    InputProps={{
+                      startAdornment: <CalendarToday sx={{ mr: 1, fontSize: 18, color: 'action.active' }} />
+                    }}
+                  />
 
-                  <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth size="small" error={!!errors[`${index}-expenseType`]}>
-                      <InputLabel>Category</InputLabel>
-                      <Select
-                        value={entry.expenseType}
-                        onChange={(e) => handleChange(index, 'expenseType', e.target.value)}
-                        label="Category"
-                        startAdornment={<Category sx={{ mr: 1, fontSize: 18, color: 'action.active' }} />}
-                        MenuProps={{ PaperProps: { sx: { maxHeight: 260 } } }}
-                      >
-                        {expenseCategories.map((category) => (
-                          <MenuItem key={category.value} value={category.value}>
-                            <Box display="flex" alignItems="center">
-                              <span style={{ marginRight: 8, fontSize: '1.1em' }}>
-                                {category.icon}
-                              </span>
-                              {category.label}
-                            </Box>
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {errors[`${index}-expenseType`] && (
-                        <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1 }}>
-                          {errors[`${index}-expenseType`]}
-                        </Typography>
-                      )}
-                    </FormControl>
-                  </Grid>
+                  <FormControl fullWidth size="small" error={!!errors[`${index}-expenseType`]}>
+                    <InputLabel>Category</InputLabel>
+                    <Select
+                      value={entry.expenseType}
+                      onChange={(e) => handleChange(index, 'expenseType', e.target.value)}
+                      label="Category"
+                      startAdornment={<Category sx={{ mr: 1, fontSize: 18, color: 'action.active' }} />}
+                      MenuProps={{ PaperProps: { sx: { maxHeight: 260 } } }}
+                    >
+                      {expenseCategories.map((category) => (
+                        <MenuItem key={category.value} value={category.value}>
+                          <Box display="flex" alignItems="center">
+                            <span style={{ marginRight: 8, fontSize: '1.1em' }}>
+                              {category.icon}
+                            </span>
+                            {category.label}
+                          </Box>
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {errors[`${index}-expenseType`] && (
+                      <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1 }}>
+                        {errors[`${index}-expenseType`]}
+                      </Typography>
+                    )}
+                  </FormControl>
 
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="Amount (₹)"
-                      type="number"
-                      placeholder="0.00"
-                      value={entry.expenseAmount}
-                      onChange={(e) => handleChange(index, 'expenseAmount', e.target.value)}
-                      variant="outlined"
-                      size="small"
-                      fullWidth
-                      error={!!errors[`${index}-expenseAmount`]}
-                      helperText={errors[`${index}-expenseAmount`]}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <Typography sx={{ fontWeight: 'bold', color: '#f37021' }}>₹</Typography>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  </Grid>
+                  <TextField
+                    label="Amount (₹)"
+                    type="number"
+                    placeholder="0.00"
+                    value={entry.expenseAmount}
+                    onChange={(e) => handleChange(index, 'expenseAmount', e.target.value)}
+                    variant="outlined"
+                    size="small"
+                    fullWidth
+                    error={!!errors[`${index}-expenseAmount`]}
+                    helperText={errors[`${index}-expenseAmount`]}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Typography sx={{ fontWeight: 'bold', color: '#f37021' }}>₹</Typography>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
 
-                  <Grid item xs={12} sm={6}>
-                    <ReceiptUpload
-                      entry={entry}
-                      index={index}
-                      onDrop={(files) => onDrop(files, index)}
-                    />
-                  </Grid>
-                </Grid>
+                  <ReceiptUpload
+                    entry={entry}
+                    index={index}
+                    onDrop={(files) => onDrop(files, index)}
+                  />
+                </Box>
 
                 
               </Box>
@@ -395,13 +404,13 @@ function ApplyExpense({ open, onClose, onExpenseApplied }) {
         </DialogContent>
 
         <DialogActions sx={{ 
-          px: 3, 
-          py: 2, 
+          px: { xs: 2, sm: 3 }, 
+          py: { xs: 1.5, sm: 2 }, 
           borderTop: '1px solid #e5e7eb', 
           bgcolor: '#f9fafb',
           display: 'flex',
-          justifyContent: 'flex-end',
-          gap: 1.5,
+          flexDirection: { xs: "column-reverse", sm: "row" },
+          gap: { xs: 1, sm: 1.5 },
         }}>
           <Button
             onClick={onClose}
@@ -410,6 +419,7 @@ function ApplyExpense({ open, onClose, onExpenseApplied }) {
               color: '#6b7280',
               fontWeight: 600,
               textTransform: 'none',
+              width: { xs: "100%", sm: "auto" },
             }}
           >
             Cancel
@@ -426,6 +436,7 @@ function ApplyExpense({ open, onClose, onExpenseApplied }) {
               px: 3,
               py: 0.8,
               borderRadius: 1.5,
+              width: { xs: "100%", sm: "auto" },
             }}
           >
             {loading ? 'Submitting...' : 'Submit'}

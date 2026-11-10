@@ -551,7 +551,7 @@ const [expanded, setExpanded] = useState(false);
   return (
     <Box sx={{ p: { xs: 1, md: 2 }, bgcolor: "#f8fafc", minHeight: "100vh" }}>
       {/* Header */}
-      <Paper elevation={0} sx={{ p: 2.5, mb: 2, borderRadius: 2.5, background: 'white', border: '1px solid #f1f5f9' }}>
+      <Paper elevation={0} sx={{ p: { xs: 2, sm: 2.5 }, mb: 2, borderRadius: 2.5, background: 'white', border: '1px solid #f1f5f9' }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, flexWrap: "wrap", gap: 2 }}>
           <Box>
             <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}>
@@ -561,7 +561,7 @@ const [expanded, setExpanded] = useState(false);
               Track employee leave requests, balances, and approval records
             </Typography>
           </Box>
-          <Box sx={{ display: "flex", gap: 1, alignItems: "center", flexWrap: "wrap" }}>
+          <Box sx={{ display: "flex", gap: 1, alignItems: "center", flexWrap: "wrap", width: { xs: "100%", sm: "auto" } }}>
             <Button
               variant="contained"
               startIcon={<Add />}
@@ -575,6 +575,7 @@ const [expanded, setExpanded] = useState(false);
                 textTransform: "none",
                 px: 2,
                 py: 0.75,
+                flex: { xs: 1, sm: "none" },
                 "&:hover": {
                   bgcolor: "#d95300",
                 },
@@ -587,15 +588,29 @@ const [expanded, setExpanded] = useState(false);
                 {refreshing ? <CircularProgress size={18} /> : <Refresh fontSize="small" />}
               </IconButton>
             </Tooltip>
-            <Button variant="outlined" startIcon={<Download />} onClick={exportToCsv} size="small">
+            <Button
+              variant="outlined"
+              startIcon={<Download />}
+              onClick={exportToCsv}
+              size="small"
+              sx={{ flex: { xs: 1, sm: "none" } }}
+            >
               Export CSV
             </Button>
           </Box>
         </Box>
 
         {/* Search and Filters */}
-        <Grid container spacing={1.5} alignItems="center">
-          <Grid item xs={12} md={6}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            alignItems: "center",
+            gap: 1.5,
+            width: "100%",
+          }}
+        >
+          <Box sx={{ flex: { xs: "1 1 100%", md: "1 1 50%" }, width: "100%" }}>
             <TextField
               fullWidth
               variant="outlined"
@@ -611,8 +626,8 @@ const [expanded, setExpanded] = useState(false);
                 ),
               }}
             />
-          </Grid>
-          <Grid item xs={12} md={3}>
+          </Box>
+          <Box sx={{ flex: { xs: "1 1 100%", md: "1 1 30%" }, width: "100%" }}>
             <TextField
               select
               fullWidth
@@ -626,14 +641,14 @@ const [expanded, setExpanded] = useState(false);
               <MenuItem value="Approved">Approved</MenuItem>
               <MenuItem value="Rejected">Rejected</MenuItem>
             </TextField>
-          </Grid>
-          <Grid item xs={12} md={3}>
+          </Box>
+          <Box sx={{ width: { xs: "100%", md: "auto" }, display: "flex", justifyContent: { xs: "flex-start", md: "flex-end" } }}>
             <Stack direction="row" spacing={0.5}>
               <Button
                 variant={viewMode === "table" ? "contained" : "outlined"}
                 onClick={() => setViewMode("table")}
                 size="small"
-                sx={{ fontSize: '0.75rem' }}
+                sx={{ fontSize: "0.75rem", height: 40 }}
               >
                 Table
               </Button>
@@ -641,13 +656,13 @@ const [expanded, setExpanded] = useState(false);
                 variant={viewMode === "cards" ? "contained" : "outlined"}
                 onClick={() => setViewMode("cards")}
                 size="small"
-                sx={{ fontSize: '0.75rem' }}
+                sx={{ fontSize: "0.75rem", height: 40 }}
               >
                 Cards
               </Button>
             </Stack>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
       </Paper>
 
       {/* Error Alert */}
@@ -658,47 +673,56 @@ const [expanded, setExpanded] = useState(false);
       )}
 
       {/* Compact Stats Cards */}
-      <Grid container spacing={1.5} sx={{ mb: 2 }}>
-        <Grid item xs={6} sm={3}>
-          <StatsCard
-            icon={<EventAvailable />}
-            title="Total Leaves"
-            value={totalLeaves}
-            color={theme.palette.primary.main}
-            subtitle="All applications"
-          />
-        </Grid>
-        <Grid item xs={6} sm={3}>
-          <StatsCard
-            icon={<AccessTime />}
-            title="Pending"
-            value={pendingLeaves}
-            color={theme.palette.warning.main}
-            subtitle="Awaiting approval"
-          />
-        </Grid>
-        <Grid item xs={6} sm={3}>
-          <StatsCard
-            icon={<Check />}
-            title="Approved"
-            value={approvedLeaves}
-            color={theme.palette.success.main}
-            subtitle="Approved leaves"
-          />
-        </Grid>
-        <Grid item xs={6} sm={3}>
-          <StatsCard
-            icon={<Cancel />}
-            title="Rejected"
-            value={rejectedLeaves}
-            color={theme.palette.error.main}
-            subtitle="Rejected leaves"
-          />
-        </Grid>
-      </Grid>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr 1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr 1fr" },
+          gap: { xs: 1.5, sm: 2 },
+          mb: 3,
+          width: "100%",
+        }}
+      >
+        <StatsCard
+          icon={<EventAvailable />}
+          title="Total Leaves"
+          value={totalLeaves}
+          color={theme.palette.primary.main}
+          subtitle="All applications"
+        />
+        <StatsCard
+          icon={<AccessTime />}
+          title="Pending"
+          value={pendingLeaves}
+          color={theme.palette.warning.main}
+          subtitle="Awaiting approval"
+        />
+        <StatsCard
+          icon={<Check />}
+          title="Approved"
+          value={approvedLeaves}
+          color={theme.palette.success.main}
+          subtitle="Approved leaves"
+        />
+        <StatsCard
+          icon={<Cancel />}
+          title="Rejected"
+          value={rejectedLeaves}
+          color={theme.palette.error.main}
+          subtitle="Rejected leaves"
+        />
+      </Box>
 
       {/* Main Content */}
-      <Paper elevation={1} sx={{ borderRadius: 2, background: 'white' }}>
+      <Paper
+        elevation={1}
+        sx={{
+          borderRadius: 2,
+          background: "white",
+          overflow: "hidden",
+          border: "1px solid #e2e8f0",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+        }}
+      >
         {viewMode === "cards" || isMobile ? (
           // Card View
           <Box sx={{ p: 1.5 }}>

@@ -266,14 +266,21 @@ function ViewHoliday() {
       <Paper 
         elevation={0} 
         sx={{ 
-          p: 2.5, 
+          p: { xs: 2, sm: 2.5 }, 
           mb: 2, 
           borderRadius: 2, 
           background: 'white',
           border: `1px solid ${alpha(theme.palette.divider, 0.1)}`
         }}
       >
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+        <Box sx={{ 
+          display: "flex", 
+          flexDirection: { xs: "column", sm: "row" },
+          justifyContent: "space-between", 
+          alignItems: { xs: "flex-start", sm: "center" }, 
+          gap: { xs: 1.5, sm: 2 },
+          mb: 2 
+        }}>
           <Box>
             <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }} gutterBottom>
               Holiday Calendar
@@ -282,7 +289,7 @@ function ViewHoliday() {
               Manage and view company holidays and official calendar
             </Typography>
           </Box>
-          <Box sx={{ display: "flex", gap: 1 }}>
+          <Box sx={{ display: "flex", gap: 1, width: { xs: "100%", sm: "auto" } }}>
             <Tooltip title="Refresh Data">
               <IconButton 
                 onClick={handleRefresh} 
@@ -301,7 +308,7 @@ function ViewHoliday() {
               startIcon={<ViewModule />}
               onClick={() => setViewMode("calendar")}
               size="small"
-              sx={{ borderRadius: 2 }}
+              sx={{ borderRadius: 2, flex: { xs: 1, sm: "none" } }}
             >
               Calendar
             </Button>
@@ -310,7 +317,7 @@ function ViewHoliday() {
               startIcon={<ViewList />}
               onClick={() => setViewMode("list")}
               size="small"
-              sx={{ borderRadius: 2 }}
+              sx={{ borderRadius: 2, flex: { xs: 1, sm: "none" } }}
             >
               List
             </Button>
@@ -451,24 +458,38 @@ function ViewHoliday() {
             elevation={0} 
             sx={{ 
               borderRadius: 2, 
-              height: 550,
+              minHeight: { xs: 460, sm: 550 },
+              height: { xs: "auto", sm: 550 },
               background: 'white',
               border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-              overflow: 'hidden'
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
             {viewMode === "calendar" ? (
-              <Box sx={{ p: 2, height: "100%" }}>
-                <Typography variant="subtitle1" fontWeight="600" gutterBottom sx={{ fontSize: '0.9rem' }}>
-                  {selectedDate.toFormat("MMMM yyyy")} Calendar
-                </Typography>
+              <Box sx={{ p: { xs: 1.5, sm: 2 }, flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5, flexWrap: "wrap", gap: 1 }}>
+                  <Typography variant="subtitle1" fontWeight="600" sx={{ fontSize: '0.9rem' }}>
+                    {selectedDate.toFormat("MMMM yyyy")} Calendar
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: "text.secondary", display: { xs: "block", sm: "none" } }}>
+                    Swipe horizontally to view full week
+                  </Typography>
+                </Box>
                 <Box
                   sx={{
-                    height: "calc(100% - 32px)",
+                    flex: 1,
+                    minHeight: { xs: 400, sm: "calc(100% - 36px)" },
+                    width: "100%",
                     borderRadius: 1,
-                    overflow: "hidden",
+                    overflowX: "auto",
+                    overflowY: "hidden",
+                    WebkitOverflowScrolling: "touch",
                     "& .rbc-calendar": {
                       height: "100%",
+                      minHeight: 400,
+                      minWidth: { xs: 480, sm: "100%" },
                       fontFamily: 'inherit',
                     },
                     "& .rbc-event": {
@@ -476,9 +497,9 @@ function ViewHoliday() {
                       borderRadius: "4px",
                       border: "none",
                       color: "white",
-                      fontSize: "0.75rem",
+                      fontSize: { xs: "0.68rem", sm: "0.75rem" },
                       fontWeight: 500,
-                      padding: '2px 4px',
+                      padding: { xs: '1px 3px', sm: '2px 4px' },
                     },
                     "& .rbc-today": {
                       backgroundColor: `${alpha("#f37021", 0.08)}`,
@@ -487,16 +508,18 @@ function ViewHoliday() {
                       backgroundColor: alpha("#f37021", 0.9),
                       color: "white",
                       fontWeight: "600",
-                      padding: "6px",
-                      fontSize: '0.8rem',
+                      padding: { xs: "4px 2px", sm: "6px" },
+                      fontSize: { xs: "0.72rem", sm: "0.8rem" },
+                      textAlign: "center",
                     },
                     "& .rbc-month-view": {
                       border: `1px solid ${alpha(theme.palette.divider, 0.2)}`,
                       borderRadius: "8px",
+                      minWidth: { xs: 480, sm: "100%" },
                     },
                     "& .rbc-date-cell": {
-                      fontSize: '0.8rem',
-                      padding: '4px',
+                      fontSize: { xs: "0.72rem", sm: "0.8rem" },
+                      padding: { xs: "2px", sm: "4px" },
                     },
                   }}
                 >
@@ -525,7 +548,7 @@ function ViewHoliday() {
                 </Box>
               </Box>
             ) : (
-              <Box sx={{ p: 2, height: "100%", overflow: "auto" }}>
+              <Box sx={{ p: { xs: 1.5, sm: 2 }, height: "100%", overflow: "auto" }}>
                 <Typography variant="subtitle1" fontWeight="600" gutterBottom sx={{ fontSize: '0.9rem' }}>
                   Holidays in {selectedDate.toFormat("MMMM yyyy")}
                 </Typography>

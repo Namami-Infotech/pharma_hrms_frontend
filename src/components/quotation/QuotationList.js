@@ -48,7 +48,6 @@ import {
   Refresh,
   Receipt,
   Schedule,
-  Tune,
 } from "@mui/icons-material";
 import axios from "axios";
 import { useAuth } from "../auth/AuthContext";
@@ -67,17 +66,33 @@ const StatCard = ({ title, value, color, icon, subtitle }) => {
         boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
       }}
     >
-      <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="caption" color="text.secondary" fontWeight="600">
+      <CardContent sx={{ p: { xs: 1.2, sm: 2 }, "&:last-child": { pb: { xs: 1.2, sm: 2 } } }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 0.5 }}>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontWeight="600"
+              sx={{ fontSize: { xs: "0.68rem", sm: "0.75rem" }, display: "block" }}
+              noWrap
+            >
               {title}
             </Typography>
-            <Typography variant="h6" fontWeight="bold" color={color} sx={{ my: 0.3 }}>
+            <Typography
+              variant="h6"
+              fontWeight="bold"
+              color={color}
+              sx={{ my: { xs: 0.1, sm: 0.3 }, fontSize: { xs: "1.05rem", sm: "1.25rem" } }}
+            >
               {value}
             </Typography>
             {subtitle && (
-              <Typography variant="caption" color="text.secondary" sx={{ fontSize: "0.72rem" }}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ fontSize: { xs: "0.62rem", sm: "0.72rem" }, display: "block" }}
+                noWrap
+              >
                 {subtitle}
               </Typography>
             )}
@@ -86,11 +101,12 @@ const StatCard = ({ title, value, color, icon, subtitle }) => {
             sx={{
               bgcolor: alpha(color, 0.12),
               color: color,
-              width: 40,
-              height: 40,
+              width: { xs: 32, sm: 40 },
+              height: { xs: 32, sm: 40 },
+              flexShrink: 0,
             }}
           >
-            {icon}
+            {React.cloneElement(icon, { sx: { fontSize: { xs: 17, sm: 22 } } })}
           </Avatar>
         </Box>
       </CardContent>
@@ -438,13 +454,13 @@ function QuotationList() {
   }
 
   return (
-    <Box sx={{ p: { xs: 2, sm: 3 }, width: "100%", boxSizing: "border-box" }}>
+    <Box sx={{ p: { xs: 1.5, sm: 3 }, width: "100%", maxWidth: "100%", boxSizing: "border-box", overflowX: "hidden" }}>
       {/* Notifications */}
       {successMsg && (
         <Alert
           severity="success"
           onClose={() => setSuccessMsg("")}
-          sx={{ mb: 2.5, borderRadius: 2 }}
+          sx={{ mb: 2, borderRadius: 2 }}
         >
           {successMsg}
         </Alert>
@@ -453,68 +469,124 @@ function QuotationList() {
         <Alert
           severity="error"
           onClose={() => setError("")}
-          sx={{ mb: 2.5, borderRadius: 2 }}
+          sx={{ mb: 2, borderRadius: 2 }}
         >
           {error}
         </Alert>
       )}
 
       {/* Page Title Block */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}>
-          Quotations Management
-        </Typography>
-        <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: "0.85rem" }}>
-          Create, track, and manage client pharmaceutical price quotations and approvals
-        </Typography>
+      <Box
+        sx={{
+          mb: { xs: 2, sm: 3 },
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: { xs: "flex-start", sm: "center" },
+          flexWrap: "wrap",
+          gap: 1.5,
+        }}
+      >
+        <Box>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3, fontSize: { xs: "1.25rem", sm: "1.5rem" } }}>
+            Quotations Management
+          </Typography>
+          <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: "0.82rem" }}>
+            Create, track, and manage client pharmaceutical price quotations and approvals
+          </Typography>
+        </Box>
+
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, width: { xs: "100%", sm: "auto" }, justifyContent: { xs: "flex-start", sm: "flex-end" } }}>
+          <IconButton
+            onClick={fetchQuotations}
+            color="primary"
+            title="Refresh"
+            sx={{
+              border: "1px solid #e2e8f0",
+              borderRadius: 2,
+              bgcolor: "#ffffff",
+              width: 40,
+              height: 40,
+              "&:hover": { bgcolor: "#f8fafc", borderColor: "#cbd5e1" },
+            }}
+          >
+            <Refresh />
+          </IconButton>
+
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            onClick={handleOpenCreate}
+            sx={{
+              bgcolor: "#f37021",
+              "&:hover": { bgcolor: "#d95300" },
+              borderRadius: 2,
+              textTransform: "none",
+              fontWeight: 600,
+              px: 2.5,
+              height: 40,
+              whiteSpace: "nowrap",
+              boxShadow: "0 2px 6px rgba(243, 112, 33, 0.3)",
+            }}
+          >
+            New Quotation
+          </Button>
+        </Box>
       </Box>
 
-      {/* 1. Header Summary Stats Cards */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            title="Total Quotations"
-            value={stats.totalQuotations || 0}
-            color="#f37021"
-            icon={<RequestQuote />}
-            subtitle={`Total Value: ₹${(stats.totalValue || 0).toLocaleString("en-IN")}`}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            title="Approved (Orders Won)"
-            value={stats.approvedCount || 0}
-            color="#10b981"
-            icon={<CheckCircle />}
-            subtitle="Client accepted quotes"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            title="Sent / Pending"
-            value={stats.sentCount || 0}
-            color="#3b82f6"
-            icon={<HourglassEmpty />}
-            subtitle="Awaiting client confirmation"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            title="Drafts & Others"
-            value={(stats.draftCount || 0) + (stats.rejectedCount || 0)}
-            color="#f59e0b"
-            icon={<Receipt />}
-            subtitle={`Draft: ${stats.draftCount || 0} | Rejected: ${stats.rejectedCount || 0}`}
-          />
-        </Grid>
-      </Grid>
+      {/* 1. Header Summary Stats Cards (2x2 on mobile, 4 in 1 row on desktop) */}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr 1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr 1fr" },
+          gap: { xs: 1.2, sm: 2 },
+          mb: 2.5,
+          width: "100%",
+        }}
+      >
+        <StatCard
+          title="Total Quotations"
+          value={stats.totalQuotations || 0}
+          color="#f37021"
+          icon={<RequestQuote />}
+          subtitle={`Val: ₹${(stats.totalValue || 0).toLocaleString("en-IN")}`}
+        />
+        <StatCard
+          title="Approved"
+          value={stats.approvedCount || 0}
+          color="#10b981"
+          icon={<CheckCircle />}
+          subtitle="Orders won"
+        />
+        <StatCard
+          title="Sent / Pending"
+          value={stats.sentCount || 0}
+          color="#3b82f6"
+          icon={<HourglassEmpty />}
+          subtitle="Awaiting confirm"
+        />
+        <StatCard
+          title="Drafts & Others"
+          value={(stats.draftCount || 0) + (stats.rejectedCount || 0)}
+          color="#f59e0b"
+          icon={<Receipt />}
+          subtitle={`Draft: ${stats.draftCount || 0} | Rej: ${stats.rejectedCount || 0}`}
+        />
+      </Box>
 
-      {/* 2. Top Filter & Action Bar */}
-      <Card sx={{ mb: 3, p: 2, borderRadius: 2, boxShadow: "0 2px 10px rgba(0,0,0,0.04)" }}>
-        <Grid container spacing={2} alignItems="center">
+      {/* 2. Top Filter Bar */}
+      <Card sx={{ mb: 2.5, p: { xs: 1.5, sm: 2 }, borderRadius: 2, border: "1px solid #e2e8f0", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            alignItems: "center",
+            gap: 1.5,
+            width: "100%",
+          }}
+        >
           {/* Search */}
-          <Grid item xs={12} sm={5} md={4}>
-            <form onSubmit={handleSearchSubmit}>
+          <Box sx={{ flex: 1, width: "100%" }}>
+            <form onSubmit={handleSearchSubmit} style={{ width: "100%" }}>
               <TextField
                 fullWidth
                 size="small"
@@ -522,81 +594,58 @@ function QuotationList() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 InputProps={{
-                  startAdornment: <Search sx={{ color: "action.active", mr: 1 }} />,
+                  startAdornment: <Search sx={{ color: "action.active", mr: 1, fontSize: 20 }} />,
+                }}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 2,
+                    fontSize: "0.85rem",
+                    height: 40,
+                  },
                 }}
               />
             </form>
-          </Grid>
+          </Box>
 
           {/* Status Filter */}
-          <Grid item xs={6} sm={3} md={2.5}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Status</InputLabel>
-              <Select
-                value={statusFilter}
-                label="Status"
-                onChange={(e) => setStatusFilter(e.target.value)}
-              >
-                <MenuItem value="All">All Statuses</MenuItem>
-                <MenuItem value="Pending Approval">Pending Approval</MenuItem>
-                <MenuItem value="Sent">Sent</MenuItem>
-                <MenuItem value="Approved">Approved</MenuItem>
-                <MenuItem value="Draft">Draft</MenuItem>
-                <MenuItem value="Rejected">Rejected</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-
-          {/* Actions */}
-          <Grid
-            item
-            xs={12}
-            sm={4}
-            md={5.5}
-            sx={{ display: "flex", gap: 1.5, justifyContent: "flex-end", alignItems: "center" }}
+          <FormControl
+            size="small"
+            sx={{
+              width: { xs: "100%", sm: 200 },
+              flexShrink: 0,
+            }}
           >
-            <Tooltip title="Approval Policy: Any item with discount > 35% requires RM approval before emailing client. Discounts ≤ 35% are emailed directly with CC to RM.">
-              <Chip
-                label="Rule: Disc > 35% → RM Approval"
-                size="small"
-                sx={{
-                  bgcolor: "rgba(243, 112, 33,0.08)",
-                  color: "#f37021",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                  py: 1.8,
-                  px: 0.5,
-                  borderRadius: 2,
-                  border: "1px solid rgba(243, 112, 33,0.2)",
-                }}
-              />
-            </Tooltip>
-
-            <IconButton onClick={fetchQuotations} color="primary" title="Refresh">
-              <Refresh />
-            </IconButton>
-
-            <Button
-              variant="contained"
-              startIcon={<Add />}
-              onClick={handleOpenCreate}
-              sx={{
-                bgcolor: "#f37021",
-                "&:hover": { bgcolor: "#d95300" },
-                borderRadius: 2,
-                textTransform: "none",
-                fontWeight: 600,
-                px: 2.5,
-              }}
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={statusFilter}
+              label="Status"
+              onChange={(e) => setStatusFilter(e.target.value)}
+              sx={{ borderRadius: 2, height: 40, fontSize: "0.85rem" }}
             >
-              New Quotation
-            </Button>
-          </Grid>
-        </Grid>
+              <MenuItem value="All">All Statuses</MenuItem>
+              <MenuItem value="Pending Approval">Pending Approval</MenuItem>
+              <MenuItem value="Sent">Sent</MenuItem>
+              <MenuItem value="Approved">Approved</MenuItem>
+              <MenuItem value="Draft">Draft</MenuItem>
+              <MenuItem value="Rejected">Rejected</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
       </Card>
 
       {/* 3. Quotation Data Table */}
-      <TableContainer component={Paper} elevation={1} sx={{ borderRadius: 2 }}>
+      <TableContainer
+        component={Paper}
+        elevation={1}
+        sx={{
+          borderRadius: 2,
+          width: "100%",
+          maxWidth: "100%",
+          overflowX: "auto",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
+          border: "1px solid #e2e8f0",
+        }}
+      >
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
             <CircularProgress sx={{ color: "#f37021" }} />
@@ -622,13 +671,13 @@ function QuotationList() {
           </Box>
         ) : (
           <>
-            <Table size="medium">
+            <Table size="small" sx={{ minWidth: 920 }}>
               <TableHead sx={{ bgcolor: "#f8fafc" }}>
-                <TableRow>
+                <TableRow sx={{ "& th": { whiteSpace: "nowrap", py: 1.4, color: "#475569", fontSize: "0.82rem" } }}>
                   <TableCell sx={{ fontWeight: 800 }}>Quotation No</TableCell>
                   <TableCell sx={{ fontWeight: 800 }}>Doctor / Hospital</TableCell>
                   <TableCell sx={{ fontWeight: 800 }}>Date</TableCell>
-                  <TableCell sx={{ fontWeight: 800 }}>Items</TableCell>
+                  <TableCell sx={{ fontWeight: 800, textAlign: "center" }}>Items</TableCell>
                   <TableCell sx={{ fontWeight: 800, textAlign: "right" }}>Total (₹)</TableCell>
                   <TableCell sx={{ fontWeight: 800 }}>Created By</TableCell>
                   <TableCell sx={{ fontWeight: 800 }}>Approved By</TableCell>
@@ -656,14 +705,14 @@ function QuotationList() {
                         hover
                         sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                       >
-                      <TableCell sx={{ fontWeight: 700, color: "#f37021" }}>
+                      <TableCell sx={{ fontWeight: 700, color: "#f37021", whiteSpace: "nowrap" }}>
                         {row.quotation_no}
                       </TableCell>
-                      <TableCell>
+                      <TableCell sx={{ minWidth: 180 }}>
                         <Typography variant="body2" fontWeight="600">
                           {row.client_name}
                         </Typography>
-                        <Box sx={{ display: "flex", gap: 0.8, alignItems: "center", flexWrap: "wrap" }}>
+                        <Box sx={{ display: "flex", gap: 0.8, alignItems: "center", flexWrap: "wrap", mt: 0.3 }}>
                           {row.client_phone && (
                             <Typography variant="caption" color="text.secondary">
                               {row.client_phone}
@@ -676,25 +725,25 @@ function QuotationList() {
                           )}
                         </Box>
                       </TableCell>
-                      <TableCell>
+                      <TableCell sx={{ whiteSpace: "nowrap" }}>
                         {row.quotation_date ? row.quotation_date.slice(0, 10) : "NA"}
                       </TableCell>
-                      <TableCell>
+                      <TableCell sx={{ textAlign: "center", whiteSpace: "nowrap" }}>
                         <Chip
                           size="small"
                           label={`${Array.isArray(row.items) ? row.items.length : 0} Products`}
                           variant="outlined"
-                          sx={{ fontSize: "11px" }}
+                          sx={{ fontSize: "11px", height: 22 }}
                         />
                       </TableCell>
-                      <TableCell sx={{ textAlign: "right", fontWeight: 800, fontSize: "14px" }}>
+                      <TableCell sx={{ textAlign: "right", fontWeight: 800, fontSize: "13.5px", whiteSpace: "nowrap" }}>
                         ₹
                         {parseFloat(row.total_amount || 0).toLocaleString("en-IN", {
                           minimumFractionDigits: 2,
                         })}
                       </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" fontWeight="600" sx={{ color: "#1e293b" }}>
+                      <TableCell sx={{ whiteSpace: "nowrap" }}>
+                        <Typography variant="body2" fontWeight="600" sx={{ color: "#1e293b", fontSize: "0.82rem" }}>
                           {row.created_by_name || (row.prepared_by && row.prepared_by !== "Aberdure Sales Team" && row.prepared_by !== "Sales Team" ? row.prepared_by : null) || row.emp_id || "—"}
                         </Typography>
                         {row.emp_id && (
@@ -703,7 +752,7 @@ function QuotationList() {
                           </Typography>
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell sx={{ whiteSpace: "nowrap" }}>
                         {row.status === "Approved" && (row.approved_by || row.approved_by_name) ? (
                           <Box>
                             <Chip
@@ -729,7 +778,7 @@ function QuotationList() {
                           </Typography>
                         )}
                       </TableCell>
-                      <TableCell sx={{ textAlign: "center" }}>
+                      <TableCell sx={{ textAlign: "center", whiteSpace: "nowrap" }}>
                         {canApproveQuotation && !isLockedStatus && !isOwnQuotation ? (
                           <FormControl size="small" variant="standard">
                             <Select
@@ -750,7 +799,7 @@ function QuotationList() {
                           getStatusChip(row.status)
                         )}
                       </TableCell>
-                      <TableCell sx={{ textAlign: "center" }}>
+                      <TableCell sx={{ textAlign: "center", whiteSpace: "nowrap" }}>
                         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 0.5 }}>
                           {canApproveQuotation && !isLockedStatus && !isOwnQuotation && (row.status === "Pending Approval" || (row.status || "").toLowerCase() === "pending") && (
                             <Tooltip title="Approve & Send to Client Email">
@@ -864,6 +913,13 @@ function QuotationList() {
         onClose={() => setThresholdDialogOpen(false)}
         maxWidth="xs"
         fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            m: { xs: 2, sm: "auto" },
+            width: { xs: "calc(100% - 32px)", sm: "auto" },
+          },
+        }}
       >
         <DialogTitle sx={{ fontWeight: "bold", bgcolor: "#f37021", color: "#ffffff", py: 1.5 }}>
           Discount Approval Threshold Configuration
@@ -905,7 +961,17 @@ function QuotationList() {
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={Boolean(deleteId)} onClose={() => setDeleteId(null)}>
+      <Dialog
+        open={Boolean(deleteId)}
+        onClose={() => setDeleteId(null)}
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            m: { xs: 2, sm: "auto" },
+            width: { xs: "calc(100% - 32px)", sm: "auto" },
+          },
+        }}
+      >
         <DialogTitle sx={{ fontWeight: "bold" }}>Confirm Deletion</DialogTitle>
         <DialogContent>
           <DialogContentText>

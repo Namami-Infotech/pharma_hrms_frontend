@@ -28,9 +28,12 @@ const MainLayout = ({ children }) => {
         sx={{
           flexGrow: 1,
           marginTop: '84px', // Navbar height
-          width: { md: `calc(100% - 260px)` },
+          width: { xs: '100%', md: `calc(100% - 260px)` },
+          minWidth: 0,
+          maxWidth: { xs: '100vw', md: 'none' },
           height: 'calc(100vh - 84px)', // Full height minus navbar
           overflow: 'hidden', // Prevent double scrolling
+          boxSizing: 'border-box',
         }}
       >
         {children}

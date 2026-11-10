@@ -736,7 +736,7 @@ function SalarySlip() {
     dob: "NA",
     doj: "NA",
     idNo: "-",
-    payableDays: 30,
+    payableDays: 30,    
   };
 
   const rate = salarySlip?.rate || {
@@ -891,6 +891,7 @@ function SalarySlip() {
                 px: 2,
                 py: 0.8,
                 boxShadow: "0 2px 6px rgba(243, 112, 33, 0.25)",
+                flex: { xs: 1, sm: "none" },
               }}
             >
               View Slip
@@ -920,6 +921,7 @@ function SalarySlip() {
                 fontWeight: 600,
                 fontSize: "13px",
                 py: 0.8,
+                flex: { xs: 1, sm: "none" },
               }}
             >
               {downloading ? "PDF..." : "Download PDF"}
@@ -1267,7 +1269,9 @@ function SalarySlip() {
         fullWidth
         PaperProps={{
           sx: {
-            borderRadius: 3,
+            borderRadius: { xs: 2, sm: 3 },
+            m: { xs: 1.5, sm: 2 },
+            width: { xs: "calc(100% - 24px)", sm: "auto" },
             bgcolor: "#f8fafc",
             overflow: "hidden",
             boxShadow: "0 20px 45px rgba(0,0,0,0.18)",

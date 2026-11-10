@@ -13,6 +13,7 @@ import {
   Alert,
   CircularProgress,
   InputAdornment,
+  Stack,
 } from "@mui/material";
 import {
   AccountBalanceWallet,
@@ -140,7 +141,9 @@ const ApplyAdvanceModal = ({ open, onClose, onSuccess }) => {
       fullWidth
       PaperProps={{
         sx: {
-          borderRadius: 2.5,
+          borderRadius: { xs: 2, sm: 2.5 },
+          m: { xs: 1.5, sm: 2 },
+          width: { xs: "calc(100% - 24px)", sm: "auto" },
           overflow: "hidden",
         },
       }}
@@ -150,16 +153,16 @@ const ApplyAdvanceModal = ({ open, onClose, onSuccess }) => {
         sx={{
           bgcolor: "#f37021",
           color: "#ffffff",
-          py: 2,
-          px: 3,
+          py: { xs: 1.5, sm: 2 },
+          px: { xs: 2, sm: 3 },
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.2 }}>
-          <AccountBalanceWallet sx={{ fontSize: 26 }} />
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+          <AccountBalanceWallet sx={{ fontSize: { xs: 22, sm: 26 } }} />
+          <Typography variant="h6" sx={{ fontWeight: 600, fontSize: { xs: "1.05rem", sm: "1.25rem" } }}>
             Request Advance Payment
           </Typography>
         </Box>
@@ -178,80 +181,84 @@ const ApplyAdvanceModal = ({ open, onClose, onSuccess }) => {
       </DialogTitle>
 
       <form onSubmit={handleSubmit}>
-        <DialogContent sx={{ p: 3 }}>
+        <DialogContent sx={{ p: { xs: 2, sm: 3 }, overflowX: "hidden" }}>
           {error && (
             <Alert severity="error" sx={{ mb: 2.5, borderRadius: 1.5 }}>
               {error}
             </Alert>
           )}
 
-          <Grid container spacing={2.5}>
+          <Stack spacing={2.5}>
             {/* Advance Amount */}
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Advance Amount (₹)"
-                name="amount"
-                type="number"
-                value={formData.amount}
-                onChange={handleChange}
-                placeholder="e.g. 5000"
-                required
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Typography sx={{ fontWeight: "bold", color: "#f37021" }}>₹</Typography>
-                    </InputAdornment>
-                  ),
-                }}
-                helperText="Enter the total advance amount you wish to request"
-              />
-            </Grid>
+            <TextField
+              fullWidth
+              label="Advance Amount (₹)"
+              name="amount"
+              type="number"
+              value={formData.amount}
+              onChange={handleChange}
+              placeholder="e.g. 5000"
+              required
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Typography sx={{ fontWeight: "bold", color: "#f37021" }}>₹</Typography>
+                  </InputAdornment>
+                ),
+              }}
+              helperText="Enter the total advance amount you wish to request"
+            />
 
             {/* Deduction Month & Year Combined Picker */}
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                required
-                type="month"
-                label="Deduction Month & Year"
-                name="monthYear"
-                value={formData.monthYear}
-                onChange={handleChange}
-                InputLabelProps={{ shrink: true }}
-                inputProps={{
-                  min: minMonthYear,
-                }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <CalendarMonth sx={{ fontSize: 20, color: "#f37021" }} />
-                    </InputAdornment>
-                  ),
-                }}
-                helperText="Select the month & year when this advance should be deducted from your salary"
-              />
-            </Grid>
+            <TextField
+              fullWidth
+              required
+              type="month"
+              label="Deduction Month & Year"
+              name="monthYear"
+              value={formData.monthYear}
+              onChange={handleChange}
+              InputLabelProps={{ shrink: true }}
+              inputProps={{
+                min: minMonthYear,
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <CalendarMonth sx={{ fontSize: 20, color: "#f37021" }} />
+                  </InputAdornment>
+                ),
+              }}
+              helperText="Select the month & year when this advance should be deducted from your salary"
+            />
 
             {/* Reason */}
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                multiline
-                rows={3}
-                label="Reason / Purpose"
-                name="reason"
-                value={formData.reason}
-                onChange={handleChange}
-                placeholder="Explain the purpose of this advance payment request..."
-                required
-                helperText="Provide sufficient reason for faster approval by your RM"
-              />
-            </Grid>
-          </Grid>
+            <TextField
+              fullWidth
+              multiline
+              rows={3}
+              label="Reason / Purpose"
+              name="reason"
+              value={formData.reason}
+              onChange={handleChange}
+              placeholder="Explain the purpose of this advance payment request..."
+              required
+              helperText="Provide sufficient reason for faster approval by your RM"
+            />
+          </Stack>
         </DialogContent>
 
-        <DialogActions sx={{ px: 3, py: 2, borderTop: "1px solid #e5e7eb", bgcolor: "#f9fafb" }}>
+        <DialogActions
+          sx={{
+            px: { xs: 2, sm: 3 },
+            py: { xs: 1.5, sm: 2 },
+            borderTop: "1px solid #e5e7eb",
+            bgcolor: "#f9fafb",
+            display: "flex",
+            flexDirection: { xs: "column-reverse", sm: "row" },
+            gap: { xs: 1, sm: 1.5 },
+          }}
+        >
           <Button
             onClick={handleClose}
             disabled={loading}
@@ -259,6 +266,7 @@ const ApplyAdvanceModal = ({ open, onClose, onSuccess }) => {
               color: "#6b7280",
               fontWeight: 600,
               textTransform: "none",
+              width: { xs: "100%", sm: "auto" },
             }}
           >
             Cancel
@@ -274,6 +282,7 @@ const ApplyAdvanceModal = ({ open, onClose, onSuccess }) => {
               fontWeight: 600,
               textTransform: "none",
               px: 3,
+              width: { xs: "100%", sm: "auto" },
             }}
           >
             {loading ? "Submitting..." : "Submit Request"}

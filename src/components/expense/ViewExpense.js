@@ -325,7 +325,7 @@ function EnhancedViewExpense() {
   }
 
   return (
-    <Box sx={{ p: 3, bgcolor: '#f8fafc', minHeight: '100vh' }}>
+    <Box sx={{ p: { xs: 1.5, sm: 3 }, bgcolor: '#f8fafc', minHeight: '100vh', boxSizing: 'border-box' }}>
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -341,7 +341,7 @@ function EnhancedViewExpense() {
               Submit, review, and track employee business expenses and claims
             </Typography>
           </Box>
-          <Box display="flex" gap={2}>
+          <Box display="flex" gap={1.5} flexWrap="wrap" width={{ xs: "100%", sm: "auto" }}>
             <Button
               variant="contained"
               startIcon={<Add />}
@@ -354,6 +354,7 @@ function EnhancedViewExpense() {
                 textTransform: 'none',
                 px: 2,
                 boxShadow: '0 3px 10px rgba(243, 112, 33, 0.3)',
+                flex: { xs: 1, sm: "none" },
                 '&:hover': {
                   bgcolor: '#d95300',
                 }
@@ -373,6 +374,7 @@ function EnhancedViewExpense() {
                 textTransform: "none",
                 fontWeight: 600,
                 px: 2,
+                flex: { xs: 1, sm: "none" },
                 "&:hover": { bgcolor: "#f8fafc", borderColor: "#cbd5e1" },
               }}
             >
@@ -388,115 +390,119 @@ function EnhancedViewExpense() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, delay: 0.1 }}
       >
-        <Grid container spacing={2.5} mb={3}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card
-              elevation={0}
-              sx={{
-                bgcolor: '#ffffff',
-                border: '1px solid #e2e8f0',
-                borderRadius: 2.5,
-                boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-                p: 0.5,
-              }}
-            >
-              <CardContent>
-                <Box display="flex" alignItems="center" justifyContent="space-between">
-                  <Box>
-                    <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 600, mb: 0.5 }}>Total Amount</Typography>
-                    <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a" }}>
-                      {formatCurrency(stats.total)}
-                    </Typography>
-                  </Box>
-                  <Avatar sx={{ bgcolor: "rgba(243, 112, 33, 0.1)", color: "#f37021", width: 48, height: 48 }}>
-                    <AttachMoney sx={{ fontSize: 28 }} />
-                  </Avatar>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "1fr 1fr",
+              md: "1fr 1fr 1fr 1fr",
+            },
+            gap: { xs: 1.5, sm: 2, md: 2.5 },
+            mb: 3,
+            width: "100%",
+          }}
+        >
+          <Card
+            elevation={0}
+            sx={{
+              bgcolor: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: 2.5,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+              p: 0.5,
+            }}
+          >
+            <CardContent>
+              <Box display="flex" alignItems="center" justifyContent="space-between">
+                <Box>
+                  <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 600, mb: 0.5 }}>Total Amount</Typography>
+                  <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a" }}>
+                    {formatCurrency(stats.total)}
+                  </Typography>
                 </Box>
-              </CardContent>
-            </Card>
-          </Grid>
+                <Avatar sx={{ bgcolor: "rgba(243, 112, 33, 0.1)", color: "#f37021", width: 48, height: 48 }}>
+                  <AttachMoney sx={{ fontSize: 28 }} />
+                </Avatar>
+              </Box>
+            </CardContent>
+          </Card>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <Card
-              elevation={0}
-              sx={{
-                bgcolor: '#ffffff',
-                border: '1px solid #e2e8f0',
-                borderRadius: 2.5,
-                boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-                p: 0.5,
-              }}
-            >
-              <CardContent>
-                <Box display="flex" alignItems="center" justifyContent="space-between">
-                  <Box>
-                    <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 600, mb: 0.5 }}>Approved</Typography>
-                    <Typography variant="h5" sx={{ fontWeight: 700, color: "#10b981" }}>
-                      {stats.approved}
-                    </Typography>
-                  </Box>
-                  <Avatar sx={{ bgcolor: "rgba(16, 185, 129, 0.1)", color: "#10b981", width: 48, height: 48 }}>
-                    <CheckCircle sx={{ fontSize: 28 }} />
-                  </Avatar>
+          <Card
+            elevation={0}
+            sx={{
+              bgcolor: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: 2.5,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+              p: 0.5,
+            }}
+          >
+            <CardContent>
+              <Box display="flex" alignItems="center" justifyContent="space-between">
+                <Box>
+                  <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 600, mb: 0.5 }}>Approved</Typography>
+                  <Typography variant="h5" sx={{ fontWeight: 700, color: "#10b981" }}>
+                    {stats.approved}
+                  </Typography>
                 </Box>
-              </CardContent>
-            </Card>
-          </Grid>
+                <Avatar sx={{ bgcolor: "rgba(16, 185, 129, 0.1)", color: "#10b981", width: 48, height: 48 }}>
+                  <CheckCircle sx={{ fontSize: 28 }} />
+                </Avatar>
+              </Box>
+            </CardContent>
+          </Card>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <Card
-              elevation={0}
-              sx={{
-                bgcolor: '#ffffff',
-                border: '1px solid #e2e8f0',
-                borderRadius: 2.5,
-                boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-                p: 0.5,
-              }}
-            >
-              <CardContent>
-                <Box display="flex" alignItems="center" justifyContent="space-between">
-                  <Box>
-                    <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 600, mb: 0.5 }}>Pending</Typography>
-                    <Typography variant="h5" sx={{ fontWeight: 700, color: "#f59e0b" }}>
-                      {stats.pending}
-                    </Typography>
-                  </Box>
-                  <Avatar sx={{ bgcolor: "rgba(245, 158, 11, 0.1)", color: "#f59e0b", width: 48, height: 48 }}>
-                    <Pending sx={{ fontSize: 28 }} />
-                  </Avatar>
+          <Card
+            elevation={0}
+            sx={{
+              bgcolor: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: 2.5,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+              p: 0.5,
+            }}
+          >
+            <CardContent>
+              <Box display="flex" alignItems="center" justifyContent="space-between">
+                <Box>
+                  <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 600, mb: 0.5 }}>Pending</Typography>
+                  <Typography variant="h5" sx={{ fontWeight: 700, color: "#f59e0b" }}>
+                    {stats.pending}
+                  </Typography>
                 </Box>
-              </CardContent>
-            </Card>
-          </Grid>
+                <Avatar sx={{ bgcolor: "rgba(245, 158, 11, 0.1)", color: "#f59e0b", width: 48, height: 48 }}>
+                  <Pending sx={{ fontSize: 28 }} />
+                </Avatar>
+              </Box>
+            </CardContent>
+          </Card>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <Card
-              elevation={0}
-              sx={{
-                bgcolor: '#ffffff',
-                border: '1px solid #e2e8f0',
-                borderRadius: 2.5,
-                boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-                p: 0.5,
-              }}
-            >
-              <CardContent>
-                <Box display="flex" alignItems="center" justifyContent="space-between">
-                  <Box>
-                    <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 600, mb: 0.5 }}>Rejected</Typography>
-                    <Typography variant="h5" sx={{ fontWeight: 700, color: "#ef4444" }}>
-                      {stats.rejected}
-                    </Typography>
-                  </Box>
-                  <Avatar sx={{ bgcolor: "rgba(239, 68, 68, 0.1)", color: "#ef4444", width: 48, height: 48 }}>
-                    <ErrorIcon sx={{ fontSize: 28 }} />
-                  </Avatar>
+          <Card
+            elevation={0}
+            sx={{
+              bgcolor: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: 2.5,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+              p: 0.5,
+            }}
+          >
+            <CardContent>
+              <Box display="flex" alignItems="center" justifyContent="space-between">
+                <Box>
+                  <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 600, mb: 0.5 }}>Rejected</Typography>
+                  <Typography variant="h5" sx={{ fontWeight: 700, color: "#ef4444" }}>
+                    {stats.rejected}
+                  </Typography>
                 </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+                <Avatar sx={{ bgcolor: "rgba(239, 68, 68, 0.1)", color: "#ef4444", width: 48, height: 48 }}>
+                  <ErrorIcon sx={{ fontSize: 28 }} />
+                </Avatar>
+              </Box>
+            </CardContent>
+          </Card>
+        </Box>
       </motion.div>
 
       {/* Search and Filter */}
@@ -505,40 +511,60 @@ function EnhancedViewExpense() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        <Card elevation={3} sx={{ mb: 3, borderRadius: 3 }}>
-          <CardContent>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} md={8}>
-                <TextField
-                  fullWidth
-                  placeholder="Search by employee name or expense type..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Search />
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{ borderRadius: 2 }}
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <TextField
-                  select
-                  fullWidth
-                  label="Filter by Status"
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                >
-                  <MenuItem value="All">All Status</MenuItem>
-                  <MenuItem value="Pending">Pending</MenuItem>
-                  <MenuItem value="Approved">Approved</MenuItem>
-                  <MenuItem value="Rejected">Rejected</MenuItem>
-                </TextField>
-              </Grid>
-            </Grid>
+        <Card elevation={0} sx={{ mb: 3, borderRadius: 2.5, border: "1px solid #e2e8f0", bgcolor: "#ffffff", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
+          <CardContent sx={{ p: { xs: 1.5, sm: 2 }, "&:last-child": { pb: { xs: 1.5, sm: 2 } } }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", md: "row" },
+                alignItems: "center",
+                gap: 2,
+                width: "100%",
+              }}
+            >
+              <TextField
+                fullWidth
+                size="small"
+                placeholder="Search by employee name or expense type..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search sx={{ color: "#94a3b8" }} />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  flex: { xs: "none", md: 1 },
+                  width: "100%",
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 2,
+                    height: 42,
+                  },
+                }}
+              />
+              <TextField
+                select
+                size="small"
+                label="Filter by Status"
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                sx={{
+                  width: { xs: "100%", md: 220 },
+                  flexShrink: 0,
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 2,
+                    height: 42,
+                  },
+                }}
+              >
+                <MenuItem value="All">All Status</MenuItem>
+                <MenuItem value="Pending">Pending</MenuItem>
+                <MenuItem value="Approved">Approved</MenuItem>
+                <MenuItem value="Rejected">Rejected</MenuItem>
+              </TextField>
+            </Box>
           </CardContent>
         </Card>
       </motion.div>
@@ -565,19 +591,14 @@ function EnhancedViewExpense() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                <AnimatePresence>
-                  {filteredExpenses
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((expense, index) => (
-                      <motion.tr
-                        key={expense.detailId}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 20 }}
-                        transition={{ duration: 0.3, delay: index * 0.05 }}
-                        component={TableRow}
-                        sx={{ '&:hover': { backgroundColor: 'action.hover' } }}
-                      >
+                {filteredExpenses
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((expense, index) => (
+                    <TableRow
+                      key={expense.detailId || index}
+                      hover
+                      sx={{ '&:hover': { backgroundColor: 'action.hover' } }}
+                    >
                         <TableCell>
                           <Box display="flex" alignItems="center">
                             <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
@@ -668,9 +689,8 @@ function EnhancedViewExpense() {
                             )}
                           </TableCell>
                         )}
-                      </motion.tr>
+                      </TableRow>
                     ))}
-                </AnimatePresence>
               </TableBody>
               <TableFooter>
                 <TableRow>

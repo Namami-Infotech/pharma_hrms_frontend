@@ -196,14 +196,14 @@ function ProductModal({ open, onClose, product, onSuccess }) {
       </DialogTitle>
 
       <form onSubmit={handleSubmit}>
-        <DialogContent dividers sx={{ p: { xs: 2.5, sm: 4 } }}>
+        <DialogContent dividers sx={{ p: { xs: 2, sm: 4 }, overflowX: "hidden" }}>
           {error && (
             <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
               {error}
             </Alert>
           )}
 
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ width: "100%", m: 0 }}>
             {/* Product Name */}
             <Grid item xs={12}>
               <TextField
@@ -329,11 +329,13 @@ function ProductModal({ open, onClose, product, onSuccess }) {
 
         <DialogActions
           sx={{
-            px: { xs: 2.5, sm: 4 },
-            py: 2.5,
+            px: { xs: 2, sm: 4 },
+            py: { xs: 1.5, sm: 2.5 },
             bgcolor: "#f8fafc",
             display: "flex",
+            flexDirection: { xs: "column-reverse", sm: "row" },
             justifyContent: "space-between",
+            gap: { xs: 1, sm: 1.5 },
           }}
         >
           <Button
@@ -341,7 +343,7 @@ function ProductModal({ open, onClose, product, onSuccess }) {
             variant="outlined"
             color="inherit"
             disabled={loading}
-            sx={{ px: 3, py: 1, textTransform: "none", fontWeight: 600 }}
+            sx={{ px: 3, py: 1, textTransform: "none", fontWeight: 600, width: { xs: "100%", sm: "auto" } }}
           >
             Cancel
           </Button>
@@ -358,6 +360,7 @@ function ProductModal({ open, onClose, product, onSuccess }) {
               py: 1,
               textTransform: "none",
               boxShadow: "0 4px 14px rgba(243, 112, 33,0.3)",
+              width: { xs: "100%", sm: "auto" },
             }}
           >
             {loading ? "Saving..." : product ? "Update Product" : "Save Product"}

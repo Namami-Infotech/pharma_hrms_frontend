@@ -45,6 +45,7 @@ import {
   ArrowBack,
   Schedule,
   CheckCircle,
+  RequestQuote,
 } from "@mui/icons-material";
 import axios from "axios";
 import { useAuth } from "../auth/AuthContext";
@@ -518,7 +519,21 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
   if (showPreview) {
     const previewData = buildQuotationPayload();
     return (
-      <Dialog open={open} onClose={() => setShowPreview(false)} maxWidth="lg" fullWidth>
+      <Dialog
+        open={open}
+        onClose={() => setShowPreview(false)}
+        maxWidth="lg"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: { xs: 2, sm: 2.5 },
+            width: { xs: "calc(100% - 24px)", sm: "calc(100% - 48px)" },
+            m: { xs: 1.5, sm: "auto" },
+            maxHeight: { xs: "calc(100% - 32px)", sm: "calc(100% - 64px)" },
+            overflow: "hidden",
+          },
+        }}
+      >
         <DialogTitle
           sx={{
             bgcolor: "#f37021",
@@ -532,7 +547,7 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Visibility />
             <Typography variant="h6" fontWeight="bold">
-              Preview
+              Preview Quotation
             </Typography>
           </Box>
           <IconButton onClick={() => setShowPreview(false)} sx={{ color: "#ffffff" }} size="small">
@@ -579,7 +594,22 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
   }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        sx: {
+          borderRadius: { xs: 2, sm: 3 },
+          width: { xs: "calc(100% - 24px)", sm: "calc(100% - 48px)", md: "960px" },
+          maxWidth: "960px !important",
+          m: { xs: 1.5, sm: "auto" },
+          maxHeight: { xs: "calc(100% - 32px)", sm: "calc(100% - 64px)" },
+          overflow: "hidden",
+        },
+      }}
+    >
       <DialogTitle
         sx={{
           bgcolor: "#f37021",
@@ -587,19 +617,49 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          px: { xs: 2, sm: 3 },
           py: 1.5,
         }}
       >
-        <Typography variant="h6" fontWeight="bold">
-          {quotation ? "Edit" : "Create"}
-        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.2 }}>
+          <RequestQuote sx={{ fontSize: { xs: 24, sm: 28 } }} />
+          <Box>
+            <Typography variant="h6" fontWeight="bold" sx={{ fontSize: { xs: "1rem", sm: "1.2rem" }, lineHeight: 1.2 }}>
+              {quotation ? "Edit Quotation" : "Create New Quotation"}
+            </Typography>
+            <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.85)", display: "block", fontSize: "0.74rem" }}>
+              {quotation ? `Quotation #${quotation.quotation_no}` : "Fill doctor & products to generate price quotation"}
+            </Typography>
+          </Box>
+        </Box>
         <IconButton onClick={onClose} sx={{ color: "#ffffff" }} size="small">
           <Close />
         </IconButton>
       </DialogTitle>
 
-      <form onSubmit={handleSubmit}>
-        <DialogContent dividers sx={{ p: 3 }}>
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+          minHeight: 0,
+          overflow: "hidden",
+        }}
+      >
+        <DialogContent
+          dividers
+          sx={{
+            px: { xs: 2, sm: 3 },
+            py: { xs: 1.8, sm: 2.5 },
+            overflowY: "auto",
+            overflowX: "hidden",
+            flex: 1,
+            minHeight: 0,
+            boxSizing: "border-box",
+          }}
+        >
           {error && (
             <Alert severity="error" sx={{ mb: 2.5, borderRadius: 2 }}>
               {error}
@@ -620,116 +680,112 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
             1. Doctor
           </Typography>
 
-          <Grid container spacing={2} sx={{ mb: 2.5 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 2.5, width: "100%" }}>
             {/* Doctor Dropdown (Full Width) */}
-            <Grid item xs={12}>
-              <Autocomplete
-                size="small"
-                loading={loadingClients}
-                options={clients}
-                getOptionLabel={(option) => option.displayName || option.name || ""}
-                isOptionEqualToValue={(option, val) => option.id === val.id || option.name === val.name}
-                value={
-                  selectedClient ||
-                  clients.find((c) => c.name.toLowerCase() === formData.client_name.toLowerCase()) ||
-                  null
-                }
-                onChange={(_, newValue) => handleClientSelect(newValue)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Doctor *"
-                    placeholder="Search doctor..."
-                    required
-                    InputProps={{
-                      ...params.InputProps,
-                      startAdornment: (
-                        <>
-                          <Business sx={{ color: "action.active", mr: 1 }} />
-                          {params.InputProps.startAdornment}
-                        </>
-                      ),
-                      endAdornment: (
-                        <>
-                          {loadingClients ? <CircularProgress color="inherit" size={18} /> : null}
-                          {params.InputProps.endAdornment}
-                        </>
-                      ),
-                    }}
-                  />
-                )}
-              />
-            </Grid>
+            <Autocomplete
+              size="small"
+              loading={loadingClients}
+              options={clients}
+              getOptionLabel={(option) => option.displayName || option.name || ""}
+              isOptionEqualToValue={(option, val) => option.id === val.id || option.name === val.name}
+              value={
+                selectedClient ||
+                clients.find((c) => c.name.toLowerCase() === formData.client_name.toLowerCase()) ||
+                null
+              }
+              onChange={(_, newValue) => handleClientSelect(newValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Doctor *"
+                  placeholder="Search doctor..."
+                  required
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: (
+                      <>
+                        <Business sx={{ color: "action.active", mr: 1 }} />
+                        {params.InputProps.startAdornment}
+                      </>
+                    ),
+                    endAdornment: (
+                      <>
+                        {loadingClients ? <CircularProgress color="inherit" size={18} /> : null}
+                        {params.InputProps.endAdornment}
+                      </>
+                    ),
+                  }}
+                />
+              )}
+            />
 
             {/* Auto-populated Client Summary Card */}
             {formData.client_name && (
-              <Grid item xs={12}>
-                <Card
-                  variant="outlined"
-                  sx={{
-                    bgcolor: "#f8fafc",
-                    borderColor: "#e2e8f0",
-                    borderRadius: 2,
-                  }}
-                >
-                  <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 1 }}>
-                      <Box>
-                        <Typography variant="subtitle2" fontWeight="bold" color="#1e293b">
-                          {formData.client_name}
-                        </Typography>
-                        {formData.client_address && (
-                          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 0.3, fontSize: "12px", color: "#64748b" }}>
-                            <LocationOn sx={{ fontSize: "14px" }} />
-                            <span>{formData.client_address}</span>
-                          </Box>
-                        )}
-                      </Box>
-
-                      <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                        {formData.client_phone && (
-                          <Chip
-                            size="small"
-                            icon={<Phone sx={{ fontSize: "13px !important" }} />}
-                            label={formData.client_phone}
-                            sx={{ fontSize: "11px", bgcolor: "#f1f5f9" }}
-                          />
-                        )}
-                        {formData.client_email && (
-                          <Chip
-                            size="small"
-                            icon={<Email sx={{ fontSize: "13px !important" }} />}
-                            label={formData.client_email}
-                            sx={{ fontSize: "11px", bgcolor: "#f1f5f9" }}
-                          />
-                        )}
-                        {formData.client_gst && (
-                          <Chip
-                            size="small"
-                            icon={<Receipt sx={{ fontSize: "13px !important" }} />}
-                            label={`GSTIN: ${formData.client_gst}`}
-                            sx={{ fontSize: "11px", bgcolor: "#f1f5f9" }}
-                          />
-                        )}
-                        {formData.client_state && (
-                          <Chip
-                            size="small"
-                            label={`State: ${formData.client_state} (${formData.tax_type})`}
-                            sx={{ 
-                              fontSize: "11px", 
-                              bgcolor: formData.tax_type === "IGST" ? "rgba(184, 22, 82, 0.1)" : "rgba(243, 112, 33, 0.1)",
-                              color: formData.tax_type === "IGST" ? "#b81652" : "#f37021",
-                              fontWeight: 600,
-                            }}
-                          />
-                        )}
-                      </Box>
+              <Card
+                variant="outlined"
+                sx={{
+                  bgcolor: "#f8fafc",
+                  borderColor: "#e2e8f0",
+                  borderRadius: 2,
+                }}
+              >
+                <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
+                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 1 }}>
+                    <Box>
+                      <Typography variant="subtitle2" fontWeight="bold" color="#1e293b">
+                        {formData.client_name}
+                      </Typography>
+                      {formData.client_address && (
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 0.3, fontSize: "12px", color: "#64748b" }}>
+                          <LocationOn sx={{ fontSize: "14px" }} />
+                          <span>{formData.client_address}</span>
+                        </Box>
+                      )}
                     </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
+
+                    <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                      {formData.client_phone && (
+                        <Chip
+                          size="small"
+                          icon={<Phone sx={{ fontSize: "13px !important" }} />}
+                          label={formData.client_phone}
+                          sx={{ fontSize: "11px", bgcolor: "#f1f5f9" }}
+                        />
+                      )}
+                      {formData.client_email && (
+                        <Chip
+                          size="small"
+                          icon={<Email sx={{ fontSize: "13px !important" }} />}
+                          label={formData.client_email}
+                          sx={{ fontSize: "11px", bgcolor: "#f1f5f9" }}
+                        />
+                      )}
+                      {formData.client_gst && (
+                        <Chip
+                          size="small"
+                          icon={<Receipt sx={{ fontSize: "13px !important" }} />}
+                          label={`GSTIN: ${formData.client_gst}`}
+                          sx={{ fontSize: "11px", bgcolor: "#f1f5f9" }}
+                        />
+                      )}
+                      {formData.client_state && (
+                        <Chip
+                          size="small"
+                          label={`State: ${formData.client_state} (${formData.tax_type})`}
+                          sx={{ 
+                            fontSize: "11px", 
+                            bgcolor: formData.tax_type === "IGST" ? "rgba(184, 22, 82, 0.1)" : "rgba(243, 112, 33, 0.1)",
+                            color: formData.tax_type === "IGST" ? "#b81652" : "#f37021",
+                            fontWeight: 600,
+                          }}
+                        />
+                      )}
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
             )}
-          </Grid>
+          </Box>
 
           {/* 2. Product Line Items */}
           <Box
@@ -737,7 +793,10 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              mb: 1,
+              mb: 1.5,
+              mt: 2,
+              flexWrap: "wrap",
+              gap: 1,
             }}
           >
             <Typography
@@ -747,47 +806,64 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
                 color: "#f37021",
                 textTransform: "uppercase",
                 letterSpacing: 0.5,
+                fontSize: { xs: "0.85rem", sm: "0.9rem" },
               }}
             >
-              3. Products
+              2. Products
             </Typography>
             <Button
               size="small"
               startIcon={<Add />}
-              variant="outlined"
+              variant="contained"
               onClick={handleAddItem}
               sx={{
-                borderColor: "#f37021",
-                color: "#f37021",
+                bgcolor: "#f37021",
+                "&:hover": { bgcolor: "#d95300" },
+                color: "#ffffff",
                 textTransform: "none",
                 fontWeight: 600,
+                borderRadius: 2,
+                px: 2,
+                py: 0.6,
+                fontSize: "12.5px",
+                boxShadow: "0 2px 6px rgba(243, 112, 33, 0.25)",
               }}
             >
               Add Item
             </Button>
           </Box>
 
-          <Paper variant="outlined" sx={{ mb: 3, overflowX: "auto" }}>
-            <Table size="small">
+          <Paper
+            variant="outlined"
+            sx={{
+              mb: 3,
+              overflowX: "auto",
+              width: "100%",
+              maxWidth: "100%",
+              borderRadius: 2,
+              border: "1px solid #e2e8f0",
+            }}
+          >
+            <Table size="small" sx={{ minWidth: 780 }}>
               <TableHead sx={{ bgcolor: "#f9fafb" }}>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: 800, width: isInterState ? "34%" : "30%", color: "#1e293b" }}>Product *</TableCell>
-                  <TableCell sx={{ fontWeight: 800, width: "9%", color: "#1e293b", textAlign: "center" }}>HSN</TableCell>
-                  <TableCell sx={{ fontWeight: 800, width: "9%", color: "#1e293b", textAlign: "center" }}>Qty</TableCell>
-                  <TableCell sx={{ fontWeight: 800, width: "12%", color: "#1e293b", textAlign: "right" }}>Rate (₹)</TableCell>
-                  <TableCell sx={{ fontWeight: 800, width: "8%", color: "#1e293b", textAlign: "center" }}>Disc %</TableCell>
+                <TableRow sx={{ "& th": { whiteSpace: "nowrap", py: 1.2 } }}>
+                  <TableCell sx={{ fontWeight: 800, minWidth: 240, color: "#1e293b" }}>Product *</TableCell>
+                  <TableCell sx={{ fontWeight: 800, width: 80, color: "#1e293b", textAlign: "center" }}>HSN</TableCell>
+                  <TableCell sx={{ fontWeight: 800, width: 80, color: "#1e293b", textAlign: "center" }}>Qty</TableCell>
+                  <TableCell sx={{ fontWeight: 800, width: 100, color: "#1e293b", textAlign: "right" }}>Rate (₹)</TableCell>
+                  <TableCell sx={{ fontWeight: 800, width: 80, color: "#1e293b", textAlign: "center" }}>Disc %</TableCell>
                   {!isInterState ? (
                     <>
-                      <TableCell sx={{ fontWeight: 800, width: "9%", color: "#1e293b", textAlign: "center" }}>CGST %</TableCell>
-                      <TableCell sx={{ fontWeight: 800, width: "9%", color: "#1e293b", textAlign: "center" }}>SGST %</TableCell>
+                      <TableCell sx={{ fontWeight: 800, width: 80, color: "#1e293b", textAlign: "center" }}>CGST %</TableCell>
+                      <TableCell sx={{ fontWeight: 800, width: 80, color: "#1e293b", textAlign: "center" }}>SGST %</TableCell>
                     </>
                   ) : (
-                    <TableCell sx={{ fontWeight: 800, width: "12%", color: "#1e293b", textAlign: "center" }}>IGST %</TableCell>
+                    <TableCell sx={{ fontWeight: 800, width: 90, color: "#1e293b", textAlign: "center" }}>IGST %</TableCell>
                   )}
-                  <TableCell sx={{ fontWeight: 800, width: "14%", color: "#1e293b", textAlign: "right" }}>
+                  <TableCell sx={{ fontWeight: 800, width: 110, color: "#1e293b", textAlign: "right" }}>
                     Total (₹)
                   </TableCell>
-                  <TableCell sx={{ width: "4%" }}></TableCell>
+                  <TableCell sx={{ width: 45, textAlign: "center" }}></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -945,9 +1021,19 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
             </Table>
           </Paper>
 
-          {/* 4. Financial Calculation Summary */}
-          <Grid container spacing={3} sx={{ mb: 2 }}>
-            <Grid item xs={12} sm={6}>
+          {/* 3. Financial Calculation Summary & Terms/Notes */}
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "minmax(0, 1fr)", sm: "minmax(0, 1fr) minmax(0, 1fr)" },
+              gap: { xs: 2, sm: 2.5 },
+              mb: 2,
+              width: "100%",
+              maxWidth: "100%",
+              boxSizing: "border-box",
+            }}
+          >
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0, width: "100%" }}>
               <TextField
                 fullWidth
                 size="small"
@@ -956,7 +1042,6 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
                 onChange={(e) => setFormData({ ...formData, terms_conditions: e.target.value })}
                 multiline
                 rows={4}
-                sx={{ mb: 2 }}
               />
               <TextField
                 fullWidth
@@ -968,80 +1053,126 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
                 multiline
                 rows={2}
               />
-            </Grid>
+            </Box>
 
-            <Grid item xs={12} sm={6}>
-              <Paper variant="outlined" sx={{ p: 2.5, bgcolor: "#f9fafb", borderRadius: 2 }}>
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600, color: "#334155" }}>
-                    GRAND TOTAL:
-                  </Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 700, color: "#ea580c" }}>
-                    ₹{grandTotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-                  </Typography>
+            <Paper
+              variant="outlined"
+              sx={{
+                p: { xs: 1.8, sm: 2.5 },
+                bgcolor: "#f9fafb",
+                borderRadius: 2,
+                minWidth: 0,
+                maxWidth: "100%",
+                boxSizing: "border-box",
+                overflow: "hidden",
+              }}
+            >
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5, flexWrap: "wrap", gap: 0.5 }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: "#334155", fontSize: { xs: "0.85rem", sm: "1rem" } }}>
+                  GRAND TOTAL:
+                </Typography>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: "#ea580c", fontSize: { xs: "1.1rem", sm: "1.25rem" } }}>
+                  ₹{grandTotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                </Typography>
+              </Box>
+
+              <Divider sx={{ my: 1.5, borderColor: "#e2e8f0" }} />
+
+              <Box sx={{ fontSize: "12px", color: "#64748b" }}>
+                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.8, flexWrap: "wrap", gap: 0.5 }}>
+                  <span>Tax Regime:</span>
+                  <strong style={{ color: "#0f172a", textAlign: "right" }}>
+                    {!isInterState ? "Intrastate (Delhi: CGST + SGST)" : "Interstate (Outside Delhi: IGST)"}
+                  </strong>
                 </Box>
-
-                <Divider sx={{ my: 1.5, borderColor: "#e2e8f0" }} />
-
-                <Box sx={{ fontSize: "12px", color: "#64748b" }}>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.8 }}>
-                    <span>Tax Regime:</span>
-                    <strong style={{ color: "#0f172a" }}>
-                      {!isInterState ? "Intrastate (Delhi: CGST + SGST)" : "Interstate (Outside Delhi: IGST)"}
-                    </strong>
-                  </Box>
-                  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>Total Products:</span>
-                    <strong style={{ color: "#0f172a" }}>{items.length} Item(s)</strong>
-                  </Box>
+                <Box sx={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 0.5 }}>
+                  <span>Total Products:</span>
+                  <strong style={{ color: "#0f172a" }}>{items.length} Item(s)</strong>
                 </Box>
+              </Box>
 
-                {!quotation && (
-                  <Box sx={{ mt: 2, textAlign: "right" }}>
-                    {items.some((it) => (parseFloat(it.discount) || 0) > 35) ? (
-                      <Chip
-                        size="small"
-                        icon={<Schedule sx={{ fontSize: "14px !important" }} />}
-                        label="Item discount > 35% (Requires RM Approval)"
-                        sx={{
-                          bgcolor: "#fef3c7",
-                          color: "#b45309",
-                          fontWeight: 700,
-                          fontSize: "11px",
-                          border: "1px solid #fde68a",
-                        }}
-                      />
-                    ) : (
-                      <Chip
-                        size="small"
-                        icon={<CheckCircle sx={{ fontSize: "14px !important" }} />}
-                        label="All discounts ≤ 35% (Direct Send to Client & CC to RM)"
-                        sx={{
-                          bgcolor: "#ecfdf5",
-                          color: "#047857",
-                          fontWeight: 700,
-                          fontSize: "11px",
-                          border: "1px solid #a7f3d0",
-                        }}
-                      />
-                    )}
-                  </Box>
-                )}
-              </Paper>
-            </Grid>
-          </Grid>
+              {!quotation && (
+                <Box sx={{ mt: 2, textAlign: { xs: "left", sm: "right" } }}>
+                  {items.some((it) => (parseFloat(it.discount) || 0) > 35) ? (
+                    <Chip
+                      size="small"
+                      icon={<Schedule sx={{ fontSize: "14px !important" }} />}
+                      label="Item discount > 35% (Requires RM Approval)"
+                      sx={{
+                        bgcolor: "#fef3c7",
+                        color: "#b45309",
+                        fontWeight: 700,
+                        fontSize: "11px",
+                        border: "1px solid #fde68a",
+                        maxWidth: "100%",
+                        height: "auto",
+                        py: 0.5,
+                        "& .MuiChip-label": { whiteSpace: "normal", textAlign: "left", display: "block" },
+                      }}
+                    />
+                  ) : (
+                    <Chip
+                      size="small"
+                      icon={<CheckCircle sx={{ fontSize: "14px !important" }} />}
+                      label="All discounts ≤ 35% (Direct Send to Client & CC to RM)"
+                      sx={{
+                        bgcolor: "#ecfdf5",
+                        color: "#047857",
+                        fontWeight: 700,
+                        fontSize: "11px",
+                        border: "1px solid #a7f3d0",
+                        maxWidth: "100%",
+                        height: "auto",
+                        py: 0.5,
+                        "& .MuiChip-label": { whiteSpace: "normal", textAlign: "left", display: "block" },
+                      }}
+                    />
+                  )}
+                </Box>
+              )}
+            </Paper>
+          </Box>
         </DialogContent>
 
-        <DialogActions sx={{ p: 2, display: "flex", justifyContent: "space-between" }}>
-          <Button onClick={onClose} variant="outlined" color="inherit" disabled={loading}>
+        <DialogActions
+          sx={{
+            p: { xs: 1.2, sm: 2 },
+            px: { xs: 1.5, sm: 2.5 },
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 1,
+            bgcolor: "#ffffff",
+            borderTop: "1px solid #e2e8f0",
+            flexShrink: 0,
+          }}
+        >
+          <Button
+            onClick={onClose}
+            variant="outlined"
+            size="small"
+            color="inherit"
+            disabled={loading}
+            sx={{
+              color: "#64748b",
+              borderColor: "#cbd5e1",
+              borderRadius: 2,
+              textTransform: "none",
+              fontWeight: 600,
+              fontSize: "13px",
+              px: { xs: 1.5, sm: 2.5 },
+              height: 38,
+            }}
+          >
             Cancel
           </Button>
 
-          <Box sx={{ display: "flex", gap: 1.5 }}>
+          <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
             {/* Preview Button Before Creating */}
             <Button
               variant="outlined"
-              startIcon={<Visibility />}
+              size="small"
+              startIcon={<Visibility sx={{ fontSize: 18 }} />}
               onClick={handleOpenPreview}
               disabled={loading}
               sx={{
@@ -1049,6 +1180,10 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
                 color: "#f37021",
                 textTransform: "none",
                 fontWeight: 600,
+                borderRadius: 2,
+                fontSize: "13px",
+                height: 38,
+                px: { xs: 1.2, sm: 2 },
                 "&:hover": { borderColor: "#d95300", bgcolor: "rgba(243, 112, 33,0.04)" },
               }}
             >
@@ -1058,21 +1193,26 @@ function QuotationModal({ open, onClose, quotation, onSuccess, approvalThreshold
             {/* Create/Save Button */}
             <Button
               type="submit"
+              size="small"
               variant="contained"
-              startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <Save />}
+              startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <Save sx={{ fontSize: 18 }} />}
               disabled={loading}
               sx={{
                 bgcolor: "#f37021",
                 "&:hover": { bgcolor: "#d95300" },
                 fontWeight: 700,
-                px: 3,
+                borderRadius: 2,
+                fontSize: "13px",
+                height: 38,
+                px: { xs: 2, sm: 3 },
+                whiteSpace: "nowrap",
               }}
             >
               {loading ? "Saving..." : quotation ? "Update" : "Create"}
             </Button>
           </Box>
         </DialogActions>
-      </form>
+      </Box>
     </Dialog>
   );
 }

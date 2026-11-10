@@ -85,68 +85,236 @@ const EmployeeCard = ({
   theme,
   isAdmin = false,
 }) => {
+  const roleText = ['Admin', 'admin', 'superadmin', 'SuperAdmin'].includes(
+    employee.Role || employee.new_role || employee.actual_role
+  ) ? 'Admin' : 'Employee';
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      whileHover={{ y: -2, boxShadow: theme.shadows[8] }}
+      exit={{ opacity: 0, y: -15 }}
       transition={{ duration: 0.2 }}
     >
       <Card
         sx={{
           mb: 2,
-          borderLeft: `4px solid ${
-            employee.IsActive
-              ? theme.palette.success.main
-              : theme.palette.error.main
+          borderRadius: 2.5,
+          border: "1px solid #e2e8f0",
+          borderLeft: `5px solid ${
+            employee.IsActive ? "#10b981" : "#94a3b8"
           }`,
+          boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+          bgcolor: "#ffffff",
+          overflow: "hidden",
+          transition: "box-shadow 0.2s ease",
           "&:hover": {
-            transform: "translateY(-2px)",
-            boxShadow: theme.shadows[8],
-            transition: "all 0.2s ease",
+            boxShadow: "0 4px 14px rgba(0,0,0,0.08)",
           },
         }}
       >
-        <CardContent>
+        <CardContent sx={{ p: { xs: 1.8, sm: 2 }, "&:last-child": { pb: { xs: 1.8, sm: 2 } } }}>
+          {/* Top Header: Avatar, Name, EmpID, and Status Chip */}
           <Box
             sx={{
               display: "flex",
               justifyContent: "space-between",
               alignItems: "flex-start",
-              mb: 2,
+              gap: 1,
+              mb: 1.5,
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, minWidth: 0, flex: 1 }}>
               <Avatar
+                src={employee.Pic || undefined}
                 sx={{
-                  bgcolor: employee.IsActive
-                    ? theme.palette.primary.main
-                    : theme.palette.grey[400],
-                  mr: 2,
-                  width: 48,
-                  height: 48,
+                  bgcolor: employee.IsActive ? "#f37021" : "#94a3b8",
+                  color: "#ffffff",
+                  width: 44,
+                  height: 44,
+                  fontWeight: 700,
+                  fontSize: "1.1rem",
+                  flexShrink: 0,
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.12)",
                 }}
               >
-                {employee.Name.charAt(0).toUpperCase()}
+                {!employee.Pic && (employee.Name ? employee.Name.charAt(0).toUpperCase() : "E")}
               </Avatar>
-              <Box>
-                <Typography variant="h6" fontWeight="bold">
+              <Box sx={{ minWidth: 0, flex: 1 }}>
+                <Typography
+                  variant="subtitle1"
+                  fontWeight="bold"
+                  sx={{
+                    color: "#0f172a",
+                    fontSize: "0.98rem",
+                    lineHeight: 1.25,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
                   {employee.Name}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {employee.EmpId}
-                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.8, mt: 0.3, flexWrap: "wrap" }}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: "#64748b",
+                      fontWeight: 600,
+                      fontSize: "0.76rem",
+                    }}
+                  >
+                    {employee.EmpId}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: "#cbd5e1" }}>
+                    •
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: roleText === "Admin" ? "#f37021" : "#475569",
+                      fontWeight: 700,
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    {roleText}
+                  </Typography>
+                </Box>
               </Box>
             </Box>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
+
+            {/* Status Chip */}
+            <Chip
+              size="small"
+              label={employee.IsActive ? "Active" : "Inactive"}
+              sx={{
+                fontWeight: 700,
+                fontSize: "11px",
+                height: "24px",
+                flexShrink: 0,
+                bgcolor: employee.IsActive ? "rgba(16, 185, 129, 0.12)" : "rgba(148, 163, 184, 0.12)",
+                color: employee.IsActive ? "#059669" : "#64748b",
+                border: `1px solid ${
+                  employee.IsActive ? "rgba(16, 185, 129, 0.3)" : "rgba(148, 163, 184, 0.25)"
+                }`,
+              }}
+            />
+          </Box>
+
+          {/* Details Section: Mobile, Email & Shift */}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 0.8,
+              py: 1,
+              px: 1.2,
+              bgcolor: "#f8fafc",
+              borderRadius: 2,
+              border: "1px solid #f1f5f9",
+              mb: 1.5,
+            }}
+          >
+            {/* Phone */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Phone sx={{ fontSize: 16, color: "#f37021", flexShrink: 0 }} />
+              <Typography
+                variant="body2"
+                sx={{ fontSize: "0.82rem", color: "#334155", fontWeight: 500 }}
+              >
+                {employee.Mobile || "—"}
+              </Typography>
+            </Box>
+
+            {/* Email (with text ellipsis so it NEVER overflows or collides) */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 0 }}>
+              <Email sx={{ fontSize: 16, color: "#0284c7", flexShrink: 0 }} />
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: "0.82rem",
+                  color: "#334155",
+                  fontWeight: 500,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  minWidth: 0,
+                  flex: 1,
+                }}
+                title={employee.EmailId}
+              >
+                {employee.EmailId || "—"}
+              </Typography>
+            </Box>
+
+            {/* Shift (if present) */}
+            {employee.Shift && (
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Schedule sx={{ fontSize: 16, color: "#f59e0b", flexShrink: 0 }} />
+                <Typography
+                  variant="body2"
+                  sx={{ fontSize: "0.78rem", color: "#64748b", fontWeight: 500 }}
+                >
+                  {employee.Shift}
+                </Typography>
+              </Box>
+            )}
+          </Box>
+
+          {/* Bottom Actions: View, Edit, and Status Switch Toggle */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              pt: 0.5,
+            }}
+          >
+            <Typography variant="caption" sx={{ color: "#94a3b8", fontSize: "0.72rem", fontWeight: 600 }}>
+              Actions
+            </Typography>
+
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Tooltip title="View Details">
+                <IconButton
+                  size="small"
+                  onClick={() => onViewDetails(employee)}
+                  sx={{
+                    bgcolor: "rgba(2, 132, 199, 0.08)",
+                    color: "#0284c7",
+                    "&:hover": { bgcolor: "rgba(2, 132, 199, 0.16)" },
+                    width: 32,
+                    height: 32,
+                  }}
+                >
+                  <Visibility sx={{ fontSize: 18 }} />
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip title="Edit Employee">
+                <IconButton
+                  size="small"
+                  onClick={() => onEdit(employee)}
+                  sx={{
+                    bgcolor: "rgba(243, 112, 33, 0.08)",
+                    color: "#f37021",
+                    "&:hover": { bgcolor: "rgba(243, 112, 33, 0.16)" },
+                    width: 32,
+                    height: 32,
+                  }}
+                >
+                  <Edit sx={{ fontSize: 18 }} />
+                </IconButton>
+              </Tooltip>
+
+              {/* Status Toggle Switch */}
               <Tooltip
                 title={
                   !isAdmin
-                    ? "Only Admin can change employee status"
+                    ? "Only Admin can change status"
                     : employee.IsActive
-                    ? "Click to deactivate employee"
-                    : "Click to activate employee"
+                    ? "Deactivate Employee"
+                    : "Activate Employee"
                 }
               >
                 <span>
@@ -166,97 +334,7 @@ const EmployeeCard = ({
                   />
                 </span>
               </Tooltip>
-              <Typography
-                variant="caption"
-                sx={{
-                  ml: 0.5,
-                  fontWeight: "bold",
-                  color: employee.IsActive ? "success.main" : "text.secondary",
-                }}
-              >
-                {employee.IsActive ? "Active" : "Inactive"}
-              </Typography>
             </Box>
-          </Box>
-
-          <Grid container spacing={2} sx={{ mb: 2 }}>
-            <Grid item xs={6}>
-              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                <Phone
-                  fontSize="small"
-                  sx={{ mr: 1, color: theme.palette.primary.main }}
-                />
-                <Typography variant="body2">{employee.Mobile}</Typography>
-              </Box>
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Work
-                  fontSize="small"
-                  sx={{ mr: 1, color: theme.palette.secondary.main }}
-                />
-                <Typography variant="body2">
-                  {['Admin', 'admin', 'superadmin', 'SuperAdmin'].includes(employee.Role || employee.new_role || employee.actual_role) ? 'Admin' : 'Employee'}
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={6}>
-              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                <Email
-                  fontSize="small"
-                  sx={{ mr: 1, color: theme.palette.info.main }}
-                />
-                <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>
-                  {employee.EmailId}
-                </Typography>
-              </Box>
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Schedule
-                  fontSize="small"
-                  sx={{ mr: 1, color: theme.palette.warning.main }}
-                />
-                <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>
-                  {employee.Shift}
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
-
-          <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 1 }}>
-            <Tooltip title="View Details">
-              <IconButton
-                size="small"
-                color="info"
-                onClick={() => onViewDetails(employee)}
-              >
-                <Visibility fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Edit Employee">
-              <IconButton
-                size="small"
-                sx={{ color: "#f37021" }}
-                onClick={() => onEdit(employee)}
-              >
-                <Edit fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={!isAdmin ? "Only Admin can change status" : employee.IsActive ? "Deactivate Employee" : "Activate Employee"}>
-              <span>
-                <Switch
-                  size="small"
-                  checked={Boolean(employee.IsActive)}
-                  disabled={!isAdmin}
-                  onChange={() => onToggleStatus(employee)}
-                  sx={{
-                    "& .MuiSwitch-switchBase.Mui-checked": {
-                      color: "#10b981",
-                    },
-                    "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                      backgroundColor: "#10b981",
-                    },
-                  }}
-                />
-              </span>
-            </Tooltip>
           </Box>
         </CardContent>
       </Card>
@@ -452,8 +530,11 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
       TransitionComponent={Fade}
       PaperProps={{
         sx: {
-          borderRadius: 2,
+          borderRadius: { xs: 2, sm: 2.5 },
           maxHeight: "90vh",
+          width: { xs: "calc(100% - 24px)", sm: "auto" },
+          m: { xs: 1.5, sm: 2 },
+          overflow: "hidden",
         },
       }}
     >
@@ -464,6 +545,7 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          p: { xs: 2, sm: 2.5 },
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -475,8 +557,8 @@ const EmployeeDetails = ({ employee, open, onClose, salary }) => {
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 3, pt: "28px !important" }}>
-        <Grid container spacing={3} sx={{ mt: 0.5 }}>
+      <DialogContent sx={{ p: { xs: 2, sm: 3 }, pt: { xs: "20px !important", sm: "28px !important" }, overflowX: "hidden" }}>
+        <Grid container spacing={3} sx={{ mt: 0.5, width: "100%", m: 0 }}>
           {/* Personal Information */}
           <Grid item xs={12}>
             <Typography
@@ -1847,7 +1929,7 @@ const exportToExcel = () => {
               </Typography>
             </Box>
 
-            <Box sx={{ display: "flex", gap: 1, mt: { xs: 2, md: 0 } }}>
+            <Box sx={{ display: "flex", gap: 1, mt: { xs: 2, md: 0 }, width: { xs: "100%", sm: "auto" }, flexWrap: "wrap" }}>
               <Tooltip title="Refresh Data">
                 <IconButton
                   onClick={fetchEmployees}
@@ -1876,7 +1958,8 @@ const exportToExcel = () => {
                   },
                   borderRadius: 2,
                   textTransform: "none",
-                  minWidth: "120px",
+                  minWidth: { xs: "100px", sm: "120px" },
+                  flex: { xs: 1, sm: "none" },
                 }}
               >
                 {exporting ? "Exporting..." : "Export"}
@@ -1893,6 +1976,7 @@ const exportToExcel = () => {
                     "&:hover": { bgcolor: "#d95300" },
                     borderRadius: 2,
                     textTransform: "none",
+                    flex: { xs: 1, sm: "none" },
                   }}
                 >
                   Add Employee
@@ -1907,6 +1991,8 @@ const exportToExcel = () => {
             alignItems="center"
             sx={{
               mb: 1,
+              width: "100%",
+              m: 0,
               "& .MuiInputBase-root": { borderRadius: 2 },
             }}
           >
@@ -1932,7 +2018,7 @@ const exportToExcel = () => {
               />
             </Grid>
 
-            <Grid item xs={6} md={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <Autocomplete
                 options={roleOptions}
                 value={filterRole}
@@ -1953,7 +2039,7 @@ const exportToExcel = () => {
               />
             </Grid>
 
-            <Grid item xs={6} md={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <FormControl fullWidth size="small" sx={{ bgcolor: "#fff", borderRadius: 2 }}>
                 <InputLabel>Employee Status</InputLabel>
                 <Select
@@ -1976,10 +2062,19 @@ const exportToExcel = () => {
           </Alert>
         )}
 
-        <Paper elevation={2} sx={{ borderRadius: 2 }}>
+        <Paper elevation={2} sx={{ borderRadius: 2, overflow: "hidden" }}>
           {isMobile ? (
-            <Box sx={{ p: 2 }}>
-              <Typography variant="h6" gutterBottom>
+            <Box sx={{ p: { xs: 1.5, sm: 2 } }}>
+              <Typography
+                variant="h6"
+                gutterBottom
+                sx={{
+                  fontWeight: 700,
+                  fontSize: { xs: "1.05rem", sm: "1.25rem" },
+                  color: "#0f172a",
+                  mb: 2,
+                }}
+              >
                 Employee List ({filteredEmployees.length})
               </Typography>
               <AnimatePresence>
@@ -2300,8 +2395,11 @@ const exportToExcel = () => {
           TransitionComponent={Fade}
           PaperProps={{
             sx: {
-              borderRadius: 2,
+              borderRadius: { xs: 2, sm: 2.5 },
               maxHeight: "90vh",
+              width: { xs: "calc(100% - 24px)", sm: "auto" },
+              m: { xs: 1.5, sm: 2 },
+              overflow: "hidden",
             },
           }}
         >
@@ -2312,6 +2410,7 @@ const exportToExcel = () => {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
+              p: { xs: 2, sm: 2.5 },
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -2323,14 +2422,14 @@ const exportToExcel = () => {
             </IconButton>
           </DialogTitle>
 
-          <DialogContent sx={{ p: 3 }}>
+          <DialogContent sx={{ p: { xs: 2, sm: 3 }, overflowX: "hidden" }}>
             {formGeneralError && (
               <Alert severity="error" sx={{ mb: 2 }} onClose={() => setFormGeneralError("")}>
                 {formGeneralError}
               </Alert>
             )}
             <form onSubmit={handleFormSubmit}>
-              <Grid container spacing={3} sx={{ mt: 1 }}>
+              <Grid container spacing={3} sx={{ mt: 1, width: "100%", m: 0 }}>
                 <Grid item xs={12}>
                   <Typography
                     variant="h6"
@@ -2974,8 +3073,16 @@ const exportToExcel = () => {
             </form>
           </DialogContent>
 
-          <DialogActions sx={{ p: 3, bgcolor: "#f5f5f5" }}>
-            <Button onClick={handleCloseForm} variant="outlined">
+          <DialogActions
+            sx={{
+              p: { xs: 2, sm: 3 },
+              bgcolor: "#f5f5f5",
+              display: "flex",
+              flexDirection: { xs: "column-reverse", sm: "row" },
+              gap: { xs: 1, sm: 1.5 },
+            }}
+          >
+            <Button onClick={handleCloseForm} variant="outlined" sx={{ width: { xs: "100%", sm: "auto" } }}>
               Cancel
             </Button>
             <Button
@@ -2985,7 +3092,7 @@ const exportToExcel = () => {
               startIcon={
                 submitting ? <CircularProgress size={20} /> : <CheckCircle />
               }
-              sx={{ bgcolor: "#f37021", color: "white" }}
+              sx={{ bgcolor: "#f37021", color: "white", width: { xs: "100%", sm: "auto" } }}
             >
               {submitting
                 ? "Saving..."

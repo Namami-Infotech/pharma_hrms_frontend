@@ -734,7 +734,10 @@ function OfficeManagement() {
           TransitionComponent={Fade}
           PaperProps={{
             sx: {
-              borderRadius: 2,
+              borderRadius: { xs: 2, sm: 2.5 },
+              width: { xs: "calc(100% - 24px)", sm: "auto" },
+              m: { xs: 1.5, sm: 2 },
+              overflow: "hidden",
             },
           }}
         >
@@ -745,6 +748,7 @@ function OfficeManagement() {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
+              p: { xs: 2, sm: 2.5 },
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -756,9 +760,9 @@ function OfficeManagement() {
             </IconButton>
           </DialogTitle>
 
-          <DialogContent sx={{ p: 3 }}>
+          <DialogContent sx={{ p: { xs: 2, sm: 3 }, overflowX: "hidden" }}>
             <form onSubmit={handleFormSubmit}>
-              <Grid container spacing={3} sx={{ mt: 1 }}>
+              <Grid container spacing={3} sx={{ mt: 1, width: "100%", m: 0 }}>
                 <Grid item xs={12}>
                   <Typography
                     variant="h6"
@@ -820,8 +824,16 @@ function OfficeManagement() {
             </form>
           </DialogContent>
 
-          <DialogActions sx={{ p: 3, bgcolor: "#f5f5f5" }}>
-            <Button onClick={handleCloseForm} variant="outlined">
+          <DialogActions
+            sx={{
+              p: { xs: 2, sm: 3 },
+              bgcolor: "#f5f5f5",
+              display: "flex",
+              flexDirection: { xs: "column-reverse", sm: "row" },
+              gap: { xs: 1, sm: 1.5 },
+            }}
+          >
+            <Button onClick={handleCloseForm} variant="outlined" sx={{ width: { xs: "100%", sm: "auto" } }}>
               Cancel
             </Button>
             <Button
@@ -831,7 +843,7 @@ function OfficeManagement() {
               startIcon={
                 submitting ? <CircularProgress size={20} /> : <CheckCircle />
               }
-              sx={{ bgcolor: "#f37021", color: "white" }}
+              sx={{ bgcolor: "#f37021", color: "white", width: { xs: "100%", sm: "auto" } }}
             >
               {submitting
                 ? "Saving..."

@@ -124,8 +124,8 @@ const LeavePreview = ({ leaveDetails, categories, totalDays }) => {
         <Preview sx={{ mr: 1 }} />
         <Typography variant="h6">Application Summary</Typography>
       </Box>
-      <CardContent>
-        <Grid container spacing={2}>
+      <CardContent sx={{ p: { xs: 1.5, sm: 2 } }}>
+        <Grid container spacing={2} sx={{ width: "100%", m: 0 }}>
           <Grid item xs={12} sm={6}>
             <Box sx={{ display: "flex", alignItems: "center", mb: 0.5 }}>
               <Person fontSize="small" sx={{ mr: 1, color: "text.secondary" }} />
@@ -405,8 +405,10 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
       TransitionComponent={Fade}
       PaperProps={{
         sx: {
-          borderRadius: 2,
-          maxHeight: "90vh",
+          borderRadius: { xs: 2, sm: 3 },
+          maxHeight: "92vh",
+          m: { xs: 1.5, sm: 2 },
+          width: { xs: "calc(100% - 24px)", sm: "auto" },
         },
       }}
     >
@@ -417,30 +419,37 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          p: 2.5,
+          p: { xs: 1.5, sm: 2.5 },
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <EventAvailable sx={{ mr: 1 }} />
-          <Typography variant="h6" fontWeight="bold">
+          <EventAvailable sx={{ mr: 1, fontSize: { xs: 22, sm: 26 } }} />
+          <Typography variant="h6" fontWeight="bold" sx={{ fontSize: { xs: "1.05rem", sm: "1.25rem" } }}>
             Apply for Leave
           </Typography>
         </Box>
-        <IconButton onClick={handleClose} sx={{ color: "white" }}>
-          <Close />
+        <IconButton onClick={handleClose} sx={{ color: "white", p: { xs: 0.5, sm: 1 } }}>
+          <Close fontSize="small" />
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 3, pt: "24px !important" }}>
+      <DialogContent sx={{ p: { xs: 2, sm: 3 }, pt: { xs: "16px !important", sm: "24px !important" }, overflowX: "hidden" }}>
         {error && (
           <Alert severity="error" sx={{ mb: 2.5 }} onClose={() => setError("")}>
             {error}
           </Alert>
         )}
 
-        <Grid container spacing={2.5}>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: showPreview ? "1fr 1fr" : "1fr" },
+            gap: 2.5,
+            width: "100%",
+          }}
+        >
           {/* Form Section */}
-          <Grid item xs={12} md={showPreview ? 6 : 12}>
+          <Box sx={{ width: "100%" }}>
             <Stack spacing={2.5}>
               <TextField
                 label="Employee ID"
@@ -479,6 +488,32 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
                 }}
                 SelectProps={{
                   displayEmpty: true,
+                  renderValue: (selected) => {
+                    if (!selected) {
+                      return <Typography variant="body2" color="text.secondary">Select Leave Type</Typography>;
+                    }
+                    const cat = categories.find((c) => c.value === selected);
+                    if (!cat) return selected;
+                    const isSpecial = cat.value === "LWP";
+                    return (
+                      <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center", pr: 0.5, overflow: "hidden" }}>
+                        <Typography variant="body2" noWrap sx={{ fontWeight: 500, mr: 1 }}>
+                          {cat.label}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          noWrap
+                          sx={{
+                            color: isSpecial ? "info.main" : cat.balance === 0 ? "error.main" : "success.main",
+                            fontWeight: 600,
+                            flexShrink: 0,
+                          }}
+                        >
+                          {isSpecial ? "Always Available" : `Bal: ${cat.balance}`}
+                        </Typography>
+                      </Box>
+                    );
+                  },
                   MenuProps: {
                     PaperProps: {
                       sx: { maxHeight: 280 },
@@ -493,14 +528,14 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
                   const isSpecial = category.value === "LWP";
                   return (
                     <MenuItem key={category.value} value={category.value}>
-                      <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
+                      <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center", gap: 1 }}>
                         <Typography variant="body2">{category.label}</Typography>
                         <Typography
                           variant="caption"
                           sx={{
                             color: isSpecial ? "info.main" : category.balance === 0 ? "error.main" : "success.main",
                             fontWeight: 600,
-                            ml: 2,
+                            flexShrink: 0,
                           }}
                         >
                           {isSpecial ? "Always Available" : `Balance: ${category.balance} day${category.balance !== 1 ? "s" : ""}`}
@@ -512,34 +547,37 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
               </TextField>
 
               {/* Date Pickers (Native, reliable) */}
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    type="date"
-                    label="Start Date"
-                    fullWidth
-                    size="small"
-                    value={leaveDetails.startDate}
-                    onChange={(e) => handleChange("startDate", e.target.value)}
-                    InputLabelProps={{ shrink: true }}
-                    error={!!validationErrors.startDate}
-                    helperText={validationErrors.startDate}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    type="date"
-                    label="End Date"
-                    fullWidth
-                    size="small"
-                    value={leaveDetails.endDate}
-                    onChange={(e) => handleChange("endDate", e.target.value)}
-                    InputLabelProps={{ shrink: true }}
-                    error={!!validationErrors.endDate}
-                    helperText={validationErrors.endDate}
-                  />
-                </Grid>
-              </Grid>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+                  gap: 2,
+                  width: "100%",
+                }}
+              >
+                <TextField
+                  type="date"
+                  label="Start Date"
+                  fullWidth
+                  size="small"
+                  value={leaveDetails.startDate}
+                  onChange={(e) => handleChange("startDate", e.target.value)}
+                  InputLabelProps={{ shrink: true }}
+                  error={!!validationErrors.startDate}
+                  helperText={validationErrors.startDate}
+                />
+                <TextField
+                  type="date"
+                  label="End Date"
+                  fullWidth
+                  size="small"
+                  value={leaveDetails.endDate}
+                  onChange={(e) => handleChange("endDate", e.target.value)}
+                  InputLabelProps={{ shrink: true }}
+                  error={!!validationErrors.endDate}
+                  helperText={validationErrors.endDate}
+                />
+              </Box>
 
               {totalDays > 0 && (
                 <Box sx={{ p: 1.5, bgcolor: "rgba(243, 112, 33, 0.08)", borderRadius: 1.5 }}>
@@ -563,12 +601,12 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
                 helperText={validationErrors.reason || "Provide a detailed reason"}
               />
             </Stack>
-          </Grid>
+          </Box>
 
           {/* Preview Section */}
           <AnimatePresence>
             {showPreview && (
-              <Grid item xs={12} md={6}>
+              <Box sx={{ width: "100%" }}>
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -581,20 +619,23 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
                     totalDays={totalDays}
                   />
                 </motion.div>
-              </Grid>
+              </Box>
             )}
           </AnimatePresence>
-        </Grid>
+        </Box>
       </DialogContent>
 
       <DialogActions
         sx={{
-          p: 2.5,
+          p: { xs: 1.5, sm: 2.5 },
           bgcolor: "#f9fafb",
           borderTop: "1px solid #e5e7eb",
           display: "flex",
+          flexDirection: { xs: "column-reverse", sm: "row" },
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: { xs: "stretch", sm: "center" },
+          gap: { xs: 1, sm: 1.5 },
+          overflow: "hidden",
         }}
       >
         <Button
@@ -602,13 +643,19 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
           size="small"
           startIcon={<Preview />}
           onClick={() => setShowPreview(!showPreview)}
-          sx={{ textTransform: "none" }}
+          sx={{ textTransform: "none", width: { xs: "100%", sm: "auto" } }}
         >
           {showPreview ? "Hide Preview" : "Show Preview"}
         </Button>
 
-        <Box sx={{ display: "flex", gap: 1 }}>
-          <Button onClick={handleClose} variant="outlined" size="small" disabled={submitting} sx={{ textTransform: "none" }}>
+        <Box sx={{ display: "flex", gap: 1, width: { xs: "100%", sm: "auto" } }}>
+          <Button
+            onClick={handleClose}
+            variant="outlined"
+            size="small"
+            disabled={submitting}
+            sx={{ textTransform: "none", flex: { xs: 1, sm: "none" } }}
+          >
             Cancel
           </Button>
           <Button
@@ -623,6 +670,7 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
               fontWeight: 600,
               textTransform: "none",
               px: 2.5,
+              flex: { xs: 1, sm: "none" },
               "&:hover": {
                 bgcolor: "#d95300",
               },

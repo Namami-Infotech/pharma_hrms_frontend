@@ -377,15 +377,15 @@ const ManualAttendancePage = () => {
   const unmarkedCount = employees.length - markedCount;
 
   return (
-    <Box sx={{ p: 3, backgroundColor: "#f8f9fa", minHeight: "100vh" }}>
+    <Box sx={{ p: { xs: 1.5, sm: 2.5, md: 3 }, backgroundColor: "#f8f9fa", minHeight: "100vh" }}>
       {/* Header */}
-      <Box sx={{ mb: 3 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
+      <Box sx={{ mb: 2.5 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={1.5}>
           <Box>
-            <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3, fontSize: { xs: "1.25rem", sm: "1.5rem" } }}>
               Manual Attendance
             </Typography>
-            <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: "0.85rem" }}>
+            <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: { xs: "0.8rem", sm: "0.85rem" } }}>
               Mark or edit attendance records for employees manually
             </Typography>
           </Box>
@@ -396,9 +396,10 @@ const ManualAttendancePage = () => {
                 bgcolor: "#ffffff",
                 border: "1px solid #e2e8f0",
                 color: "#64748b",
-                width: 40,
-                height: 40,
+                width: 38,
+                height: 38,
                 borderRadius: 2,
+                flexShrink: 0,
                 boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
                 "&:hover": { bgcolor: "#f8fafc", color: "#0f172a", borderColor: "#cbd5e1" },
               }}
@@ -410,15 +411,19 @@ const ManualAttendancePage = () => {
       </Box>
 
       {/* Search and Filters */}
-      <Paper sx={{ p: 2.5, mb: 3, borderRadius: 2 }}>
-        <Box display="flex" gap={2} alignItems="center" flexWrap="wrap">
+      <Paper sx={{ p: { xs: 1.5, sm: 2.5 }, mb: 2.5, borderRadius: 2 }}>
+        <Box display="flex" gap={1.5} alignItems="center" flexWrap="wrap">
           {/* Search input */}
           <TextField
             placeholder="Search employees by name, ID, or dept..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             size="small"
-            sx={{ flex: 2, minWidth: 240 }}
+            sx={{
+              flex: { xs: "1 1 100%", md: 2 },
+              width: { xs: "100%", md: "auto" },
+              minWidth: { xs: 0, sm: 220 },
+            }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -454,11 +459,22 @@ const ManualAttendancePage = () => {
               min: getMinDate(),
               max: getMaxDate(),
             }}
-            sx={{ flex: 1, minWidth: 190 }}
+            sx={{
+              flex: { xs: "1 1 100%", sm: 1 },
+              width: { xs: "100%", sm: "auto" },
+              minWidth: { xs: 0, sm: 180 },
+            }}
           />
 
           {/* Status Filter */}
-          <FormControl size="small" sx={{ flex: 1, minWidth: 170 }}>
+          <FormControl
+            size="small"
+            sx={{
+              flex: { xs: "1 1 100%", sm: 1 },
+              width: { xs: "100%", sm: "auto" },
+              minWidth: { xs: 0, sm: 160 },
+            }}
+          >
             <InputLabel>Attendance Status</InputLabel>
             <Select
               value={statusFilter}
@@ -472,7 +488,16 @@ const ManualAttendancePage = () => {
           </FormControl>
 
           {(searchTerm || statusFilter !== "all" || selectedDate !== format(new Date(), "yyyy-MM-dd")) && (
-            <Button size="small" onClick={clearFilters} startIcon={<Clear />} sx={{ color: "#f37021" }}>
+            <Button
+              size="small"
+              onClick={clearFilters}
+              startIcon={<Clear />}
+              sx={{
+                color: "#f37021",
+                width: { xs: "100%", sm: "auto" },
+                justifyContent: { xs: "center", sm: "flex-start" },
+              }}
+            >
               Reset Filters
             </Button>
           )}
@@ -481,13 +506,13 @@ const ManualAttendancePage = () => {
 
       {/* Alerts */}
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
+        <Alert severity="error" sx={{ mb: 2.5 }} onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
 
       {success && (
-        <Alert severity="success" sx={{ mb: 3 }} onClose={() => setSuccess(null)}>
+        <Alert severity="success" sx={{ mb: 2.5 }} onClose={() => setSuccess(null)}>
           {success}
         </Alert>
       )}
@@ -501,26 +526,30 @@ const ManualAttendancePage = () => {
       ) : (
         <>
           {/* Results Summary Bar */}
-          <Paper sx={{ p: 2, mb: 2, borderRadius: 2, bgcolor: "#fff", border: "1px solid #e0e0e0" }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={1}>
-              <Box display="flex" alignItems="center" gap={1.5}>
-                <Typography variant="body1" fontWeight={600}>
+          <Paper sx={{ p: { xs: 1.5, sm: 2 }, mb: 2, borderRadius: 2, bgcolor: "#fff", border: "1px solid #e0e0e0" }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={1.2}>
+              <Box display="flex" alignItems="center" flexWrap="wrap" gap={1}>
+                <Typography variant="body2" fontWeight={600} sx={{ fontSize: { xs: "0.85rem", sm: "0.95rem" } }}>
                   Showing {filteredEmployees.length} of {employees.length} employees
                 </Typography>
-                <Chip
-                  label={`${markedCount} Marked`}
-                  color="success"
-                  size="small"
-                  variant="filled"
-                />
-                <Chip
-                  label={`${unmarkedCount} Not Marked`}
-                  color="default"
-                  size="small"
-                  variant="outlined"
-                />
+                <Box display="flex" gap={0.8} flexWrap="wrap" alignItems="center">
+                  <Chip
+                    label={`${markedCount} Marked`}
+                    color="success"
+                    size="small"
+                    variant="filled"
+                    sx={{ fontWeight: 600, fontSize: "0.75rem" }}
+                  />
+                  <Chip
+                    label={`${unmarkedCount} Not Marked`}
+                    color="default"
+                    size="small"
+                    variant="outlined"
+                    sx={{ fontWeight: 600, fontSize: "0.75rem" }}
+                  />
+                </Box>
               </Box>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: "0.8rem", sm: "0.85rem" } }}>
                 Selected Date: <strong>{format(parseISO(selectedDate), "dd MMMM yyyy")}</strong>
                 {attendanceLoading && " (loading...)"}
               </Typography>
@@ -529,8 +558,8 @@ const ManualAttendancePage = () => {
 
           {/* Employee Table */}
           <Paper sx={{ borderRadius: 2, overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-            <TableContainer>
-              <Table>
+            <TableContainer sx={{ overflowX: "auto", width: "100%" }}>
+              <Table sx={{ minWidth: 650 }}>
                 <TableHead sx={{ bgcolor: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
                   <TableRow>
                     <TableCell sx={{ color: "#475569", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Employee ID</TableCell>
@@ -669,18 +698,26 @@ const ManualAttendancePage = () => {
         onClose={() => !submitting && setMarkAttendanceDialog(false)}
         maxWidth="sm"
         fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: { xs: 2, sm: 2.5 },
+            m: { xs: 1.5, sm: 2 },
+            width: { xs: "calc(100% - 24px)", sm: "auto" },
+            overflow: "hidden",
+          },
+        }}
       >
-        <DialogTitle sx={{ bgcolor: "#f37021", color: "white" }}>
+        <DialogTitle sx={{ bgcolor: "#f37021", color: "white", p: { xs: 2, sm: 2.5 } }}>
           <Box display="flex" alignItems="center" gap={1}>
             {formMode === "edit" ? <Edit /> : <HowToReg />}
-            <Typography variant="h6" fontWeight={600}>
+            <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: "1.05rem", sm: "1.25rem" } }}>
               {formMode === "edit" ? "Edit Attendance (IN/OUT)" : "Mark Attendance (IN/OUT)"}
             </Typography>
           </Box>
         </DialogTitle>
-        <DialogContent sx={{ pt: 3 }}>
+        <DialogContent sx={{ p: { xs: 2, sm: 3 }, pt: { xs: "16px !important", sm: "24px !important" }, overflowX: "hidden" }}>
           {selectedEmployee && (
-            <Stack spacing={3} mt={1}>
+            <Stack spacing={2.5} mt={1}>
               {/* Employee Info */}
               <Box p={2} sx={{ bgcolor: "grey.100", borderRadius: 1.5 }}>
                 <Box display="flex" alignItems="center" gap={2}>
@@ -723,7 +760,7 @@ const ManualAttendancePage = () => {
                 helperText="You can mark attendance for the last 30 days up to today"
               />
 
-              <Box display="flex" gap={2}>
+              <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 2 }}>
                 <TextField
                   label="IN Time"
                   type="time"
@@ -786,8 +823,20 @@ const ManualAttendancePage = () => {
             </Stack>
           )}
         </DialogContent>
-        <DialogActions sx={{ p: 2.5, borderTop: "1px solid #e0e0e0" }}>
-          <Button onClick={() => setMarkAttendanceDialog(false)} disabled={submitting}>
+        <DialogActions
+          sx={{
+            p: { xs: 2, sm: 2.5 },
+            borderTop: "1px solid #e0e0e0",
+            display: "flex",
+            flexDirection: { xs: "column-reverse", sm: "row" },
+            gap: { xs: 1, sm: 1.5 },
+          }}
+        >
+          <Button
+            onClick={() => setMarkAttendanceDialog(false)}
+            disabled={submitting}
+            sx={{ width: { xs: "100%", sm: "auto" } }}
+          >
             Cancel
           </Button>
           <Button
@@ -797,8 +846,9 @@ const ManualAttendancePage = () => {
             startIcon={formMode === "edit" ? <Edit /> : <HowToReg />}
             sx={{
               bgcolor: "#f37021",
-              "&:hover": { bgcolor: "#6d042aff" },
+              "&:hover": { bgcolor: "#d95300" },
               px: 3,
+              width: { xs: "100%", sm: "auto" },
             }}
           >
             {submitting ? "Saving..." : formMode === "edit" ? "Update Attendance" : "Mark Attendance"}

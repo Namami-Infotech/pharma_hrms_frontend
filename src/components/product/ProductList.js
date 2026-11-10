@@ -268,7 +268,7 @@ function ProductList() {
           </Typography>
         </Box>
 
-        <Box sx={{ display: "flex", gap: 1.5 }}>
+        <Box sx={{ display: "flex", gap: 1.5, width: { xs: "100%", sm: "auto" } }}>
           <Button
             variant="outlined"
             startIcon={<Refresh />}
@@ -278,6 +278,7 @@ function ProductList() {
               color: "#f37021",
               textTransform: "none",
               fontWeight: 600,
+              flex: { xs: 1, sm: "none" },
               "&:hover": { borderColor: "#d95300", bgcolor: "rgba(243, 112, 33,0.04)" },
             }}
           >
@@ -294,6 +295,7 @@ function ProductList() {
               textTransform: "none",
               fontWeight: 700,
               px: 2.5,
+              flex: { xs: 1, sm: "none" },
               "&:hover": { bgcolor: "#d95300" },
               boxShadow: "0 4px 12px rgba(243, 112, 33,0.25)",
             }}
@@ -325,118 +327,132 @@ function ProductList() {
       )}
 
       {/* Stats Cards */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={4} md={4}>
-          <StatCard
-            title="TOTAL PRODUCTS"
-            value={stats.totalProducts}
-            color="#f37021"
-            icon={<LocalPharmacy />}
-            subtitle="Cataloged medicines"
-          />
-        </Grid>
-        <Grid item xs={12} sm={4} md={4}>
-          <StatCard
-            title="ACTIVE / FORMULARY"
-            value={stats.activeProducts}
-            color="#16a34a"
-            icon={<CheckCircle />}
-            subtitle="Available for sales"
-          />
-        </Grid>
-        <Grid item xs={12} sm={4} md={4}>
-          <StatCard
-            title="AVERAGE PRICE"
-            value={`₹${parseFloat(stats.avgPrice || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}`}
-            color="#0284c7"
-            icon={<Inventory2 />}
-            subtitle="Per unit rate"
-          />
-        </Grid>
-      </Grid>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr" },
+          gap: { xs: 1.5, sm: 2 },
+          mb: 3,
+          width: "100%",
+        }}
+      >
+        <StatCard
+          title="TOTAL PRODUCTS"
+          value={stats.totalProducts}
+          color="#f37021"
+          icon={<LocalPharmacy />}
+          subtitle="Cataloged medicines"
+        />
+        <StatCard
+          title="ACTIVE / FORMULARY"
+          value={stats.activeProducts}
+          color="#16a34a"
+          icon={<CheckCircle />}
+          subtitle="Available for sales"
+        />
+        <StatCard
+          title="AVERAGE PRICE"
+          value={`₹${parseFloat(stats.avgPrice || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}`}
+          color="#0284c7"
+          icon={<Inventory2 />}
+          subtitle="Per unit rate"
+        />
+      </Box>
 
       {/* Filters Card */}
-      <Card sx={{ mb: 3, borderRadius: 2, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
-        <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
-          <form onSubmit={handleSearchSubmit}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} md={5}>
-                <TextField
-                  fullWidth
-                  size="small"
-                  placeholder="Search by name, composition, code..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Search sx={{ color: "action.active" }} />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
+      <Card sx={{ mb: 3, borderRadius: 2, border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
+        <CardContent sx={{ p: { xs: 1.5, sm: 2 }, "&:last-child": { pb: { xs: 1.5, sm: 2 } } }}>
+          <form onSubmit={handleSearchSubmit} style={{ width: "100%" }}>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: {
+                  xs: "1fr",
+                  sm: "1fr 1fr",
+                  md: "2fr 1fr 1fr auto",
+                },
+                gap: 1.5,
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <TextField
+                fullWidth
+                size="small"
+                placeholder="Search by name, composition, code..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search sx={{ color: "action.active" }} />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  "& .MuiOutlinedInput-root": { borderRadius: 2, height: 40 },
+                }}
+              />
 
-              <Grid item xs={6} sm={4} md={2.5}>
-                <FormControl fullWidth size="small">
-                  <InputLabel>Unit</InputLabel>
-                  <Select
-                    value={unitFilter}
-                    label="Unit"
-                    onChange={(e) => setUnitFilter(e.target.value)}
-                    MenuProps={{
-                      PaperProps: {
-                        sx: {
-                          maxHeight: 220,
-                          "&::-webkit-scrollbar": { width: "6px" },
-                          "&::-webkit-scrollbar-thumb": {
-                            backgroundColor: "#cbd5e1",
-                            borderRadius: "3px",
-                          },
+              <FormControl fullWidth size="small">
+                <InputLabel>Unit</InputLabel>
+                <Select
+                  value={unitFilter}
+                  label="Unit"
+                  onChange={(e) => setUnitFilter(e.target.value)}
+                  sx={{ borderRadius: 2, height: 40 }}
+                  MenuProps={{
+                    PaperProps: {
+                      sx: {
+                        maxHeight: 220,
+                        "&::-webkit-scrollbar": { width: "6px" },
+                        "&::-webkit-scrollbar-thumb": {
+                          backgroundColor: "#cbd5e1",
+                          borderRadius: "3px",
                         },
                       },
-                    }}
-                  >
-                    {STANDARD_UNITS.map((u) => (
-                      <MenuItem key={u} value={u}>
-                        {u}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              <Grid item xs={6} sm={4} md={2.5}>
-                <FormControl fullWidth size="small">
-                  <InputLabel>Status</InputLabel>
-                  <Select
-                    value={statusFilter}
-                    label="Status"
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                  >
-                    <MenuItem value="All">All Status</MenuItem>
-                    <MenuItem value="Active">Active</MenuItem>
-                    <MenuItem value="Inactive">Inactive</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              <Grid item xs={12} md={2}>
-                <Button
-                  fullWidth
-                  type="submit"
-                  variant="contained"
-                  sx={{
-                    bgcolor: "#f37021",
-                    "&:hover": { bgcolor: "#d95300" },
-                    textTransform: "none",
-                    fontWeight: 600,
+                    },
                   }}
                 >
-                  Search
-                </Button>
-              </Grid>
-            </Grid>
+                  {STANDARD_UNITS.map((u) => (
+                    <MenuItem key={u} value={u}>
+                      {u}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControl fullWidth size="small">
+                <InputLabel>Status</InputLabel>
+                <Select
+                  value={statusFilter}
+                  label="Status"
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  sx={{ borderRadius: 2, height: 40 }}
+                >
+                  <MenuItem value="All">All Status</MenuItem>
+                  <MenuItem value="Active">Active</MenuItem>
+                  <MenuItem value="Inactive">Inactive</MenuItem>
+                </Select>
+              </FormControl>
+
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                  bgcolor: "#f37021",
+                  "&:hover": { bgcolor: "#d95300" },
+                  textTransform: "none",
+                  fontWeight: 600,
+                  borderRadius: 2,
+                  height: 40,
+                  px: 3,
+                  width: { xs: "100%", sm: "auto" },
+                }}
+              >
+                Search
+              </Button>
+            </Box>
           </form>
         </CardContent>
       </Card>

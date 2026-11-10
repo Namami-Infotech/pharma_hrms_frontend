@@ -157,8 +157,11 @@ const AddHoliday = ({ open, onClose, onHolidayAdded }) => {
       TransitionComponent={Fade}
       PaperProps={{
         sx: {
-          borderRadius: 2,
+          borderRadius: { xs: 2, sm: 2.5 },
           maxHeight: "90vh",
+          width: { xs: "calc(100% - 24px)", sm: "auto" },
+          m: { xs: 1.5, sm: 2 },
+          overflow: "hidden",
         },
       }}
     >
@@ -169,7 +172,7 @@ const AddHoliday = ({ open, onClose, onHolidayAdded }) => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          p: 3,
+          p: { xs: 2, sm: 3 },
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -181,7 +184,7 @@ const AddHoliday = ({ open, onClose, onHolidayAdded }) => {
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 3 }}>
+      <DialogContent sx={{ p: { xs: 2, sm: 3 }, overflowX: "hidden" }}>
         {error && (
           <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError("")}>
             {error}
@@ -222,7 +225,7 @@ const AddHoliday = ({ open, onClose, onHolidayAdded }) => {
                   },
                 }}
               >
-                <CardContent sx={{ p: 3 }}>
+                <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                   <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
                     <Typography variant="subtitle1" fontWeight="bold">
                       Holiday #{index + 1}
@@ -245,7 +248,7 @@ const AddHoliday = ({ open, onClose, onHolidayAdded }) => {
                     )}
                   </Box>
 
-                  <Grid container spacing={3}>
+                  <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ width: "100%", m: 0 }}>
                     <Grid item xs={12} md={6}>
                       <TextField
                         fullWidth
@@ -325,19 +328,21 @@ const AddHoliday = ({ open, onClose, onHolidayAdded }) => {
 
       <DialogActions
         sx={{
-          p: 3,
+          p: { xs: 2, sm: 3 },
           bgcolor: "#f5f5f5",
           display: "flex",
+          flexDirection: { xs: "column-reverse", sm: "row" },
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: { xs: "stretch", sm: "center" },
+          gap: { xs: 1.5, sm: 2 },
         }}
       >
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="text.secondary" sx={{ textAlign: { xs: "center", sm: "left" } }}>
           {holidays.filter((h) => h.date && h.title).length} of {holidays.length} holidays ready
         </Typography>
 
-        <Box sx={{ display: "flex", gap: 1 }}>
-          <Button onClick={handleClose} variant="outlined" disabled={loading}>
+        <Box sx={{ display: "flex", gap: 1, width: { xs: "100%", sm: "auto" } }}>
+          <Button onClick={handleClose} variant="outlined" disabled={loading} sx={{ flex: { xs: 1, sm: "none" } }}>
             Cancel
           </Button>
           <Button
@@ -350,6 +355,7 @@ const AddHoliday = ({ open, onClose, onHolidayAdded }) => {
               "&:hover": {
                 bgcolor: "#0f1f3d",
               },
+              flex: { xs: 1, sm: "none" },
             }}
           >
             {loading ? "Adding..." : `Add ${holidays.length} Holiday${holidays.length > 1 ? "s" : ""}`}

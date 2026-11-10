@@ -152,13 +152,13 @@ function ApplyTravel({ open, onClose, onTravelApplied }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          p: 3,
+          p: { xs: 2, sm: 3 },
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <FlightTakeoff sx={{ fontSize: 28 }} />
+        <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1.2, sm: 2 } }}>
+          <FlightTakeoff sx={{ fontSize: { xs: 24, sm: 28 } }} />
           <Box>
-            <Typography variant="h6" fontWeight="700">
+            <Typography variant="h6" fontWeight="700" sx={{ fontSize: { xs: "1.05rem", sm: "1.25rem" } }}>
               Apply for Travel
             </Typography>
             <Typography variant="caption" sx={{ opacity: 0.9, display: 'block', mt: 0.5 }}>
@@ -181,14 +181,14 @@ function ApplyTravel({ open, onClose, onTravelApplied }) {
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 3 }}>
-        <Box sx={{ mt:3, mb: 3 }}>
+      <DialogContent sx={{ p: { xs: 2, sm: 3 }, overflowX: "hidden" }}>
+        <Box sx={{ mt: { xs: 1.5, sm: 3 }, mb: { xs: 2, sm: 3 } }}>
           <Typography variant="body1" color="text.secondary">
             Fill in the details for your travel request. All fields are required.
           </Typography>
         </Box>
 
-        <Grid container spacing={3}>
+        <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ width: "100%", m: 0 }}>
           <Grid item xs={12} sm={6}>
             <TextField
               label="Travel Date"
@@ -314,7 +314,14 @@ function ApplyTravel({ open, onClose, onTravelApplied }) {
         )}
       </DialogContent>
 
-      <DialogActions sx={{ p: 3, gap: 2 }}>
+      <DialogActions
+        sx={{
+          p: { xs: 2, sm: 3 },
+          display: "flex",
+          flexDirection: { xs: "column-reverse", sm: "row" },
+          gap: { xs: 1, sm: 2 },
+        }}
+      >
         <Button 
           onClick={handleClose} 
           disabled={loading}
@@ -322,6 +329,7 @@ function ApplyTravel({ open, onClose, onTravelApplied }) {
           sx={{ 
             borderRadius: 2,
             minWidth: 100,
+            width: { xs: "100%", sm: "auto" },
             borderColor: alpha("#f37021", 0.5),
             color: "#f37021",
             "&:hover": {
@@ -339,11 +347,12 @@ function ApplyTravel({ open, onClose, onTravelApplied }) {
           sx={{ 
             borderRadius: 2,
             minWidth: 140,
+            width: { xs: "100%", sm: "auto" },
             bgcolor: "#f37021",
             fontWeight: "600",
             fontSize: "1rem",
             "&:hover": {
-              bgcolor: "#6d052cff",
+              bgcolor: "#d95300",
             }
           }}
         >
