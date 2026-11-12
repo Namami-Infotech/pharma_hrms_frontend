@@ -14,6 +14,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TablePagination,
   Paper,
   Chip,
   IconButton,
@@ -83,6 +84,9 @@ const AdvanceList = () => {
   const [teamRequests, setTeamRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [openApplyModal, setOpenApplyModal] = useState(false);
 
@@ -309,91 +313,36 @@ const AdvanceList = () => {
     .reduce((sum, r) => sum + (parseFloat(r.amount) || 0), 0);
 
   return (
-    <Box sx={{ p: { xs: 1.5, sm: 3 }, width: "100%", boxSizing: "border-box" }}>
-      {/* Top Banner / Actions Bar */}
-      <Box
-        sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: 2,
-          mb: 3,
-        }}
-      >
-        <Box>
-          <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}>
-            Advance Payment Management
-          </Typography>
-          <Typography variant="body2" sx={{ color: "#64748b", mt: 0.4, fontSize: "0.875rem" }}>
-            Manage employee advance requests, approval workflows, and deductions
-          </Typography>
-        </Box>
-
-        <Box sx={{ display: "flex", gap: 1.5, alignItems: "center", width: { xs: "100%", sm: "auto" } }}>
-          <Tooltip title="Refresh list">
-            <IconButton
-              onClick={fetchAdvances}
-              disabled={loading}
-              sx={{
-                bgcolor: "#ffffff",
-                border: "1px solid #e2e8f0",
-                color: "#64748b",
-                width: 40,
-                height: 40,
-                borderRadius: 2,
-                "&:hover": { bgcolor: "#f8fafc", color: "#0f172a" },
-              }}
-            >
-              <Refresh sx={{ fontSize: 20 }} />
-            </IconButton>
-          </Tooltip>
-
-          <Button
-            variant="contained"
-            startIcon={<Add sx={{ fontSize: "20px !important" }} />}
-            onClick={() => setOpenApplyModal(true)}
-            sx={{
-              bgcolor: "#f37021",
-              color: "#ffffff",
-              "&:hover": {
-                bgcolor: "#d95300",
-                boxShadow: "0 4px 14px rgba(243, 112, 33, 0.35)",
-              },
-              fontWeight: 600,
-              fontSize: "0.875rem",
-              textTransform: "none",
-              borderRadius: 2,
-              px: 2.5,
-              py: 1,
-              flex: { xs: 1, sm: "none" },
-              boxShadow: "0 2px 8px rgba(243, 112, 33, 0.25)",
-              transition: "all 0.2s ease-in-out",
-            }}
-          >
-            Request Advance
-          </Button>
-        </Box>
-      </Box>
-
+    <Box
+      sx={{
+        p: { xs: 1, sm: 1.5 },
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        boxSizing: "border-box",
+      }}
+    >
       {/* Stats Cards - Clean Minimal Style */}
       <Box
         sx={{
           display: "grid",
           gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr" },
-          gap: { xs: 1.5, sm: 2.5 },
-          mb: 3,
+          gap: { xs: 1, sm: 1.5 },
+          mb: 1.5,
           width: "100%",
+          flexShrink: 0,
         }}
       >
         {/* Card 1: My Advance Requests */}
         <Card
           sx={{
-            borderRadius: 3,
+            borderRadius: 2,
             boxShadow: "0 1px 3px rgba(0,0,0,0.02), 0 2px 8px rgba(0,0,0,0.03)",
             border: "1px solid #eef2f6",
             bgcolor: "#ffffff",
-            p: 2.5,
+            p: 1.5,
             transition: "transform 0.2s, box-shadow 0.2s",
             "&:hover": {
               boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
@@ -401,16 +350,16 @@ const AdvanceList = () => {
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "#64748b" }}>
-            <AccountBalanceWallet sx={{ fontSize: 18, color: "#f37021" }} />
-            <Typography sx={{ fontSize: "0.85rem", fontWeight: 600, color: "#64748b" }}>
+            <AccountBalanceWallet sx={{ fontSize: 16, color: "#f37021" }} />
+            <Typography sx={{ fontSize: "0.8rem", fontWeight: 600, color: "#64748b" }}>
               My Advance Requests
             </Typography>
           </Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: "#0f172a", mt: 1.5, mb: 0.8, fontSize: "1.85rem" }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", mt: 0.8, mb: 0.4, fontSize: "1.4rem" }}>
             {totalMyCount}
           </Typography>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.6, fontSize: "0.78rem", fontWeight: 600, color: "#10b981" }}>
-            <TrendingUp sx={{ fontSize: 15 }} />
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.6, fontSize: "0.75rem", fontWeight: 600, color: "#10b981" }}>
+            <TrendingUp sx={{ fontSize: 14 }} />
             <span>Active requests in system</span>
           </Box>
         </Card>
@@ -418,11 +367,11 @@ const AdvanceList = () => {
         {/* Card 2: Pending RM Approvals */}
         <Card
           sx={{
-            borderRadius: 3,
+            borderRadius: 2,
             boxShadow: "0 1px 3px rgba(0,0,0,0.02), 0 2px 8px rgba(0,0,0,0.03)",
             border: "1px solid #eef2f6",
             bgcolor: "#ffffff",
-            p: 2.5,
+            p: 1.5,
             transition: "transform 0.2s, box-shadow 0.2s",
             "&:hover": {
               boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
@@ -430,23 +379,23 @@ const AdvanceList = () => {
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "#64748b" }}>
-            <AssignmentTurnedIn sx={{ fontSize: 18, color: "#d97706" }} />
-            <Typography sx={{ fontSize: "0.85rem", fontWeight: 600, color: "#64748b" }}>
+            <AssignmentTurnedIn sx={{ fontSize: 16, color: "#d97706" }} />
+            <Typography sx={{ fontSize: "0.8rem", fontWeight: 600, color: "#64748b" }}>
               Pending RM Approvals
             </Typography>
           </Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: "#0f172a", mt: 1.5, mb: 0.8, fontSize: "1.85rem" }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", mt: 0.8, mb: 0.4, fontSize: "1.4rem" }}>
             {pendingApprovalsCount}
           </Typography>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.6, fontSize: "0.78rem", fontWeight: 600, color: pendingApprovalsCount > 0 ? "#f59e0b" : "#10b981" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.6, fontSize: "0.75rem", fontWeight: 600, color: pendingApprovalsCount > 0 ? "#f59e0b" : "#10b981" }}>
             {pendingApprovalsCount > 0 ? (
               <>
-                <InfoOutlined sx={{ fontSize: 15 }} />
+                <InfoOutlined sx={{ fontSize: 14 }} />
                 <span>Requires your attention</span>
               </>
             ) : (
               <>
-                <CheckCircle sx={{ fontSize: 15 }} />
+                <CheckCircle sx={{ fontSize: 14 }} />
                 <span>All caught up</span>
               </>
             )}
@@ -456,11 +405,11 @@ const AdvanceList = () => {
         {/* Card 3: Total Approved Amount */}
         <Card
           sx={{
-            borderRadius: 3,
+            borderRadius: 2,
             boxShadow: "0 1px 3px rgba(0,0,0,0.02), 0 2px 8px rgba(0,0,0,0.03)",
             border: "1px solid #eef2f6",
             bgcolor: "#ffffff",
-            p: 2.5,
+            p: 1.5,
             transition: "transform 0.2s, box-shadow 0.2s",
             "&:hover": {
               boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
@@ -468,16 +417,16 @@ const AdvanceList = () => {
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "#64748b" }}>
-            <Paid sx={{ fontSize: 18, color: "#10b981" }} />
-            <Typography sx={{ fontSize: "0.85rem", fontWeight: 600, color: "#64748b" }}>
+            <Paid sx={{ fontSize: 16, color: "#10b981" }} />
+            <Typography sx={{ fontSize: "0.8rem", fontWeight: 600, color: "#64748b" }}>
               Total Approved Amount
             </Typography>
           </Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: "#0f172a", mt: 1.5, mb: 0.8, fontSize: "1.85rem" }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", mt: 0.8, mb: 0.4, fontSize: "1.4rem" }}>
             ₹{approvedAdvancesTotal.toLocaleString("en-IN")}
           </Typography>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.6, fontSize: "0.78rem", fontWeight: 600, color: "#0ea5e9" }}>
-            <TrendingUp sx={{ fontSize: 15 }} />
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.6, fontSize: "0.75rem", fontWeight: 600, color: "#0ea5e9" }}>
+            <TrendingUp sx={{ fontSize: 14 }} />
             <span>Deducted via salary slip</span>
           </Box>
         </Card>
@@ -486,7 +435,11 @@ const AdvanceList = () => {
       {/* Main Content Card */}
       <Card
         sx={{
-          borderRadius: 3,
+          flex: 1,
+          minHeight: 0,
+          display: "flex",
+          flexDirection: "column",
+          borderRadius: 2.5,
           boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
           border: "1px solid #eef2f6",
           overflow: "hidden",
@@ -509,7 +462,10 @@ const AdvanceList = () => {
           {/* Tabs */}
           <Tabs
             value={currentTab}
-            onChange={(e, val) => setActiveTab(val)}
+            onChange={(e, val) => {
+              setActiveTab(val);
+              setPage(0);
+            }}
             indicatorColor="primary"
             textColor="primary"
             sx={{
@@ -562,16 +518,16 @@ const AdvanceList = () => {
               value="my"
               icon={<Person sx={{ fontSize: 18 }} />}
               iconPosition="start"
-              label={`My Requests (${myRequests.length})`}
+              label="My Requests"
             />
           </Tabs>
 
-          {/* Clean Search and Filter Controls */}
+          {/* Clean Search, Filter & Action Controls */}
           <Box
             sx={{
               display: "flex",
               alignItems: "center",
-              gap: 1.5,
+              gap: 1.2,
               flexWrap: "wrap",
               width: { xs: "100%", md: "auto" },
             }}
@@ -581,21 +537,24 @@ const AdvanceList = () => {
               size="small"
               placeholder="Search by name, amount, reason..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setPage(0);
+              }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Search sx={{ color: "#94a3b8", fontSize: 19 }} />
+                    <Search sx={{ color: "#94a3b8", fontSize: 18 }} />
                   </InputAdornment>
                 ),
               }}
               sx={{
-                width: { xs: "100%", sm: 260 },
+                width: { xs: "100%", sm: 220, md: 240 },
                 "& .MuiOutlinedInput-root": {
-                  borderRadius: 2,
+                  borderRadius: 1.8,
                   bgcolor: "#f8fafc",
-                  fontSize: "0.85rem",
-                  height: 38,
+                  fontSize: "0.82rem",
+                  height: 36,
                   transition: "all 0.2s",
                   border: "1px solid #e2e8f0",
                   "&:hover": {
@@ -620,9 +579,9 @@ const AdvanceList = () => {
                 alignItems: "center",
                 bgcolor: "#f8fafc",
                 border: "1px solid #e2e8f0",
-                borderRadius: 2,
-                px: 1.2,
-                height: 38,
+                borderRadius: 1.8,
+                px: 1,
+                height: 36,
                 width: { xs: "100%", sm: "auto" },
                 justifyContent: { xs: "space-between", sm: "flex-start" },
                 transition: "all 0.2s",
@@ -632,20 +591,23 @@ const AdvanceList = () => {
                 },
               }}
             >
-              <FilterList sx={{ color: "#94a3b8", fontSize: 18, mr: 0.8 }} />
+              <FilterList sx={{ color: "#94a3b8", fontSize: 18, mr: 0.5 }} />
               <Select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value);
+                  setPage(0);
+                }}
                 variant="standard"
                 disableUnderline
                 sx={{
-                  fontSize: "0.85rem",
+                  fontSize: "0.82rem",
                   fontWeight: 500,
                   color: "#334155",
-                  minWidth: 105,
+                  minWidth: 95,
                   "& .MuiSelect-select": {
                     py: 0,
-                    pr: "24px !important",
+                    pr: "20px !important",
                   },
                 }}
               >
@@ -655,19 +617,67 @@ const AdvanceList = () => {
                 <MenuItem value="Rejected">Rejected</MenuItem>
               </Select>
             </Box>
+
+            {/* Refresh Button */}
+            <Tooltip title="Refresh list">
+              <IconButton
+                onClick={fetchAdvances}
+                disabled={loading}
+                size="small"
+                sx={{
+                  bgcolor: "#ffffff",
+                  border: "1px solid #e2e8f0",
+                  color: "#64748b",
+                  width: 36,
+                  height: 36,
+                  borderRadius: 1.8,
+                  "&:hover": { bgcolor: "#f8fafc", color: "#0f172a" },
+                }}
+              >
+                <Refresh fontSize="small" />
+              </IconButton>
+            </Tooltip>
+
+            {/* Request Advance Button */}
+            <Button
+              variant="contained"
+              startIcon={<Add sx={{ fontSize: "18px !important" }} />}
+              onClick={() => setOpenApplyModal(true)}
+              size="small"
+              sx={{
+                bgcolor: "#f37021",
+                color: "#ffffff",
+                "&:hover": {
+                  bgcolor: "#d95300",
+                  boxShadow: "0 4px 14px rgba(243, 112, 33, 0.35)",
+                },
+                fontWeight: 600,
+                fontSize: "0.82rem",
+                textTransform: "none",
+                borderRadius: 1.8,
+                px: 2,
+                height: 36,
+                boxShadow: "0 2px 6px rgba(243, 112, 33, 0.25)",
+                transition: "all 0.2s ease-in-out",
+                whiteSpace: "nowrap",
+                flex: { xs: 1, sm: "none" },
+              }}
+            >
+              Request Advance
+            </Button>
           </Box>
         </Box>
 
         {error && (
-          <Alert severity="error" sx={{ m: 2.5 }}>
+          <Alert severity="error" sx={{ m: 1.5, py: 0.5 }}>
             {error}
           </Alert>
         )}
 
         {/* Table Content */}
-        <TableContainer>
-          <Table sx={{ minWidth: 750 }}>
-            <TableHead sx={{ bgcolor: "#f9fafb" }}>
+        <TableContainer sx={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
+          <Table stickyHeader sx={{ minWidth: 750 }}>
+            <TableHead sx={{ bgcolor: "#f9fafb", "& th": { bgcolor: "#f9fafb" } }}>
               <TableRow>
                 <TableCell sx={{ fontWeight: 700, color: "#374151", py: 1.8 }}>#</TableCell>
                 {isTeamTab && (
@@ -709,22 +719,24 @@ const AdvanceList = () => {
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredList.map((row, index) => {
-                  const isPending = String(row.status).toLowerCase() === "pending";
-                  const deductionPeriod = `${MONTH_NAMES[row.deduction_month] || row.deduction_month} ${row.deduction_year}`;
+                filteredList
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, index) => {
+                    const isPending = String(row.status).toLowerCase() === "pending";
+                    const deductionPeriod = `${MONTH_NAMES[row.deduction_month] || row.deduction_month} ${row.deduction_year}`;
 
-                  return (
-                    <TableRow
-                      key={row.id}
-                      hover
-                      sx={{
-                        "&:last-child td, &:last-child th": { border: 0 },
-                        transition: "background-color 0.2s",
-                      }}
-                    >
-                      <TableCell sx={{ fontWeight: 600, color: "#111827" }}>
-                        #{index + 1}
-                      </TableCell>
+                    return (
+                      <TableRow
+                        key={row.id}
+                        hover
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                          transition: "background-color 0.2s",
+                        }}
+                      >
+                        <TableCell sx={{ fontWeight: 600, color: "#111827" }}>
+                          #{page * rowsPerPage + index + 1}
+                        </TableCell>
 
                       {/* Employee details (Only in Team Approvals Tab) */}
                       {isTeamTab && (
@@ -876,6 +888,20 @@ const AdvanceList = () => {
             </TableBody>
           </Table>
         </TableContainer>
+
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25, 50]}
+          component="div"
+          count={filteredList.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={(_, newPage) => setPage(newPage)}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            setPage(0);
+          }}
+          sx={{ flexShrink: 0, borderTop: "1px solid #f1f5f9" }}
+        />
       </Card>
 
       {/* Apply Advance Request Modal */}

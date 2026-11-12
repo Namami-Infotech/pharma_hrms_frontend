@@ -74,17 +74,17 @@ const StatsCard = ({ icon, title, value, color, subtitle }) => {
         borderRadius: 2,
       }}
     >
-      <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+      <CardContent sx={{ p: 1.25, '&:last-child': { pb: 1.25 } }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Box sx={{ flex: 1 }}>
-            <Typography variant="caption" color="text.secondary" fontWeight="500" gutterBottom sx={{ fontSize: '0.75rem' }}>
+            <Typography variant="caption" color="text.secondary" fontWeight="500" sx={{ fontSize: '0.72rem', display: 'block' }}>
               {title}
             </Typography>
-            <Typography variant="h6" fontWeight="bold" color={color} sx={{ fontSize: '1.25rem', lineHeight: 1.2 }}>
+            <Typography variant="h6" fontWeight="bold" color={color} sx={{ fontSize: '1.15rem', lineHeight: 1.2, my: 0.2 }}>
               {value}
             </Typography>
             {subtitle && (
-              <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+              <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.68rem' }}>
                 {subtitle}
               </Typography>
             )}
@@ -93,9 +93,9 @@ const StatsCard = ({ icon, title, value, color, subtitle }) => {
             sx={{ 
               bgcolor: alpha(color, 0.1), 
               color: color, 
-              width: 36, 
-              height: 36,
-              fontSize: '1rem'
+              width: 32, 
+              height: 32,
+              fontSize: '0.9rem'
             }}
           >
             {icon}
@@ -261,132 +261,157 @@ function ViewHoliday() {
   }
 
   return (
-    <Box sx={{ p: { xs: 1, md: 2 }, bgcolor: "#f8fafc", minHeight: "100vh" }}>
-      {/* Header */}
+    <Box sx={{ p: { xs: 1, md: 1.5 }, bgcolor: "#f8fafc", height: "100%", display: "flex", flexDirection: "column", overflow: "hidden", boxSizing: "border-box" }}>
+      {/* Header Bar */}
       <Paper 
         elevation={0} 
         sx={{ 
-          p: { xs: 2, sm: 2.5 }, 
-          mb: 2, 
+          p: 1.25, 
+          mb: 1.5, 
           borderRadius: 2, 
           background: 'white',
-          border: `1px solid ${alpha(theme.palette.divider, 0.1)}`
+          border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: 1.5,
+          flexShrink: 0,
         }}
       >
-        <Box sx={{ 
-          display: "flex", 
-          flexDirection: { xs: "column", sm: "row" },
-          justifyContent: "space-between", 
-          alignItems: { xs: "flex-start", sm: "center" }, 
-          gap: { xs: 1.5, sm: 2 },
-          mb: 2 
-        }}>
-          <Box>
-            <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }} gutterBottom>
-              Holiday Calendar
-            </Typography>
-            <Typography variant="body2" sx={{ color: "#64748b", fontSize: "0.85rem" }}>
-              Manage and view company holidays and official calendar
-            </Typography>
-          </Box>
-          <Box sx={{ display: "flex", gap: 1, width: { xs: "100%", sm: "auto" } }}>
-            <Tooltip title="Refresh Data">
-              <IconButton 
-                onClick={handleRefresh} 
-                disabled={refreshing}
-                size="small"
-                sx={{
-                  border: `1px solid ${alpha(theme.palette.divider, 0.2)}`,
-                  bgcolor: 'white'
-                }}
-              >
-                {refreshing ? <CircularProgress size={18} /> : <Refresh fontSize="small" />}
-              </IconButton>
-            </Tooltip>
+        {/* Left: DatePicker */}
+        <Box sx={{ width: { xs: "100%", sm: 220 } }}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <DatePicker
+              views={["year", "month"]}
+              value={selectedDate}
+              onChange={handleMonthYearChange}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  size="small"
+                  fullWidth
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: <CalendarMonth sx={{ mr: 1, fontSize: 18, color: "text.secondary" }} />,
+                  }}
+                  sx={{
+                    '& .MuiInputBase-root': {
+                      height: 36,
+                      fontSize: "0.82rem",
+                      borderRadius: 1.8,
+                    }
+                  }}
+                />
+              )}
+            />
+          </LocalizationProvider>
+        </Box>
+
+        {/* Right: View Mode Toggle, Refresh, Export, Add Holiday */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+          {/* Calendar / List toggle */}
+          <Box sx={{ display: "flex", bgcolor: "#f1f5f9", p: 0.3, borderRadius: 1.8 }}>
             <Button
-              variant={viewMode === "calendar" ? "contained" : "outlined"}
-              startIcon={<ViewModule />}
+              variant={viewMode === "calendar" ? "contained" : "text"}
               onClick={() => setViewMode("calendar")}
               size="small"
-              sx={{ borderRadius: 2, flex: { xs: 1, sm: "none" } }}
+              startIcon={<ViewModule sx={{ fontSize: 16 }} />}
+              sx={{
+                fontSize: "0.75rem",
+                height: 30,
+                textTransform: "none",
+                fontWeight: 600,
+                px: 1.2,
+                borderRadius: 1.5,
+                bgcolor: viewMode === "calendar" ? "#ffffff" : "transparent",
+                color: viewMode === "calendar" ? "#0f172a" : "#64748b",
+                boxShadow: viewMode === "calendar" ? "0 1px 2px rgba(0,0,0,0.06)" : "none",
+                "&:hover": { bgcolor: viewMode === "calendar" ? "#ffffff" : "transparent" },
+              }}
             >
               Calendar
             </Button>
             <Button
-              variant={viewMode === "list" ? "contained" : "outlined"}
-              startIcon={<ViewList />}
+              variant={viewMode === "list" ? "contained" : "text"}
               onClick={() => setViewMode("list")}
               size="small"
-              sx={{ borderRadius: 2, flex: { xs: 1, sm: "none" } }}
+              startIcon={<ViewList sx={{ fontSize: 16 }} />}
+              sx={{
+                fontSize: "0.75rem",
+                height: 30,
+                textTransform: "none",
+                fontWeight: 600,
+                px: 1.2,
+                borderRadius: 1.5,
+                bgcolor: viewMode === "list" ? "#ffffff" : "transparent",
+                color: viewMode === "list" ? "#0f172a" : "#64748b",
+                boxShadow: viewMode === "list" ? "0 1px 2px rgba(0,0,0,0.06)" : "none",
+                "&:hover": { bgcolor: viewMode === "list" ? "#ffffff" : "transparent" },
+              }}
             >
               List
             </Button>
           </Box>
-        </Box>
 
-        {/* Controls */}
-        <Grid container spacing={1.5} alignItems="center">
-          <Grid item xs={12} sm={6} md={4}>
-            <LocalizationProvider dateAdapter={AdapterLuxon}>
-              <DatePicker
-                views={["year", "month"]}
-                value={selectedDate}
-                onChange={handleMonthYearChange}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Select Month & Year"
-                    fullWidth
-                    size="small"
-                    InputProps={{
-                      ...params.InputProps,
-                      startAdornment: <CalendarMonth sx={{ mr: 1, color: "text.secondary" }} />,
-                    }}
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        borderRadius: 2,
-                      }
-                    }}
-                  />
-                )}
-              />
-            </LocalizationProvider>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={4}>
-            <Button 
-              variant="outlined" 
-              startIcon={<Download />} 
-              fullWidth
+          <Tooltip title="Refresh Data">
+            <IconButton 
+              onClick={handleRefresh} 
+              disabled={refreshing}
               size="small"
-              sx={{ borderRadius: 2, py: 1 }}
+              sx={{
+                border: "1px solid #e2e8f0",
+                borderRadius: 1.8,
+                bgcolor: "white",
+                width: 36,
+                height: 36,
+              }}
             >
-              Export
-            </Button>
-          </Grid>
+              {refreshing ? <CircularProgress size={16} /> : <Refresh fontSize="small" />}
+            </IconButton>
+          </Tooltip>
 
-          <Grid item xs={12} sm={12} md={4}>
-            {isAdmin && (
-              <Button
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() => setDialogOpen(true)}
-                fullWidth
-                size="small"
-                sx={{ 
-                  borderRadius: 2, 
-                  py: 1,
-                  bgcolor: "#f37021",
-                  "&:hover": {
-                    bgcolor: "#d95300",
-                  }
-                }}
-              >
-                Add Holiday
-              </Button>
-            )}
-          </Grid>
-        </Grid>
+          <Button 
+            variant="outlined" 
+            startIcon={<Download />} 
+            size="small"
+            sx={{ 
+              borderRadius: 1.8, 
+              height: 36, 
+              fontSize: "0.8rem", 
+              textTransform: "none",
+              borderColor: "#e2e8f0",
+              color: "#334155",
+              "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
+            }}
+          >
+            Export
+          </Button>
+
+          {isAdmin && (
+            <Button
+              variant="contained"
+              startIcon={<Add />}
+              onClick={() => setDialogOpen(true)}
+              size="small"
+              sx={{ 
+                borderRadius: 1.8, 
+                height: 36,
+                fontSize: "0.8rem",
+                textTransform: "none",
+                fontWeight: 600,
+                bgcolor: "#f37021",
+                px: 2,
+                boxShadow: "0 2px 6px rgba(243, 112, 33, 0.25)",
+                "&:hover": {
+                  bgcolor: "#d95300",
+                }
+              }}
+            >
+              Add Holiday
+            </Button>
+          )}
+        </Box>
       </Paper>
 
       {/* Error Alert */}
@@ -405,7 +430,7 @@ function ViewHoliday() {
       )}
 
       {/* Compact Stats Cards */}
-      <Grid container spacing={1.5} sx={{ mb: 2 }}>
+      <Grid container spacing={1.2} sx={{ mb: 1, flexShrink: 0 }}>
         <Grid item xs={6} sm={3}>
           <StatsCard
             icon={<Event />}
@@ -451,15 +476,16 @@ function ViewHoliday() {
       </Grid>
 
       {/* Main Content */}
-      <Grid container spacing={2}>
+      <Grid container spacing={1.5} sx={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
         {/* Calendar/List View */}
-        <Grid item xs={12} lg={8}>
+        <Grid item xs={12} lg={8} sx={{ height: "100%", display: "flex", flexDirection: "column", minHeight: 0 }}>
           <Paper 
             elevation={0} 
             sx={{ 
               borderRadius: 2, 
-              minHeight: { xs: 460, sm: 550 },
-              height: { xs: "auto", sm: 550 },
+              height: "100%",
+              flex: 1,
+              minHeight: 0,
               background: 'white',
               border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
               overflow: 'hidden',
@@ -468,29 +494,28 @@ function ViewHoliday() {
             }}
           >
             {viewMode === "calendar" ? (
-              <Box sx={{ p: { xs: 1.5, sm: 2 }, flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5, flexWrap: "wrap", gap: 1 }}>
-                  <Typography variant="subtitle1" fontWeight="600" sx={{ fontSize: '0.9rem' }}>
-                    {selectedDate.toFormat("MMMM yyyy")} Calendar
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: "text.secondary", display: { xs: "block", sm: "none" } }}>
-                    Swipe horizontally to view full week
-                  </Typography>
-                </Box>
+              <Box sx={{ p: { xs: 1, sm: 1.25 }, flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
                 <Box
                   sx={{
                     flex: 1,
-                    minHeight: { xs: 400, sm: "calc(100% - 36px)" },
+                    minHeight: 0,
+                    height: "100%",
                     width: "100%",
                     borderRadius: 1,
                     overflowX: "auto",
-                    overflowY: "hidden",
+                    overflowY: "auto",
                     WebkitOverflowScrolling: "touch",
                     "& .rbc-calendar": {
                       height: "100%",
-                      minHeight: 400,
+                      width: "100%",
                       minWidth: { xs: 480, sm: "100%" },
                       fontFamily: 'inherit',
+                      display: "flex",
+                      flexDirection: "column",
+                    },
+                    "& .rbc-toolbar": {
+                      marginBottom: "6px",
+                      minHeight: "36px",
                     },
                     "& .rbc-event": {
                       backgroundColor: "#f37021",
@@ -508,18 +533,28 @@ function ViewHoliday() {
                       backgroundColor: alpha("#f37021", 0.9),
                       color: "white",
                       fontWeight: "600",
-                      padding: { xs: "4px 2px", sm: "6px" },
-                      fontSize: { xs: "0.72rem", sm: "0.8rem" },
+                      padding: { xs: "4px 2px", sm: "5px" },
+                      fontSize: { xs: "0.72rem", sm: "0.78rem" },
                       textAlign: "center",
                     },
                     "& .rbc-month-view": {
                       border: `1px solid ${alpha(theme.palette.divider, 0.2)}`,
                       borderRadius: "8px",
                       minWidth: { xs: 480, sm: "100%" },
+                      flex: 1,
+                      minHeight: 0,
+                      display: "flex",
+                      flexDirection: "column",
+                      overflow: "hidden",
+                    },
+                    "& .rbc-month-row": {
+                      flex: "1 0 0",
+                      minHeight: 0,
+                      overflow: "hidden",
                     },
                     "& .rbc-date-cell": {
                       fontSize: { xs: "0.72rem", sm: "0.8rem" },
-                      padding: { xs: "2px", sm: "4px" },
+                      padding: { xs: "2px", sm: "3px 6px" },
                     },
                   }}
                 >
@@ -572,8 +607,8 @@ function ViewHoliday() {
         </Grid>
 
         {/* Sidebar */}
-        <Grid item xs={12} lg={4}>
-          <Stack spacing={2}>
+        <Grid item xs={12} lg={4} sx={{ height: "100%", overflowY: "auto", pr: 0.5 }}>
+          <Stack spacing={1.5}>
             {/* Quick Info Card */}
             <Card 
               elevation={0}

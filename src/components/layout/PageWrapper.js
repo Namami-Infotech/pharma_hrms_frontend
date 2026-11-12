@@ -13,14 +13,14 @@ const PageWrapper = ({
 }) => {
 
   return (
-    <Box sx={{ height: "100%", overflowX: "hidden", overflowY: "auto", bgcolor: "#f5f7fa" }}>
-      {/* Header Section */}
-      
-
+    <Box sx={{ height: "100%", overflowX: "hidden", overflowY: { xs: "auto", md: "hidden" }, bgcolor: "#f5f7fa" }}>
       {/* Content Section */}
       <Box sx={{ 
         height: "100%", 
+        minHeight: 0,
         p: 0,
+        display: "flex",
+        flexDirection: "column",
       }}>
         <AnimatePresence>
           <motion.div
@@ -28,7 +28,7 @@ const PageWrapper = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            style={{ height: "100%" }}
+            style={{ height: "100%", minHeight: 0, display: "flex", flexDirection: "column" }}
           >
             {children}
           </motion.div>

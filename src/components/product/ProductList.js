@@ -64,7 +64,7 @@ const StatCard = ({ title, value, color, icon, subtitle }) => {
         boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
       }}
     >
-      <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+      <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Box sx={{ flex: 1 }}>
             <Typography variant="caption" color="text.secondary" fontWeight="600">
@@ -247,70 +247,22 @@ function ProductList() {
     );
 
   return (
-    <Box sx={{ p: { xs: 1.5, sm: 2.5 } }}>
-      {/* Page Header */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: 2,
-          mb: 3,
-        }}
-      >
-        <Box>
-          <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}>
-            Products Management
-          </Typography>
-          <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: "0.85rem" }}>
-            Manage medicine catalogue, pricing, packaging, and stock details
-          </Typography>
-        </Box>
-
-        <Box sx={{ display: "flex", gap: 1.5, width: { xs: "100%", sm: "auto" } }}>
-          <Button
-            variant="outlined"
-            startIcon={<Refresh />}
-            onClick={fetchProducts}
-            sx={{
-              borderColor: "#f37021",
-              color: "#f37021",
-              textTransform: "none",
-              fontWeight: 600,
-              flex: { xs: 1, sm: "none" },
-              "&:hover": { borderColor: "#d95300", bgcolor: "rgba(243, 112, 33,0.04)" },
-            }}
-          >
-            Refresh
-          </Button>
-
-          <Button
-            variant="contained"
-            startIcon={<Add />}
-            onClick={handleOpenCreate}
-            sx={{
-              bgcolor: "#f37021",
-              color: "#ffffff",
-              textTransform: "none",
-              fontWeight: 700,
-              px: 2.5,
-              flex: { xs: 1, sm: "none" },
-              "&:hover": { bgcolor: "#d95300" },
-              boxShadow: "0 4px 12px rgba(243, 112, 33,0.25)",
-            }}
-          >
-            Add Product
-          </Button>
-        </Box>
-      </Box>
-
+    <Box
+      sx={{
+        p: { xs: 1, sm: 1.5 },
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        boxSizing: "border-box",
+      }}
+    >
       {/* Alerts */}
       {successMsg && (
         <Alert
           severity="success"
           onClose={() => setSuccessMsg("")}
-          sx={{ mb: 2.5, borderRadius: 2 }}
+          sx={{ mb: 1.2, borderRadius: 2, flexShrink: 0 }}
         >
           {successMsg}
         </Alert>
@@ -320,7 +272,7 @@ function ProductList() {
         <Alert
           severity="error"
           onClose={() => setError("")}
-          sx={{ mb: 2.5, borderRadius: 2 }}
+          sx={{ mb: 1.2, borderRadius: 2, flexShrink: 0 }}
         >
           {error}
         </Alert>
@@ -331,9 +283,10 @@ function ProductList() {
         sx={{
           display: "grid",
           gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr" },
-          gap: { xs: 1.5, sm: 2 },
-          mb: 3,
+          gap: { xs: 1, sm: 1.2 },
+          mb: 1.2,
           width: "100%",
+          flexShrink: 0,
         }}
       >
         <StatCard
@@ -359,25 +312,22 @@ function ProductList() {
         />
       </Box>
 
-      {/* Filters Card */}
-      <Card sx={{ mb: 3, borderRadius: 2, border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
-        <CardContent sx={{ p: { xs: 1.5, sm: 2 }, "&:last-child": { pb: { xs: 1.5, sm: 2 } } }}>
-          <form onSubmit={handleSearchSubmit} style={{ width: "100%" }}>
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: {
-                  xs: "1fr",
-                  sm: "1fr 1fr",
-                  md: "2fr 1fr 1fr auto",
-                },
-                gap: 1.5,
-                alignItems: "center",
-                width: "100%",
-              }}
-            >
+      {/* Unified Search, Filter & Actions Toolbar */}
+      <Card sx={{ mb: 1.2, borderRadius: 2, border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.04)", flexShrink: 0 }}>
+        <CardContent sx={{ p: 1.2, px: 1.5, "&:last-child": { pb: 1.2 } }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: 1.2,
+              width: "100%",
+            }}
+          >
+            {/* Left: Search + Unit Filter + Status Filter */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, flexWrap: "wrap", flex: 1, minWidth: { xs: "100%", md: 500 } }}>
               <TextField
-                fullWidth
                 size="small"
                 placeholder="Search by name, composition, code..."
                 value={search}
@@ -385,22 +335,23 @@ function ProductList() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Search sx={{ color: "action.active" }} />
+                      <Search sx={{ color: "action.active", fontSize: 18 }} />
                     </InputAdornment>
                   ),
                 }}
                 sx={{
-                  "& .MuiOutlinedInput-root": { borderRadius: 2, height: 40 },
+                  width: { xs: "100%", sm: 220, md: 260 },
+                  "& .MuiOutlinedInput-root": { borderRadius: 1.8, height: 36, fontSize: "0.82rem" },
                 }}
               />
 
-              <FormControl fullWidth size="small">
+              <FormControl size="small" sx={{ width: { xs: "100%", sm: 130 } }}>
                 <InputLabel>Unit</InputLabel>
                 <Select
                   value={unitFilter}
                   label="Unit"
                   onChange={(e) => setUnitFilter(e.target.value)}
-                  sx={{ borderRadius: 2, height: 40 }}
+                  sx={{ borderRadius: 1.8, height: 36, fontSize: "0.82rem" }}
                   MenuProps={{
                     PaperProps: {
                       sx: {
@@ -422,46 +373,83 @@ function ProductList() {
                 </Select>
               </FormControl>
 
-              <FormControl fullWidth size="small">
+              <FormControl size="small" sx={{ width: { xs: "100%", sm: 130 } }}>
                 <InputLabel>Status</InputLabel>
                 <Select
                   value={statusFilter}
                   label="Status"
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  sx={{ borderRadius: 2, height: 40 }}
+                  sx={{ borderRadius: 1.8, height: 36, fontSize: "0.82rem" }}
                 >
                   <MenuItem value="All">All Status</MenuItem>
                   <MenuItem value="Active">Active</MenuItem>
                   <MenuItem value="Inactive">Inactive</MenuItem>
                 </Select>
               </FormControl>
+            </Box>
 
+            {/* Right: Refresh + Add Product */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap", width: { xs: "100%", sm: "auto" }, justifyContent: { xs: "flex-start", sm: "flex-end" } }}>
               <Button
-                type="submit"
-                variant="contained"
+                variant="outlined"
+                startIcon={<Refresh sx={{ fontSize: 18 }} />}
+                onClick={fetchProducts}
+                size="small"
                 sx={{
-                  bgcolor: "#f37021",
-                  "&:hover": { bgcolor: "#d95300" },
+                  borderColor: "#e2e8f0",
+                  color: "#334155",
                   textTransform: "none",
                   fontWeight: 600,
-                  borderRadius: 2,
-                  height: 40,
-                  px: 3,
-                  width: { xs: "100%", sm: "auto" },
+                  fontSize: "0.82rem",
+                  height: 36,
+                  borderRadius: 1.8,
+                  "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
                 }}
               >
-                Search
+                Refresh
+              </Button>
+
+              <Button
+                variant="contained"
+                startIcon={<Add sx={{ fontSize: 18 }} />}
+                onClick={handleOpenCreate}
+                size="small"
+                sx={{
+                  bgcolor: "#f37021",
+                  color: "#ffffff",
+                  textTransform: "none",
+                  fontWeight: 600,
+                  fontSize: "0.82rem",
+                  px: 2,
+                  height: 36,
+                  borderRadius: 1.8,
+                  "&:hover": { bgcolor: "#d95300" },
+                  boxShadow: "0 2px 6px rgba(243, 112, 33, 0.25)",
+                }}
+              >
+                Add Product
               </Button>
             </Box>
-          </form>
+          </Box>
         </CardContent>
       </Card>
 
       {/* Products Table */}
-      <Card sx={{ borderRadius: 2, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
-        <TableContainer component={Paper} elevation={0}>
-          <Table size="medium">
-            <TableHead sx={{ bgcolor: "#f8fafc" }}>
+      <Card
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          display: "flex",
+          flexDirection: "column",
+          borderRadius: 2,
+          boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+          border: "1px solid #e2e8f0",
+          overflow: "hidden",
+        }}
+      >
+        <TableContainer component={Paper} elevation={0} sx={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
+          <Table stickyHeader size="small">
+            <TableHead sx={{ bgcolor: "#f8fafc", "& th": { bgcolor: "#f8fafc" } }}>
               <TableRow>
                 <TableCell sx={{ fontWeight: 800, color: "#1e293b", py: 1.5 }}>Code</TableCell>
                 <TableCell sx={{ fontWeight: 800, color: "#1e293b" }}>Product Name</TableCell>
@@ -663,6 +651,7 @@ function ProductList() {
             setRowsPerPage(parseInt(e.target.value, 10));
             setPage(0);
           }}
+          sx={{ flexShrink: 0 }}
         />
       </Card>
 

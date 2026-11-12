@@ -16,329 +16,41 @@ import {
   TablePagination,
   IconButton,
   Button,
-  Card,
-  CardContent,
-  Grid,
   Chip,
   Avatar,
   useTheme,
-  useMediaQuery,
   Alert,
   TextField,
   InputAdornment,
-  Stack,
-  Divider,
   Tooltip,
-  Menu,
   MenuItem,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Fab,
-  Zoom,
+  FormControl,
+  InputLabel,
+  Select,
   alpha,
 } from "@mui/material"
 import {
   Check,
   Cancel,
   Search,
-  FilterList,
   Download,
   Refresh,
-  EventAvailable,
   Person,
   CalendarToday,
-  Schedule,
-  Description,
-  MoreVert,
-  Visibility,
-  Edit,
-  Delete,
   Add,
-  TrendingUp,
+  AccountBalanceWallet,
   AccessTime,
   Category,
-  AccountBalanceWallet,
+  Description,
+  Schedule,
 } from "@mui/icons-material"
 import { motion, AnimatePresence } from "framer-motion"
-import { format, parseISO, isValid, differenceInDays } from "date-fns"
+import { format, parseISO, isValid } from "date-fns"
 import axios from "axios"
 import { useAuth } from "../auth/AuthContext"
 import ApplyLeave from "./ApplyLeave"
 import ManageLeaveBalance from "./ManageLeaveBalance"
 
-// Enhanced Compact Stats Card Component
-const StatsCard = ({ icon, title, value, color, subtitle, trend }) => {
-  const theme = useTheme()
-
-  return (
-    <Card
-      component={motion.div}
-      whileHover={{
-        translateY: -3,
-        boxShadow: theme.shadows[6],
-        transition: { duration: 0.2 },
-      }}
-      sx={{
-        height: "100%",
-        borderLeft: `3px solid ${color}`,
-        background: `linear-gradient(135deg, ${alpha(color, 0.08)} 0%, ${alpha(color, 0.04)} 100%)`,
-        borderRadius: 2,
-        transition: "all 0.3s ease",
-      }}
-    >
-      <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="caption" color="text.secondary" fontWeight="500" gutterBottom sx={{ fontSize: '0.75rem' }}>
-              {title}
-            </Typography>
-            <Typography variant="h6" fontWeight="bold" color={color} sx={{ fontSize: '1.25rem', lineHeight: 1.2 }}>
-              {value}
-            </Typography>
-            {subtitle && (
-              <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-                {subtitle}
-              </Typography>
-            )}
-          </Box>
-          <Avatar 
-            sx={{ 
-              bgcolor: `${alpha(color, 0.1)}`, 
-              color: color, 
-              width: 36, 
-              height: 36,
-              fontSize: '1rem'
-            }}
-          >
-            {icon}
-          </Avatar>
-        </Box>
-        {trend && (
-          <Box sx={{ mt: 1, display: "flex", alignItems: "center" }}>
-            <TrendingUp fontSize="small" sx={{ color: "success.main", mr: 0.5, fontSize: '0.9rem' }} />
-            <Typography variant="caption" color="success.main" fontWeight="600" sx={{ fontSize: '0.7rem' }}>
-              {trend}
-            </Typography>
-          </Box>
-        )}
-      </CardContent>
-    </Card>
-  )
-}
-
-// Enhanced Leave Card for Mobile View
-const LeaveCard = ({ leave, employee, onStatusChange, isHR, isAdmin, currentUserEmpId, index }) => {
-  const theme = useTheme()
-  const [anchorEl, setAnchorEl] = useState(null)
-const [expanded, setExpanded] = useState(false);
-
-  const formatDate = (dateString) => {
-    try {
-      const date = parseISO(dateString)
-      return isValid(date) ? format(date, "MMM dd, yyyy") : "Invalid date"
-    } catch {
-      return "Invalid date"
-    }
-  }
-
-  const getStatusColor = (status) => {
-    switch (status.toLowerCase()) {
-      case "approved":
-        return "success"
-      case "rejected":
-        return "error"
-      case "pending":
-        return "warning"
-      default:
-        return "default"
-    }
-  }
-
-  const calculateDays = () => {
-    try {
-      const start = parseISO(leave.StartDate)
-      const end = parseISO(leave.EndDate)
-      return differenceInDays(end, start) + 1
-    } catch {
-      return 0
-    }
-  }
-
-  const handleMenuClick = (event) => {
-    setAnchorEl(event.currentTarget)
-  }
-
-  const handleMenuClose = () => {
-    setAnchorEl(null)
-  }
-
-  const handleStatusChange = (status) => {
-    onStatusChange(leave.id || leave.Id, status)
-    handleMenuClose()
-  }
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ delay: index * 0.1 }}
-    >
-      <Card
-        sx={{
-          mb: 2,
-          borderLeft: `3px solid ${theme.palette[getStatusColor(leave.Status)].main}`,
-          borderRadius: 2,
-          "&:hover": {
-            boxShadow: theme.shadows[4],
-            transform: "translateY(-2px)",
-            transition: "all 0.2s ease-in-out",
-          },
-        }}
-      >
-        <CardContent sx={{ p: 2 }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 1.5 }}>
-            <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
-              <Avatar sx={{ 
-                bgcolor: theme.palette.primary.main, 
-                mr: 1.5,
-                width: 32,
-                height: 32,
-                fontSize: '0.9rem'
-              }}>
-                <Person fontSize="small" />
-              </Avatar>
-              <Box>
-                <Typography variant="subtitle1" fontWeight="600" gutterBottom sx={{ fontSize: '0.9rem' }}>
-                  {employee?.Name || "Unknown Employee"}
-                </Typography>
-                <Chip 
-                  label={leave.Status} 
-                  color={getStatusColor(leave.Status)} 
-                  size="small" 
-                  sx={{ height: 24, fontSize: '0.7rem' }}
-                />
-              </Box>
-            </Box>
-            <Box sx={{ display: "flex", gap: 0.5 }}>
-              <Tooltip title="View Details">
-                <IconButton size="small" color="primary" sx={{ fontSize: '0.8rem' }}>
-                  <Visibility fontSize="small" />
-                </IconButton>
-              </Tooltip>
-              {isHR && leave.Status === "Pending" && (isAdmin || leave.EmpId !== currentUserEmpId) && (
-                <>
-                  <IconButton size="small" onClick={handleMenuClick}>
-                    <MoreVert fontSize="small" />
-                  </IconButton>
-                  <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-                    <MenuItem onClick={() => handleStatusChange("Approved")}>
-                      <Check sx={{ mr: 1, color: "success.main", fontSize: '1rem' }} />
-                      Approve
-                    </MenuItem>
-                    <MenuItem onClick={() => handleStatusChange("Rejected")}>
-                      <Cancel sx={{ mr: 1, color: "error.main", fontSize: '1rem' }} />
-                      Reject
-                    </MenuItem>
-                  </Menu>
-                </>
-              )}
-            </Box>
-          </Box>
-
-          <Grid container spacing={1.5} sx={{ mb: 1.5 }}>
-            <Grid item xs={6}>
-              <Box sx={{ display: "flex", alignItems: "center", mb: 0.5 }}>
-                <CalendarToday fontSize="small" sx={{ mr: 0.5, color: theme.palette.info.main, fontSize: '0.8rem' }} />
-                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-                  Duration
-                </Typography>
-              </Box>
-              <Typography variant="body2" fontWeight="medium" sx={{ fontSize: '0.8rem' }}>
-                {calculateDays()} day{calculateDays() !== 1 ? "s" : ""}
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Box sx={{ display: "flex", alignItems: "center", mb: 0.5 }}>
-                <Category fontSize="small" sx={{ mr: 0.5, color: theme.palette.secondary.main, fontSize: '0.8rem' }} />
-                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-                  Type
-                </Typography>
-              </Box>
-              <Typography variant="body2" fontWeight="medium" sx={{ fontSize: '0.8rem' }}>
-                {leave.category || leave.Category || leave.LeaveType || "Leave"}
-              </Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Box sx={{ display: "flex", alignItems: "center", mb: 0.5 }}>
-                <Schedule fontSize="small" sx={{ mr: 0.5, color: theme.palette.warning.main, fontSize: '0.8rem' }} />
-                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-                  Dates
-                </Typography>
-              </Box>
-              <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
-                {formatDate(leave.StartDate)} - {formatDate(leave.EndDate)}
-              </Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Box sx={{ display: "flex", alignItems: "center", mb: 0.5 }}>
-                <Description fontSize="small" sx={{ mr: 0.5, color: theme.palette.text.secondary, fontSize: '0.8rem' }} />
-                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-                  Reason
-                </Typography>
-              </Box>
-              <Typography variant="body2" sx={{ fontStyle: "italic", fontSize: '0.8rem' }}>
-                {leave.Reason}
-              </Typography>
-            </Grid>
-          </Grid>
-
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-              Applied: {leave.CreatedAt}
-            </Typography>
-            {isHR && leave.Status === "Pending" && (
-              leave.EmpId === currentUserEmpId && !isAdmin ? (
-                <Chip
-                  label="Pending"
-                  size="small"
-                  color="warning"
-                  variant="outlined"
-                  sx={{ fontSize: "0.7rem", height: 22 }}
-                />
-              ) : (
-                <Box sx={{ display: "flex", gap: 0.5 }}>
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    color="success"
-                    startIcon={<Check />}
-                    onClick={() => onStatusChange(leave.id || leave.Id, "Approved")}
-                    sx={{ fontSize: '0.7rem', py: 0.25, px: 1 }}
-                  >
-                    Approve
-                  </Button>
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    color="error"
-                    startIcon={<Cancel />}
-                    onClick={() => onStatusChange(leave.id || leave.Id, "Rejected")}
-                    sx={{ fontSize: '0.7rem', py: 0.25, px: 1 }}
-                  >
-                    Reject
-                  </Button>
-                </Box>
-              )
-            )}
-          </Box>
-        </CardContent>
-      </Card>
-    </motion.div>
-  )
-}
 
 const formatDateTime = (dateString) => {
   try {
@@ -356,8 +68,7 @@ function ViewLeave() {
   const isRM = user?.is_rm || user?.isRM || Boolean(user?.subordinates && user.subordinates.length > 0)
   const isHR = isAdmin || isRM
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
-const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   const [leaves, setLeaves] = useState([])
   const [employees, setEmployees] = useState([])
@@ -368,7 +79,6 @@ const [expanded, setExpanded] = useState(false);
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("")
   const [refreshing, setRefreshing] = useState(false)
-  const [viewMode, setViewMode] = useState("table") // 'table' or 'cards'
   const [applyLeaveOpen, setApplyLeaveOpen] = useState(false)
   const [manageBalanceOpen, setManageBalanceOpen] = useState(false)
 
@@ -549,258 +259,343 @@ const [expanded, setExpanded] = useState(false);
   }
 
   return (
-    <Box sx={{ p: { xs: 1, md: 2 }, bgcolor: "#f8fafc", minHeight: "100vh" }}>
-      {/* Header */}
-      <Paper elevation={0} sx={{ p: { xs: 2, sm: 2.5 }, mb: 2, borderRadius: 2.5, background: 'white', border: '1px solid #f1f5f9' }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, flexWrap: "wrap", gap: 2 }}>
-          <Box>
-            <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}>
-              Leave Management
-            </Typography>
-            <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: "0.85rem" }}>
-              Track employee leave requests, balances, and approval records
-            </Typography>
-          </Box>
-          <Box sx={{ display: "flex", gap: 1, alignItems: "center", flexWrap: "wrap", width: { xs: "100%", sm: "auto" } }}>
-            <Button
-              variant="contained"
-              startIcon={<Add />}
-              onClick={() => setApplyLeaveOpen(true)}
-              size="small"
-              sx={{
-                borderRadius: 2,
-                bgcolor: "#f37021",
-                color: "white",
-                fontWeight: 600,
-                textTransform: "none",
-                px: 2,
-                py: 0.75,
-                flex: { xs: 1, sm: "none" },
-                "&:hover": {
-                  bgcolor: "#d95300",
-                },
-              }}
-            >
-              Add Leave
-            </Button>
-            <Tooltip title="Refresh">
-              <IconButton onClick={handleRefresh} disabled={refreshing} size="small">
-                {refreshing ? <CircularProgress size={18} /> : <Refresh fontSize="small" />}
-              </IconButton>
-            </Tooltip>
-            <Button
-              variant="outlined"
-              startIcon={<Download />}
-              onClick={exportToCsv}
-              size="small"
-              sx={{ flex: { xs: 1, sm: "none" } }}
-            >
-              Export CSV
-            </Button>
-          </Box>
-        </Box>
-
-        {/* Search and Filters */}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: { xs: "column", md: "row" },
-            alignItems: "center",
-            gap: 1.5,
-            width: "100%",
-          }}
-        >
-          <Box sx={{ flex: { xs: "1 1 100%", md: "1 1 50%" }, width: "100%" }}>
-            <TextField
-              fullWidth
-              variant="outlined"
-              placeholder="Search by employee name, reason, or category..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              size="small"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search color="action" fontSize="small" />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Box>
-          <Box sx={{ flex: { xs: "1 1 100%", md: "1 1 30%" }, width: "100%" }}>
-            <TextField
-              select
-              fullWidth
-              label="Filter by Status"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              size="small"
-            >
-              <MenuItem value="">All Status</MenuItem>
-              <MenuItem value="Pending">Pending</MenuItem>
-              <MenuItem value="Approved">Approved</MenuItem>
-              <MenuItem value="Rejected">Rejected</MenuItem>
-            </TextField>
-          </Box>
-          <Box sx={{ width: { xs: "100%", md: "auto" }, display: "flex", justifyContent: { xs: "flex-start", md: "flex-end" } }}>
-            <Stack direction="row" spacing={0.5}>
-              <Button
-                variant={viewMode === "table" ? "contained" : "outlined"}
-                onClick={() => setViewMode("table")}
-                size="small"
-                sx={{ fontSize: "0.75rem", height: 40 }}
-              >
-                Table
-              </Button>
-              <Button
-                variant={viewMode === "cards" ? "contained" : "outlined"}
-                onClick={() => setViewMode("cards")}
-                size="small"
-                sx={{ fontSize: "0.75rem", height: 40 }}
-              >
-                Cards
-              </Button>
-            </Stack>
-          </Box>
-        </Box>
-      </Paper>
-
+    <Box
+      sx={{
+        p: { xs: 1, sm: 1.5 },
+        bgcolor: "#f8fafc",
+        height: "100%",
+        maxHeight: "100%",
+        display: "flex",
+        flexDirection: "column",
+        boxSizing: "border-box",
+        overflow: "hidden",
+      }}
+    >
       {/* Error Alert */}
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError("")}>
+        <Alert severity="error" sx={{ mb: 1, py: 0.5 }} onClose={() => setError("")}>
           {error}
         </Alert>
       )}
 
-      {/* Compact Stats Cards */}
+      {/* Control & Filter Bar - Single Line Layout */}
       <Box
         sx={{
-          display: "grid",
-          gridTemplateColumns: { xs: "1fr 1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr 1fr" },
-          gap: { xs: 1.5, sm: 2 },
-          mb: 3,
-          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 1.2,
+          p: { xs: 1, sm: 1.2 },
+          mb: 1.5,
+          bgcolor: "#ffffff",
+          borderRadius: 2,
+          border: "1px solid #e2e8f0",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
+          flexShrink: 0,
+          flexWrap: "wrap",
         }}
       >
-        <StatsCard
-          icon={<EventAvailable />}
-          title="Total Leaves"
-          value={totalLeaves}
-          color={theme.palette.primary.main}
-          subtitle="All applications"
-        />
-        <StatsCard
-          icon={<AccessTime />}
-          title="Pending"
-          value={pendingLeaves}
-          color={theme.palette.warning.main}
-          subtitle="Awaiting approval"
-        />
-        <StatsCard
-          icon={<Check />}
-          title="Approved"
-          value={approvedLeaves}
-          color={theme.palette.success.main}
-          subtitle="Approved leaves"
-        />
-        <StatsCard
-          icon={<Cancel />}
-          title="Rejected"
-          value={rejectedLeaves}
-          color={theme.palette.error.main}
-          subtitle="Rejected leaves"
-        />
+        {/* Left: Search + Status Dropdown */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, flexWrap: "wrap" }}>
+
+          {/* Compact Search Input */}
+          <TextField
+            placeholder="Search employee, reason..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            size="small"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search color="action" sx={{ fontSize: 18 }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              width: { xs: "100%", sm: 200, md: 240 },
+              "& .MuiOutlinedInput-root": {
+                height: 36,
+                borderRadius: 1.5,
+                fontSize: "0.82rem",
+                bgcolor: "#f8fafc",
+              },
+            }}
+          />
+
+          {/* Status Dropdown (Pending, Approved, Rejected) */}
+          <FormControl
+            size="small"
+            sx={{
+              minWidth: 155,
+              "& .MuiOutlinedInput-root": {
+                height: 36,
+                borderRadius: 1.5,
+                fontSize: "0.82rem",
+                bgcolor: "#f8fafc",
+              },
+            }}
+          >
+            <InputLabel id="leave-status-filter-label" sx={{ fontSize: "0.82rem" }}>
+              Status
+            </InputLabel>
+            <Select
+              labelId="leave-status-filter-label"
+              value={statusFilter}
+              label="Status"
+              onChange={(e) => {
+                setStatusFilter(e.target.value)
+                setPage(0)
+              }}
+              sx={{ fontSize: "0.82rem" }}
+            >
+              <MenuItem value="" sx={{ fontSize: "0.82rem" }}>
+                All Statuses ({totalLeaves})
+              </MenuItem>
+              <MenuItem value="Pending" sx={{ fontSize: "0.82rem" }}>
+                Pending ({pendingLeaves})
+              </MenuItem>
+              <MenuItem value="Approved" sx={{ fontSize: "0.82rem" }}>
+                Approved ({approvedLeaves})
+              </MenuItem>
+              <MenuItem value="Rejected" sx={{ fontSize: "0.82rem" }}>
+                Rejected ({rejectedLeaves})
+              </MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+
+        {/* Right: Refresh + Export + Add Leave in Same Line */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            flexWrap: "nowrap",
+          }}
+        >
+          {/* Refresh Icon Button */}
+          <Tooltip title="Refresh">
+            <IconButton
+              onClick={handleRefresh}
+              disabled={refreshing}
+              size="small"
+              sx={{
+                border: "1px solid #e2e8f0",
+                borderRadius: 1.8,
+                width: 36,
+                height: 36,
+                bgcolor: "#ffffff",
+              }}
+            >
+              {refreshing ? <CircularProgress size={16} /> : <Refresh sx={{ fontSize: 18 }} />}
+            </IconButton>
+          </Tooltip>
+
+          {/* Export CSV */}
+          <Button
+            variant="outlined"
+            startIcon={<Download sx={{ fontSize: 16 }} />}
+            onClick={exportToCsv}
+            size="small"
+            sx={{
+              borderRadius: 1.8,
+              height: 36,
+              textTransform: "none",
+              fontSize: "0.8rem",
+              fontWeight: 600,
+              borderColor: "#e2e8f0",
+              color: "#475569",
+              "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" },
+            }}
+          >
+            Export
+          </Button>
+
+          {/* Add Leave Button */}
+          <Button
+            variant="contained"
+            startIcon={<Add sx={{ fontSize: 18 }} />}
+            onClick={() => setApplyLeaveOpen(true)}
+            size="small"
+            sx={{
+              borderRadius: 1.8,
+              bgcolor: "#f37021",
+              color: "white",
+              fontWeight: 600,
+              textTransform: "none",
+              px: 2,
+              height: 36,
+              whiteSpace: "nowrap",
+              boxShadow: "0 2px 6px rgba(243, 112, 33, 0.25)",
+              "&:hover": { bgcolor: "#d95300" },
+            }}
+          >
+            Add Leave
+          </Button>
+        </Box>
       </Box>
 
       {/* Main Content */}
       <Paper
-        elevation={1}
+        elevation={0}
         sx={{
+          flex: 1,
+          minHeight: 0,
+          display: "flex",
+          flexDirection: "column",
           borderRadius: 2,
           background: "white",
           overflow: "hidden",
           border: "1px solid #e2e8f0",
-          boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
         }}
       >
-        {viewMode === "cards" || isMobile ? (
-          // Card View
-          <Box sx={{ p: 1.5 }}>
-            <Typography variant="subtitle1" fontWeight="600" gutterBottom sx={{ fontSize: '0.9rem' }}>
-              Leave Applications ({filteredLeaves.length})
-            </Typography>
-            <Divider sx={{ mb: 1.5 }} />
-            <AnimatePresence>
-              {filteredLeaves.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((leave, index) => {
-                const employee = employees.find((emp) => emp.EmpId === leave.EmpId)
-                return (
-                  <LeaveCard
-                    key={leave.id || leave.Id || index}
-                    leave={leave}
-                    employee={employee}
-                    onStatusChange={handleStatusChange}
-                    isHR={isHR}
-                    isAdmin={isAdmin}
-                    currentUserEmpId={user?.emp_id}
-                    index={index}
-                  />
-                )
-              })}
-            </AnimatePresence>
-            {filteredLeaves.length === 0 && (
-              <Box sx={{ textAlign: "center", py: 3 }}>
-                <Typography variant="body2" color="text.secondary">
-                  No leave applications found
-                </Typography>
-              </Box>
-            )}
-          </Box>
-        ) : (
-          // Table View
-          <TableContainer>
-  <Table sx={{ minWidth: 650 }} size="small">
-    <TableHead sx={{ bgcolor: "#f37021" }}>
-      <TableRow>
-        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Person sx={{ mr: 0.5, fontSize: '0.9rem' }} />
-            Employee
-          </Box>
-        </TableCell>
-        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <CalendarToday sx={{ mr: 0.5, fontSize: '0.9rem' }} />
-            Dates
-          </Box>
-        </TableCell>
-        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <AccessTime sx={{ mr: 0.5, fontSize: '0.9rem' }} />
-            Leave Days
-          </Box>
-        </TableCell>
-        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Category sx={{ mr: 0.5, fontSize: '0.9rem' }} />
-            Category
-          </Box>
-        </TableCell>
-        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Description sx={{ mr: 0.5, fontSize: '0.9rem' }} />
-            Reason
-          </Box>
-        </TableCell>
-        <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>Status</TableCell>
-         <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Schedule sx={{ mr: 0.5, fontSize: '0.9rem' }} />
-            Applied
-          </Box>
-        </TableCell> 
-        {isHR && <TableCell sx={{ color: "white", fontWeight: "bold", fontSize: '0.8rem', py: 1 }}>Actions</TableCell>}
-      </TableRow>
-    </TableHead>
+        {/* Table View */}
+        <TableContainer sx={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
+            <Table stickyHeader sx={{ minWidth: 650 }} size="small">
+              <TableHead
+                sx={{
+                  bgcolor: "#f8fafc",
+                  "& .MuiTableCell-stickyHeader": {
+                    bgcolor: "#f8fafc",
+                  },
+                }}
+              >
+                <TableRow>
+                  <TableCell
+                    sx={{
+                      bgcolor: "#f8fafc",
+                      color: "#475569",
+                      fontWeight: 700,
+                      fontSize: "0.75rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.5px",
+                      py: 1,
+                      borderBottom: "1px solid #e2e8f0",
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <Person sx={{ mr: 0.5, fontSize: "0.85rem", color: "#64748b" }} />
+                      Employee
+                    </Box>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      bgcolor: "#f8fafc",
+                      color: "#475569",
+                      fontWeight: 700,
+                      fontSize: "0.75rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.5px",
+                      py: 1,
+                      borderBottom: "1px solid #e2e8f0",
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <CalendarToday sx={{ mr: 0.5, fontSize: "0.85rem", color: "#64748b" }} />
+                      Dates
+                    </Box>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      bgcolor: "#f8fafc",
+                      color: "#475569",
+                      fontWeight: 700,
+                      fontSize: "0.75rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.5px",
+                      py: 1,
+                      borderBottom: "1px solid #e2e8f0",
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <AccessTime sx={{ mr: 0.5, fontSize: "0.85rem", color: "#64748b" }} />
+                      Leave Days
+                    </Box>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      bgcolor: "#f8fafc",
+                      color: "#475569",
+                      fontWeight: 700,
+                      fontSize: "0.75rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.5px",
+                      py: 1,
+                      borderBottom: "1px solid #e2e8f0",
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <Category sx={{ mr: 0.5, fontSize: "0.85rem", color: "#64748b" }} />
+                      Category
+                    </Box>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      bgcolor: "#f8fafc",
+                      color: "#475569",
+                      fontWeight: 700,
+                      fontSize: "0.75rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.5px",
+                      py: 1,
+                      borderBottom: "1px solid #e2e8f0",
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <Description sx={{ mr: 0.5, fontSize: "0.85rem", color: "#64748b" }} />
+                      Reason
+                    </Box>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      bgcolor: "#f8fafc",
+                      color: "#475569",
+                      fontWeight: 700,
+                      fontSize: "0.75rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.5px",
+                      py: 1,
+                      borderBottom: "1px solid #e2e8f0",
+                    }}
+                  >
+                    Status
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      bgcolor: "#f8fafc",
+                      color: "#475569",
+                      fontWeight: 700,
+                      fontSize: "0.75rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.5px",
+                      py: 1,
+                      borderBottom: "1px solid #e2e8f0",
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <Schedule sx={{ mr: 0.5, fontSize: "0.85rem", color: "#64748b" }} />
+                      Applied
+                    </Box>
+                  </TableCell>
+                  {isHR && (
+                    <TableCell
+                      sx={{
+                        bgcolor: "#f8fafc",
+                        color: "#475569",
+                        fontWeight: 700,
+                        fontSize: "0.75rem",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.5px",
+                        py: 1,
+                        borderBottom: "1px solid #e2e8f0",
+                      }}
+                    >
+                      Actions
+                    </TableCell>
+                  )}
+                </TableRow>
+              </TableHead>
     <TableBody>
       <AnimatePresence>
         {filteredLeaves
@@ -976,7 +771,6 @@ const [expanded, setExpanded] = useState(false);
     </TableBody>
   </Table>
 </TableContainer>
-        )}
 
         <TablePagination
           rowsPerPageOptions={[5, 10, 25, 50]}

@@ -66,7 +66,7 @@ const StatCard = ({ title, value, color, icon, subtitle }) => {
         boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
       }}
     >
-      <CardContent sx={{ p: { xs: 1.2, sm: 2 }, "&:last-child": { pb: { xs: 1.2, sm: 2 } } }}>
+      <CardContent sx={{ p: { xs: 1, sm: 1.5 }, "&:last-child": { pb: { xs: 1, sm: 1.5 } } }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 0.5 }}>
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography
@@ -82,7 +82,7 @@ const StatCard = ({ title, value, color, icon, subtitle }) => {
               variant="h6"
               fontWeight="bold"
               color={color}
-              sx={{ my: { xs: 0.1, sm: 0.3 }, fontSize: { xs: "1.05rem", sm: "1.25rem" } }}
+              sx={{ my: { xs: 0.05, sm: 0.15 }, fontSize: { xs: "1.05rem", sm: "1.2rem" } }}
             >
               {value}
             </Typography>
@@ -101,12 +101,12 @@ const StatCard = ({ title, value, color, icon, subtitle }) => {
             sx={{
               bgcolor: alpha(color, 0.12),
               color: color,
-              width: { xs: 32, sm: 40 },
-              height: { xs: 32, sm: 40 },
+              width: { xs: 30, sm: 36 },
+              height: { xs: 30, sm: 36 },
               flexShrink: 0,
             }}
           >
-            {React.cloneElement(icon, { sx: { fontSize: { xs: 17, sm: 22 } } })}
+            {React.cloneElement(icon, { sx: { fontSize: { xs: 16, sm: 20 } } })}
           </Avatar>
         </Box>
       </CardContent>
@@ -454,13 +454,13 @@ function QuotationList() {
   }
 
   return (
-    <Box sx={{ p: { xs: 1.5, sm: 3 }, width: "100%", maxWidth: "100%", boxSizing: "border-box", overflowX: "hidden" }}>
+    <Box sx={{ p: 1.5, width: "100%", height: "100%", display: "flex", flexDirection: "column", overflow: "hidden", boxSizing: "border-box" }}>
       {/* Notifications */}
       {successMsg && (
         <Alert
           severity="success"
           onClose={() => setSuccessMsg("")}
-          sx={{ mb: 2, borderRadius: 2 }}
+          sx={{ mb: 1.5, borderRadius: 2, flexShrink: 0 }}
         >
           {successMsg}
         </Alert>
@@ -469,77 +469,20 @@ function QuotationList() {
         <Alert
           severity="error"
           onClose={() => setError("")}
-          sx={{ mb: 2, borderRadius: 2 }}
+          sx={{ mb: 1.5, borderRadius: 2, flexShrink: 0 }}
         >
           {error}
         </Alert>
       )}
-
-      {/* Page Title Block */}
-      <Box
-        sx={{
-          mb: { xs: 2, sm: 3 },
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: { xs: "flex-start", sm: "center" },
-          flexWrap: "wrap",
-          gap: 1.5,
-        }}
-      >
-        <Box>
-          <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3, fontSize: { xs: "1.25rem", sm: "1.5rem" } }}>
-            Quotations Management
-          </Typography>
-          <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: "0.82rem" }}>
-            Create, track, and manage client pharmaceutical price quotations and approvals
-          </Typography>
-        </Box>
-
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, width: { xs: "100%", sm: "auto" }, justifyContent: { xs: "flex-start", sm: "flex-end" } }}>
-          <IconButton
-            onClick={fetchQuotations}
-            color="primary"
-            title="Refresh"
-            sx={{
-              border: "1px solid #e2e8f0",
-              borderRadius: 2,
-              bgcolor: "#ffffff",
-              width: 40,
-              height: 40,
-              "&:hover": { bgcolor: "#f8fafc", borderColor: "#cbd5e1" },
-            }}
-          >
-            <Refresh />
-          </IconButton>
-
-          <Button
-            variant="contained"
-            startIcon={<Add />}
-            onClick={handleOpenCreate}
-            sx={{
-              bgcolor: "#f37021",
-              "&:hover": { bgcolor: "#d95300" },
-              borderRadius: 2,
-              textTransform: "none",
-              fontWeight: 600,
-              px: 2.5,
-              height: 40,
-              whiteSpace: "nowrap",
-              boxShadow: "0 2px 6px rgba(243, 112, 33, 0.3)",
-            }}
-          >
-            New Quotation
-          </Button>
-        </Box>
-      </Box>
 
       {/* 1. Header Summary Stats Cards (2x2 on mobile, 4 in 1 row on desktop) */}
       <Box
         sx={{
           display: "grid",
           gridTemplateColumns: { xs: "1fr 1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr 1fr" },
-          gap: { xs: 1.2, sm: 2 },
-          mb: 2.5,
+          gap: { xs: 1, sm: 1.2 },
+          mb: 0.75,
+          flexShrink: 0,
           width: "100%",
         }}
       >
@@ -573,79 +516,126 @@ function QuotationList() {
         />
       </Box>
 
-      {/* 2. Top Filter Bar */}
-      <Card sx={{ mb: 2.5, p: { xs: 1.5, sm: 2 }, borderRadius: 2, border: "1px solid #e2e8f0", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+      {/* 2. Unified Search, Filter & Actions Toolbar */}
+      <Card sx={{ mt: 0.5, mb: 1.5, flexShrink: 0, p: 1.2, px: 1.5, borderRadius: 2, border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
         <Box
           sx={{
             display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
             alignItems: "center",
-            gap: 1.5,
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 1.2,
             width: "100%",
           }}
         >
-          {/* Search */}
-          <Box sx={{ flex: 1, width: "100%" }}>
-            <form onSubmit={handleSearchSubmit} style={{ width: "100%" }}>
-              <TextField
-                fullWidth
-                size="small"
-                placeholder="Search by Quote No, Doctor, Phone..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                InputProps={{
-                  startAdornment: <Search sx={{ color: "action.active", mr: 1, fontSize: 20 }} />,
-                }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: 2,
-                    fontSize: "0.85rem",
-                    height: 40,
-                  },
-                }}
-              />
-            </form>
+          {/* Left: Search + Status Filter */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, flexWrap: "wrap", flex: 1, minWidth: { xs: "100%", md: 450 } }}>
+            <Box sx={{ flex: 1, minWidth: { xs: "100%", sm: 240 } }}>
+              <form onSubmit={handleSearchSubmit} style={{ width: "100%" }}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  placeholder="Search by Quote No, Doctor, Phone..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  InputProps={{
+                    startAdornment: <Search sx={{ color: "action.active", mr: 1, fontSize: 18 }} />,
+                  }}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: 1.8,
+                      fontSize: "0.85rem",
+                      height: 36,
+                    },
+                  }}
+                />
+              </form>
+            </Box>
+
+            <FormControl
+              size="small"
+              sx={{
+                width: { xs: "100%", sm: 170 },
+                flexShrink: 0,
+              }}
+            >
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={statusFilter}
+                label="Status"
+                onChange={(e) => setStatusFilter(e.target.value)}
+                sx={{ borderRadius: 1.8, height: 36, fontSize: "0.85rem" }}
+              >
+                <MenuItem value="All">All Statuses</MenuItem>
+                <MenuItem value="Pending Approval">Pending Approval</MenuItem>
+                <MenuItem value="Sent">Sent</MenuItem>
+                <MenuItem value="Approved">Approved</MenuItem>
+                <MenuItem value="Draft">Draft</MenuItem>
+                <MenuItem value="Rejected">Rejected</MenuItem>
+              </Select>
+            </FormControl>
           </Box>
 
-          {/* Status Filter */}
-          <FormControl
-            size="small"
-            sx={{
-              width: { xs: "100%", sm: 200 },
-              flexShrink: 0,
-            }}
-          >
-            <InputLabel>Status</InputLabel>
-            <Select
-              value={statusFilter}
-              label="Status"
-              onChange={(e) => setStatusFilter(e.target.value)}
-              sx={{ borderRadius: 2, height: 40, fontSize: "0.85rem" }}
+          {/* Right: Refresh + New Quotation */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap", width: { xs: "100%", sm: "auto" }, justifyContent: { xs: "flex-start", sm: "flex-end" } }}>
+            <Tooltip title="Refresh list">
+              <IconButton
+                onClick={fetchQuotations}
+                color="primary"
+                size="small"
+                sx={{
+                  border: "1px solid #e2e8f0",
+                  borderRadius: 1.8,
+                  bgcolor: "#ffffff",
+                  width: 36,
+                  height: 36,
+                  "&:hover": { bgcolor: "#f8fafc", borderColor: "#cbd5e1" },
+                }}
+              >
+                <Refresh fontSize="small" />
+              </IconButton>
+            </Tooltip>
+
+            <Button
+              variant="contained"
+              startIcon={<Add />}
+              onClick={handleOpenCreate}
+              size="small"
+              sx={{
+                bgcolor: "#f37021",
+                "&:hover": { bgcolor: "#d95300" },
+                borderRadius: 1.8,
+                textTransform: "none",
+                fontWeight: 600,
+                fontSize: "0.82rem",
+                px: 2,
+                height: 36,
+                whiteSpace: "nowrap",
+                boxShadow: "0 2px 6px rgba(243, 112, 33, 0.25)",
+                flex: { xs: 1, sm: "none" },
+              }}
             >
-              <MenuItem value="All">All Statuses</MenuItem>
-              <MenuItem value="Pending Approval">Pending Approval</MenuItem>
-              <MenuItem value="Sent">Sent</MenuItem>
-              <MenuItem value="Approved">Approved</MenuItem>
-              <MenuItem value="Draft">Draft</MenuItem>
-              <MenuItem value="Rejected">Rejected</MenuItem>
-            </Select>
-          </FormControl>
+              New Quotation
+            </Button>
+          </Box>
         </Box>
       </Card>
 
       {/* 3. Quotation Data Table */}
-      <TableContainer
-        component={Paper}
-        elevation={1}
+      <Paper
+        elevation={0}
         sx={{
+          flex: 1,
+          minHeight: 0,
+          display: "flex",
+          flexDirection: "column",
           borderRadius: 2,
-          width: "100%",
-          maxWidth: "100%",
-          overflowX: "auto",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
           border: "1px solid #e2e8f0",
+          overflow: "hidden",
         }}
       >
+        <TableContainer sx={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
             <CircularProgress sx={{ color: "#f37021" }} />
@@ -670,9 +660,8 @@ function QuotationList() {
             </Button>
           </Box>
         ) : (
-          <>
-            <Table size="small" sx={{ minWidth: 920 }}>
-              <TableHead sx={{ bgcolor: "#f8fafc" }}>
+          <Table stickyHeader size="small" sx={{ minWidth: 920 }}>
+            <TableHead sx={{ bgcolor: "#f8fafc", "& th": { bgcolor: "#f8fafc" } }}>
                 <TableRow sx={{ "& th": { whiteSpace: "nowrap", py: 1.4, color: "#475569", fontSize: "0.82rem" } }}>
                   <TableCell sx={{ fontWeight: 800 }}>Quotation No</TableCell>
                   <TableCell sx={{ fontWeight: 800 }}>Doctor / Hospital</TableCell>
@@ -876,22 +865,25 @@ function QuotationList() {
                 })}
               </TableBody>
             </Table>
+          )}
+        </TableContainer>
 
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component="div"
-              count={filteredQuotations.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={(_, newPage) => setPage(newPage)}
-              onRowsPerPageChange={(e) => {
-                setRowsPerPage(parseInt(e.target.value, 10));
-                setPage(0);
-              }}
-            />
-          </>
+        {!loading && (
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={filteredQuotations.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={(_, newPage) => setPage(newPage)}
+            onRowsPerPageChange={(e) => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+            sx={{ flexShrink: 0, borderTop: "1px solid #e2e8f0" }}
+          />
         )}
-      </TableContainer>
+      </Paper>
 
       {/* Create / Edit Modal */}
       {isModalOpen && (

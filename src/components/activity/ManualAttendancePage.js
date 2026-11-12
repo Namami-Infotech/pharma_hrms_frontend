@@ -377,70 +377,67 @@ const ManualAttendancePage = () => {
   const unmarkedCount = employees.length - markedCount;
 
   return (
-    <Box sx={{ p: { xs: 1.5, sm: 2.5, md: 3 }, backgroundColor: "#f8f9fa", minHeight: "100vh" }}>
-      {/* Header */}
-      <Box sx={{ mb: 2.5 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={1.5}>
-          <Box>
-            <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3, fontSize: { xs: "1.25rem", sm: "1.5rem" } }}>
-              Manual Attendance
-            </Typography>
-            <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: { xs: "0.8rem", sm: "0.85rem" } }}>
-              Mark or edit attendance records for employees manually
-            </Typography>
-          </Box>
-          <Tooltip title="Refresh Data">
-            <IconButton
-              onClick={refreshData}
-              sx={{
-                bgcolor: "#ffffff",
-                border: "1px solid #e2e8f0",
-                color: "#64748b",
-                width: 38,
-                height: 38,
-                borderRadius: 2,
-                flexShrink: 0,
-                boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
-                "&:hover": { bgcolor: "#f8fafc", color: "#0f172a", borderColor: "#cbd5e1" },
-              }}
-            >
-              <Refresh sx={{ fontSize: 20 }} />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      </Box>
-
-      {/* Search and Filters */}
-      <Paper sx={{ p: { xs: 1.5, sm: 2.5 }, mb: 2.5, borderRadius: 2 }}>
-        <Box display="flex" gap={1.5} alignItems="center" flexWrap="wrap">
-          {/* Search input */}
+    <Box
+      sx={{
+        p: { xs: 1, sm: 1.5 },
+        bgcolor: "#f8fafc",
+        height: "100%",
+        maxHeight: "100%",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        boxSizing: "border-box",
+      }}
+    >
+      {/* Top Controls & Status Bar */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: 1,
+          px: 1.5,
+          mb: 1.2,
+          borderRadius: 2,
+          border: "1px solid #e2e8f0",
+          bgcolor: "#ffffff",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: 1.2,
+          flexShrink: 0,
+        }}
+      >
+        {/* Left: Search, Date, Status, Quick Chips */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap", flex: 1 }}>
           <TextField
-            placeholder="Search employees by name, ID, or dept..."
+            placeholder="Search by name, ID, dept..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             size="small"
             sx={{
-              flex: { xs: "1 1 100%", md: 2 },
-              width: { xs: "100%", md: "auto" },
-              minWidth: { xs: 0, sm: 220 },
+              width: { xs: "100%", sm: 220, md: 260 },
+              "& .MuiOutlinedInput-root": {
+                height: 36,
+                fontSize: "0.82rem",
+                borderRadius: 1.5,
+              },
             }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <Search color="action" />
+                  <Search sx={{ color: "#94a3b8", fontSize: 18 }} />
                 </InputAdornment>
               ),
               endAdornment: searchTerm && (
                 <InputAdornment position="end">
                   <IconButton size="small" onClick={() => setSearchTerm("")}>
-                    <Clear fontSize="small" />
+                    <Clear sx={{ fontSize: 16 }} />
                   </IconButton>
                 </InputAdornment>
               ),
             }}
           />
 
-          {/* Attendance Date Selector */}
           <TextField
             label="Attendance Date"
             type="date"
@@ -451,7 +448,7 @@ const ManualAttendancePage = () => {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <DateRange fontSize="small" color="primary" />
+                  <DateRange sx={{ color: "#f37021", fontSize: 18 }} />
                 </InputAdornment>
               ),
             }}
@@ -460,114 +457,205 @@ const ManualAttendancePage = () => {
               max: getMaxDate(),
             }}
             sx={{
-              flex: { xs: "1 1 100%", sm: 1 },
-              width: { xs: "100%", sm: "auto" },
-              minWidth: { xs: 0, sm: 180 },
+              width: { xs: "100%", sm: 160 },
+              "& .MuiOutlinedInput-root": {
+                height: 36,
+                fontSize: "0.82rem",
+                borderRadius: 1.5,
+              },
             }}
           />
 
-          {/* Status Filter */}
           <FormControl
             size="small"
             sx={{
-              flex: { xs: "1 1 100%", sm: 1 },
-              width: { xs: "100%", sm: "auto" },
-              minWidth: { xs: 0, sm: 160 },
+              minWidth: 150,
+              "& .MuiOutlinedInput-root": {
+                height: 36,
+                fontSize: "0.82rem",
+                borderRadius: 1.5,
+              },
             }}
           >
-            <InputLabel>Attendance Status</InputLabel>
+            <InputLabel>Status</InputLabel>
             <Select
               value={statusFilter}
-              label="Attendance Status"
+              label="Status"
               onChange={(e) => setStatusFilter(e.target.value)}
             >
-              <MenuItem value="all">All Employees ({employees.length})</MenuItem>
-              <MenuItem value="marked">Marked Only ({markedCount})</MenuItem>
-              <MenuItem value="unmarked">Not Marked Only ({unmarkedCount})</MenuItem>
+              <MenuItem value="all">All ({employees.length})</MenuItem>
+              <MenuItem value="marked">Marked ({markedCount})</MenuItem>
+              <MenuItem value="unmarked">Not Marked ({unmarkedCount})</MenuItem>
             </Select>
           </FormControl>
+
+          {/* Quick status filter chips */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.8 }}>
+            <Chip
+              clickable
+              onClick={() => setStatusFilter("all")}
+              label={`All: ${employees.length}`}
+              size="small"
+              sx={{
+                height: 26,
+                fontSize: "0.75rem",
+                fontWeight: 600,
+                bgcolor: statusFilter === "all" ? "#0f172a" : "#f1f5f9",
+                color: statusFilter === "all" ? "#ffffff" : "#475569",
+                "&:hover": { bgcolor: statusFilter === "all" ? "#1e293b" : "#e2e8f0" },
+              }}
+            />
+            <Chip
+              clickable
+              onClick={() => setStatusFilter("marked")}
+              label={`${markedCount} Marked`}
+              size="small"
+              sx={{
+                height: 26,
+                fontSize: "0.75rem",
+                fontWeight: 600,
+                bgcolor: statusFilter === "marked" ? "#10b981" : "rgba(16, 185, 129, 0.12)",
+                color: statusFilter === "marked" ? "#ffffff" : "#047857",
+                "&:hover": { bgcolor: statusFilter === "marked" ? "#059669" : "rgba(16, 185, 129, 0.2)" },
+              }}
+            />
+            <Chip
+              clickable
+              onClick={() => setStatusFilter("unmarked")}
+              label={`${unmarkedCount} Not Marked`}
+              size="small"
+              sx={{
+                height: 26,
+                fontSize: "0.75rem",
+                fontWeight: 600,
+                bgcolor: statusFilter === "unmarked" ? "#64748b" : "#f1f5f9",
+                color: statusFilter === "unmarked" ? "#ffffff" : "#475569",
+                "&:hover": { bgcolor: statusFilter === "unmarked" ? "#475569" : "#e2e8f0" },
+              }}
+            />
+          </Box>
 
           {(searchTerm || statusFilter !== "all" || selectedDate !== format(new Date(), "yyyy-MM-dd")) && (
             <Button
               size="small"
               onClick={clearFilters}
-              startIcon={<Clear />}
+              startIcon={<Clear sx={{ fontSize: 14 }} />}
               sx={{
                 color: "#f37021",
-                width: { xs: "100%", sm: "auto" },
-                justifyContent: { xs: "center", sm: "flex-start" },
+                textTransform: "none",
+                fontWeight: 600,
+                fontSize: "0.78rem",
               }}
             >
-              Reset Filters
+              Reset
             </Button>
           )}
+        </Box>
+
+        {/* Right: Selected Date & Refresh */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Chip
+            icon={<DateRange sx={{ fontSize: 14, color: "#f37021 !important" }} />}
+            label={`${format(parseISO(selectedDate), "dd MMMM yyyy")}${attendanceLoading ? " (loading...)" : ""}`}
+            size="small"
+            sx={{
+              height: 28,
+              fontSize: "0.75rem",
+              fontWeight: 600,
+              bgcolor: "#fff7ed",
+              color: "#c2410c",
+              border: "1px solid #ffedd5",
+            }}
+          />
+
+          <Tooltip title="Refresh Data">
+            <IconButton
+              onClick={refreshData}
+              size="small"
+              sx={{
+                bgcolor: "#ffffff",
+                border: "1px solid #e2e8f0",
+                color: "#64748b",
+                width: 36,
+                height: 36,
+                borderRadius: 1.5,
+                boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+                "&:hover": { bgcolor: "#f8fafc", color: "#0f172a", borderColor: "#cbd5e1" },
+              }}
+            >
+              <Refresh sx={{ fontSize: 18 }} />
+            </IconButton>
+          </Tooltip>
         </Box>
       </Paper>
 
       {/* Alerts */}
       {error && (
-        <Alert severity="error" sx={{ mb: 2.5 }} onClose={() => setError(null)}>
+        <Alert severity="error" sx={{ mb: 1, py: 0.2, flexShrink: 0 }} onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
 
       {success && (
-        <Alert severity="success" sx={{ mb: 2.5 }} onClose={() => setSuccess(null)}>
+        <Alert severity="success" sx={{ mb: 1, py: 0.2, flexShrink: 0 }} onClose={() => setSuccess(null)}>
           {success}
         </Alert>
       )}
 
-      {/* Loading */}
+      {/* Loading & Table Section */}
       {loading ? (
-        <Box sx={{ textAlign: "center", py: 8 }}>
-          <LinearProgress sx={{ mb: 2, maxWidth: 400, mx: "auto" }} />
-          <Typography>Loading employees...</Typography>
+        <Box sx={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+          <LinearProgress sx={{ mb: 2, width: 200 }} />
+          <Typography variant="body2" color="text.secondary">Loading employees...</Typography>
         </Box>
       ) : (
-        <>
-          {/* Results Summary Bar */}
-          <Paper sx={{ p: { xs: 1.5, sm: 2 }, mb: 2, borderRadius: 2, bgcolor: "#fff", border: "1px solid #e0e0e0" }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={1.2}>
-              <Box display="flex" alignItems="center" flexWrap="wrap" gap={1}>
-                <Typography variant="body2" fontWeight={600} sx={{ fontSize: { xs: "0.85rem", sm: "0.95rem" } }}>
-                  Showing {filteredEmployees.length} of {employees.length} employees
-                </Typography>
-                <Box display="flex" gap={0.8} flexWrap="wrap" alignItems="center">
-                  <Chip
-                    label={`${markedCount} Marked`}
-                    color="success"
-                    size="small"
-                    variant="filled"
-                    sx={{ fontWeight: 600, fontSize: "0.75rem" }}
-                  />
-                  <Chip
-                    label={`${unmarkedCount} Not Marked`}
-                    color="default"
-                    size="small"
-                    variant="outlined"
-                    sx={{ fontWeight: 600, fontSize: "0.75rem" }}
-                  />
-                </Box>
-              </Box>
-              <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: "0.8rem", sm: "0.85rem" } }}>
-                Selected Date: <strong>{format(parseISO(selectedDate), "dd MMMM yyyy")}</strong>
-                {attendanceLoading && " (loading...)"}
+        <Paper
+          elevation={0}
+          sx={{
+            flex: 1,
+            minHeight: 0,
+            display: "flex",
+            flexDirection: "column",
+            borderRadius: 2,
+            border: "1px solid #e2e8f0",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+            overflow: "hidden",
+            bgcolor: "#ffffff",
+          }}
+        >
+          {filteredEmployees.length === 0 ? (
+            <Box sx={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", py: 6 }}>
+              <Person sx={{ fontSize: 48, color: "#cbd5e1", mb: 1 }} />
+              <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+                No active employees found
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {searchTerm || statusFilter !== "all"
+                  ? "Try adjusting your search or status filter"
+                  : "No active employees in the system"}
               </Typography>
             </Box>
-          </Paper>
-
-          {/* Employee Table */}
-          <Paper sx={{ borderRadius: 2, overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-            <TableContainer sx={{ overflowX: "auto", width: "100%" }}>
-              <Table sx={{ minWidth: 650 }}>
-                <TableHead sx={{ bgcolor: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
+          ) : (
+            <TableContainer sx={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "auto", width: "100%" }}>
+              <Table stickyHeader size="small" sx={{ minWidth: 650 }}>
+                <TableHead>
                   <TableRow>
-                    <TableCell sx={{ color: "#475569", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Employee ID</TableCell>
-                    <TableCell sx={{ color: "#475569", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Employee</TableCell>
-                    <TableCell sx={{ color: "#475569", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Designation</TableCell>
-                    <TableCell sx={{ color: "#475569", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Department</TableCell>
-                    <TableCell sx={{ color: "#475569", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Status</TableCell>
-                    <TableCell sx={{ color: "#475569", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }} align="center">
+                    <TableCell sx={{ bgcolor: "#f8fafc", color: "#475569", fontWeight: 700, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.5px", py: 1, borderBottom: "1px solid #e2e8f0" }}>
+                      Employee ID
+                    </TableCell>
+                    <TableCell sx={{ bgcolor: "#f8fafc", color: "#475569", fontWeight: 700, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.5px", py: 1, borderBottom: "1px solid #e2e8f0" }}>
+                      Employee
+                    </TableCell>
+                    <TableCell sx={{ bgcolor: "#f8fafc", color: "#475569", fontWeight: 700, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.5px", py: 1, borderBottom: "1px solid #e2e8f0" }}>
+                      Designation
+                    </TableCell>
+                    <TableCell sx={{ bgcolor: "#f8fafc", color: "#475569", fontWeight: 700, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.5px", py: 1, borderBottom: "1px solid #e2e8f0" }}>
+                      Department
+                    </TableCell>
+                    <TableCell sx={{ bgcolor: "#f8fafc", color: "#475569", fontWeight: 700, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.5px", py: 1, borderBottom: "1px solid #e2e8f0" }}>
+                      Status
+                    </TableCell>
+                    <TableCell sx={{ bgcolor: "#f8fafc", color: "#475569", fontWeight: 700, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.5px", py: 1, borderBottom: "1px solid #e2e8f0" }} align="center">
                       Action
                     </TableCell>
                   </TableRow>
@@ -578,59 +666,61 @@ const ManualAttendancePage = () => {
                     const isMarked = Boolean(attRecord);
 
                     return (
-                      <TableRow key={employee.EmpId} hover sx={{ "&:hover": { bgcolor: "rgba(243, 112, 33,0.02)" } }}>
-                        <TableCell>
-                          <Typography variant="body2" fontWeight={600} sx={{ fontFamily: "monospace" }}>
+                      <TableRow key={employee.EmpId} hover sx={{ "&:hover": { bgcolor: "#f8fafc" } }}>
+                        <TableCell sx={{ py: 0.8 }}>
+                          <Typography variant="body2" fontWeight={600} sx={{ fontFamily: "monospace", fontSize: "0.8rem" }}>
                             {employee.EmpId}
                           </Typography>
                         </TableCell>
-                        <TableCell>
-                          <Box display="flex" alignItems="center" gap={1.5}>
-                            <Avatar sx={{ bgcolor: isMarked ? "#f37021" : "grey.500", width: 36, height: 36, fontSize: "0.9rem" }}>
+                        <TableCell sx={{ py: 0.8 }}>
+                          <Box display="flex" alignItems="center" gap={1.2}>
+                            <Avatar sx={{ bgcolor: isMarked ? "#f37021" : "grey.500", width: 32, height: 32, fontSize: "0.8rem" }}>
                               {employee.Name?.charAt(0) || employee.EmpId.charAt(0)}
                             </Avatar>
                             <Box>
-                              <Typography fontWeight={600} variant="body2">
+                              <Typography fontWeight={600} variant="body2" sx={{ fontSize: "0.8rem", color: "#0f172a" }}>
                                 {employee.Name}
                               </Typography>
-                              <Typography variant="caption" color="text.secondary" display="block">
+                              <Typography variant="caption" color="text.secondary" display="block" sx={{ fontSize: "0.7rem" }}>
                                 {employee.EmailId || "No email"}
                               </Typography>
                             </Box>
                           </Box>
                         </TableCell>
-                        <TableCell>
-                          <Typography variant="body2">
+                        <TableCell sx={{ py: 0.8, fontSize: "0.8rem" }}>
+                          <Typography variant="body2" sx={{ fontSize: "0.8rem" }}>
                             {employee.Designation || "N/A"}
                           </Typography>
                         </TableCell>
-                        <TableCell>
-                          <Typography variant="body2">
+                        <TableCell sx={{ py: 0.8, fontSize: "0.8rem" }}>
+                          <Typography variant="body2" sx={{ fontSize: "0.8rem" }}>
                             {employee.Department}
                           </Typography>
                         </TableCell>
-                        <TableCell>
+                        <TableCell sx={{ py: 0.8 }}>
                           <StatusBadge
                             isMarked={isMarked}
                             inTime={attRecord?.FirstIn}
                             outTime={attRecord?.LastOut}
                           />
                         </TableCell>
-                        <TableCell align="center">
+                        <TableCell align="center" sx={{ py: 0.8 }}>
                           {isMarked ? (
                             <Button
                               variant="outlined"
                               size="small"
-                              startIcon={<Edit />}
+                              startIcon={<Edit sx={{ fontSize: 15 }} />}
                               onClick={() => handleEditAttendance(employee)}
                               sx={{
                                 color: "#f37021",
                                 borderColor: "#f37021",
                                 textTransform: "none",
                                 fontWeight: 600,
-                                px: 2,
+                                fontSize: "0.75rem",
+                                height: 30,
+                                px: 1.8,
                                 "&:hover": {
-                                  borderColor: "#6d042aff",
+                                  borderColor: "#d95300",
                                   bgcolor: alpha("#f37021", 0.08),
                                 },
                               }}
@@ -641,14 +731,17 @@ const ManualAttendancePage = () => {
                             <Button
                               variant="contained"
                               size="small"
-                              startIcon={<HowToReg />}
+                              startIcon={<HowToReg sx={{ fontSize: 15 }} />}
                               onClick={() => handleMarkAttendance(employee)}
                               sx={{
                                 bgcolor: "#f37021",
                                 textTransform: "none",
                                 fontWeight: 600,
-                                px: 2,
-                                "&:hover": { bgcolor: "#6d042aff" },
+                                fontSize: "0.75rem",
+                                height: 30,
+                                px: 1.8,
+                                boxShadow: "0 1px 2px rgba(243, 112, 33, 0.25)",
+                                "&:hover": { bgcolor: "#d95300" },
                               }}
                             >
                               Mark
@@ -661,8 +754,10 @@ const ManualAttendancePage = () => {
                 </TableBody>
               </Table>
             </TableContainer>
+          )}
 
-            {/* Pagination */}
+          {/* Pagination */}
+          {filteredEmployees.length > 0 && (
             <TablePagination
               component="div"
               count={filteredEmployees.length}
@@ -671,25 +766,10 @@ const ManualAttendancePage = () => {
               rowsPerPage={rowsPerPage}
               onRowsPerPageChange={handleChangeRowsPerPage}
               rowsPerPageOptions={[5, 10, 25, 50]}
-              sx={{ borderTop: "1px solid rgba(224, 224, 224, 1)" }}
+              sx={{ flexShrink: 0, borderTop: "1px solid #f1f5f9" }}
             />
-          </Paper>
-
-          {/* No Results */}
-          {filteredEmployees.length === 0 && !loading && (
-            <Paper sx={{ p: 6, textAlign: "center", borderRadius: 2, mt: 3 }}>
-              <Person sx={{ fontSize: 50, color: "grey.400", mb: 1 }} />
-              <Typography variant="h6" color="text.secondary" gutterBottom>
-                No active employees found
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {searchTerm || statusFilter !== "all"
-                  ? "Try adjusting your search or status filter"
-                  : "No active employees in the system"}
-              </Typography>
-            </Paper>
           )}
-        </>
+        </Paper>
       )}
 
       {/* Mark / Edit Attendance Dialog */}

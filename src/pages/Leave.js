@@ -6,7 +6,6 @@ import { useAuth } from "../components/auth/AuthContext"
 
 function Leave() {
   const { user } = useAuth()
-
   return (
     <PageWrapper title="Leave Management">
       <Fade in timeout={500}>

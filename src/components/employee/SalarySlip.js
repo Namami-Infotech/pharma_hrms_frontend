@@ -779,17 +779,18 @@ function SalarySlip() {
   };
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
       {/* 1. Generator & Filter Controls Card (Clean & Compact Spacing) */}
       <Card
         elevation={0}
         sx={{
-          mb: 2.5,
-          p: { xs: 1.5, sm: 2 },
+          mb: 1.5,
+          p: { xs: 1.25, sm: 1.5 },
           bgcolor: "#ffffff",
-          borderRadius: 2.5,
+          borderRadius: 2,
           border: "1px solid #e2e8f0",
           boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+          flexShrink: 0,
         }}
       >
         <Grid container spacing={1.5} alignItems="center">
@@ -941,24 +942,24 @@ function SalarySlip() {
       {/* 2. KPI Summary Cards Row & 3. Employee Salary Records Table (ADMIN ONLY) */}
       {isAdmin && (
         <>
-          <Grid container spacing={2} sx={{ mb: 2.5 }}>
+          {/* <Grid container spacing={1.2} sx={{ mb: 1.2, flexShrink: 0 }}>
             <Grid item xs={12} sm={6} md={3}>
               <Card
                 elevation={0}
                 sx={{
-                  p: 2,
-                  borderRadius: 2.5,
+                  p: 1.25,
+                  borderRadius: 2,
                   border: "1px solid #e2e8f0",
                   bgcolor: "#ffffff",
                 }}
               >
-                <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 600, fontSize: "0.8rem" }}>
+                <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 600, fontSize: "0.78rem" }}>
                   Total Employees
                 </Typography>
-                <Typography variant="h5" sx={{ fontWeight: 800, color: "#0f172a", mt: 0.5 }}>
+                <Typography variant="h6" sx={{ fontWeight: 800, color: "#0f172a", mt: 0.3 }}>
                   {salaryRecords.length}
                 </Typography>
-                <Typography variant="caption" sx={{ color: "#94a3b8" }}>
+                <Typography variant="caption" sx={{ color: "#94a3b8", fontSize: "0.72rem" }}>
                   Active staff in payroll
                 </Typography>
               </Card>
@@ -968,19 +969,19 @@ function SalarySlip() {
               <Card
                 elevation={0}
                 sx={{
-                  p: 2,
-                  borderRadius: 2.5,
+                  p: 1.25,
+                  borderRadius: 2,
                   border: "1px solid #e2e8f0",
                   bgcolor: "#ffffff",
                 }}
               >
-                <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 600, fontSize: "0.8rem" }}>
+                <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 600, fontSize: "0.78rem" }}>
                   Total Net Payroll
                 </Typography>
-                <Typography variant="h5" sx={{ fontWeight: 800, color: "#f37021", mt: 0.5 }}>
+                <Typography variant="h6" sx={{ fontWeight: 800, color: "#f37021", mt: 0.3 }}>
                   ₹{totalPayroll.toLocaleString("en-IN")}
                 </Typography>
-                <Typography variant="caption" sx={{ color: "#94a3b8" }}>
+                <Typography variant="caption" sx={{ color: "#94a3b8", fontSize: "0.72rem" }}>
                   For {MONTHS.find((m) => m.value === selectedMonth)?.label} {selectedYear}
                 </Typography>
               </Card>
@@ -990,19 +991,19 @@ function SalarySlip() {
               <Card
                 elevation={0}
                 sx={{
-                  p: 2,
-                  borderRadius: 2.5,
+                  p: 1.25,
+                  borderRadius: 2,
                   border: "1px solid #e2e8f0",
                   bgcolor: "#ffffff",
                 }}
               >
-                <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 600, fontSize: "0.8rem" }}>
+                <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 600, fontSize: "0.78rem" }}>
                   Disbursed / Paid
                 </Typography>
-                <Typography variant="h5" sx={{ fontWeight: 800, color: "#16a34a", mt: 0.5 }}>
+                <Typography variant="h6" sx={{ fontWeight: 800, color: "#16a34a", mt: 0.3 }}>
                   {paidCount}
                 </Typography>
-                <Typography variant="caption" sx={{ color: "#16a34a" }}>
+                <Typography variant="caption" sx={{ color: "#16a34a", fontSize: "0.72rem" }}>
                   Processed successfully
                 </Typography>
               </Card>
@@ -1012,108 +1013,100 @@ function SalarySlip() {
               <Card
                 elevation={0}
                 sx={{
-                  p: 2,
-                  borderRadius: 2.5,
+                  p: 1.25,
+                  borderRadius: 2,
                   border: "1px solid #e2e8f0",
                   bgcolor: "#ffffff",
                 }}
               >
-                <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 600, fontSize: "0.8rem" }}>
+                <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 600, fontSize: "0.78rem" }}>
                   Pending Disbursements
                 </Typography>
-                <Typography variant="h5" sx={{ fontWeight: 800, color: pendingCount > 0 ? "#ea580c" : "#64748b", mt: 0.5 }}>
+                <Typography variant="h6" sx={{ fontWeight: 800, color: pendingCount > 0 ? "#ea580c" : "#64748b", mt: 0.3 }}>
                   {pendingCount}
                 </Typography>
-                <Typography variant="caption" sx={{ color: "#94a3b8" }}>
+                <Typography variant="caption" sx={{ color: "#94a3b8", fontSize: "0.72rem" }}>
                   Awaiting clearance
                 </Typography>
               </Card>
             </Grid>
-          </Grid>
+          </Grid> */}
 
           {/* 3. Bottom: Employee Salary Records Table */}
           <Card
             elevation={0}
             sx={{
-              borderRadius: 2.5,
+              flex: 1,
+              minHeight: 0,
+              display: "flex",
+              flexDirection: "column",
+              borderRadius: 2,
               border: "1px solid #e2e8f0",
               bgcolor: "#ffffff",
               overflow: "hidden",
               boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-              mb: 3,
+              mb: 0,
             }}
           >
             {/* Table Header Bar */}
             <Box
               sx={{
-                p: 2,
+                p: 1.2,
+                px: 1.5,
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
                 flexWrap: "wrap",
-                gap: 1.5,
+                gap: 1.2,
                 borderBottom: "1px solid #f1f5f9",
+                flexShrink: 0,
               }}
             >
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <ReceiptLong sx={{ color: "#f37021", fontSize: 24 }} />
-                <Box>
-                  <Typography sx={{ fontWeight: 700, fontSize: "1rem", color: "#0f172a" }}>
-                    Employee Salary Records
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: "#64748b" }}>
-                    Showing payroll records for {MONTHS.find((m) => m.value === selectedMonth)?.label} {selectedYear}
-                  </Typography>
-                </Box>
-              </Box>
+              <TextField
+                size="small"
+                placeholder="Search by name, ID or role..."
+                value={tableSearch}
+                onChange={(e) => {
+                  setTableSearch(e.target.value);
+                  setPage(0);
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search sx={{ color: "#94a3b8", fontSize: 18 }} />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  width: { xs: "100%", sm: 260 },
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 1.8,
+                    bgcolor: "#f8fafc",
+                    fontSize: "0.85rem",
+                    height: 36,
+                  },
+                }}
+              />
 
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                <TextField
-                  size="small"
-                  placeholder="Search by name, ID or role..."
-                  value={tableSearch}
-                  onChange={(e) => {
-                    setTableSearch(e.target.value);
-                    setPage(0);
-                  }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Search sx={{ color: "#94a3b8", fontSize: 18 }} />
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{
-                    width: { xs: "100%", sm: 260 },
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: 2,
-                      bgcolor: "#f8fafc",
-                      fontSize: "0.85rem",
-                      height: 38,
-                    },
-                  }}
-                />
-
-                <Button
-                  variant="outlined"
-                  size="small"
-                  startIcon={<FileDownload fontSize="small" />}
-                  onClick={handleExportCSV}
-                  disabled={salaryRecords.length === 0}
-                  sx={{
-                    borderColor: "#cbd5e1",
-                    color: "#475569",
-                    borderRadius: 2,
-                    textTransform: "none",
-                    fontWeight: 600,
-                    fontSize: "12.5px",
-                    height: 38,
-                    "&:hover": { borderColor: "#94a3b8", bgcolor: "#f8fafc" },
-                  }}
-                >
-                  Export CSV
-                </Button>
-              </Box>
+              <Button
+                variant="outlined"
+                size="small"
+                startIcon={<FileDownload fontSize="small" />}
+                onClick={handleExportCSV}
+                disabled={salaryRecords.length === 0}
+                sx={{
+                  borderColor: "#cbd5e1",
+                  color: "#475569",
+                  borderRadius: 1.8,
+                  textTransform: "none",
+                  fontWeight: 600,
+                  fontSize: "12.5px",
+                  height: 36,
+                  "&:hover": { borderColor: "#94a3b8", bgcolor: "#f8fafc" },
+                }}
+              >
+                Export CSV
+              </Button>
             </Box>
 
             {/* Table Content */}
@@ -1122,7 +1115,7 @@ function SalarySlip() {
                 <CircularProgress size={36} sx={{ color: "#f37021" }} />
               </Box>
             ) : (
-              <TableContainer sx={{ maxHeight: 520 }}>
+              <TableContainer sx={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
                 <Table stickyHeader size="small">
                   <TableHead>
                     <TableRow sx={{ "& th": { bgcolor: "#f8fafc", fontWeight: 700, fontSize: "0.78rem", color: "#475569", py: 1.2 } }}>

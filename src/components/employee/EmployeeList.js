@@ -1888,172 +1888,188 @@ const exportToExcel = () => {
   return (
     <Box
       sx={{
-        px: { xs: 1, md: 2 },
-        py: { xs: 1, md: 1 },
-        backgroundColor: "#f5f5f5",
-        minHeight: "100vh",
+        p: 1.5,
+        backgroundColor: "#f8fafc",
+        height: "100%",
         display: "flex",
-        justifyContent: "center",
+        flexDirection: "column",
+        overflow: "hidden",
+        boxSizing: "border-box",
       }}
     >
-      <Box sx={{ width: "100%", maxWidth: 1800 }}>
+      <Box sx={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <Paper
-          elevation={4}
+          elevation={0}
           sx={{
-            p: { xs: 2, md: 3 },
-            mb: 3,
-            borderRadius: 3,
+            p: 1.2,
+            px: 1.5,
+            mb: 1.5,
+            borderRadius: 2,
             bgcolor: "background.paper",
-            background: "linear-gradient(135deg, #f8f0f4 0%, #fff 100%)",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+            border: "1px solid #e2e8f0",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
+            flexShrink: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 1.2,
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mb: 3,
-              flexWrap: "wrap",
-            }}
-          >
-            <Box sx={{ flexGrow: 1 }}>
-              <Typography
-                variant="h5"
-                sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}
-              >
-                Employee Management
-              </Typography>
-              <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: "0.85rem" }}>
-                Manage company staff, designations, departments, and employee directory
-              </Typography>
-            </Box>
+          {/* Left: Search + Role Filter + Status Filter */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, flexWrap: "wrap", flex: 1, minWidth: { xs: "100%", md: 450 } }}>
+            {/* Search */}
+            <TextField
+              size="small"
+              placeholder="Search employees..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search color="action" sx={{ fontSize: 18 }} />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                width: { xs: "100%", sm: 220, md: 260 },
+                "& .MuiOutlinedInput-root": {
+                  height: 36,
+                  borderRadius: 1.8,
+                  fontSize: "0.82rem",
+                  bgcolor: "#fff",
+                },
+              }}
+            />
 
-            <Box sx={{ display: "flex", gap: 1, mt: { xs: 2, md: 0 }, width: { xs: "100%", sm: "auto" }, flexWrap: "wrap" }}>
-              <Tooltip title="Refresh Data">
-                <IconButton
-                  onClick={fetchEmployees}
+            {/* Role Filter */}
+            <Autocomplete
+              size="small"
+              options={roleOptions}
+              value={filterRole}
+              onChange={(event, newValue) => setFilterRole(newValue || "")}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Filter by Role"
+                  size="small"
                   sx={{
-                    bgcolor: "#fff",
-                    color: "#f37021",
-                    "&:hover": { bgcolor: "#f2e6eb" },
+                    "& .MuiOutlinedInput-root": {
+                      height: 36,
+                      borderRadius: 1.8,
+                      fontSize: "0.82rem",
+                      bgcolor: "#fff",
+                    },
+                    "& .MuiInputLabel-root": {
+                      fontSize: "0.82rem",
+                    },
                   }}
-                >
-                  <Refresh />
-                </IconButton>
-              </Tooltip>
-              
-              {/* Export Button - Simple single click */}
-              <Button
-                variant="outlined"
-                startIcon={exporting ? <CircularProgress size={20} /> : <Download />}
-                onClick={exportToExcel}
-                disabled={exporting || filteredEmployees.length === 0}
+                />
+              )}
+              sx={{
+                width: { xs: "100%", sm: 180 },
+              }}
+            />
+
+            {/* Employee Status Filter */}
+            <FormControl
+              size="small"
+              sx={{
+                width: { xs: "100%", sm: 160 },
+                "& .MuiOutlinedInput-root": {
+                  height: 36,
+                  borderRadius: 1.8,
+                  fontSize: "0.82rem",
+                  bgcolor: "#fff",
+                },
+                "& .MuiInputLabel-root": {
+                  fontSize: "0.82rem",
+                },
+              }}
+            >
+              <InputLabel>Employee Status</InputLabel>
+              <Select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                label="Employee Status"
+              >
+                <MenuItem value="1">Active Only</MenuItem>
+                <MenuItem value="0">Inactive Only</MenuItem>
+                <MenuItem value="">All Employees</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+
+          {/* Right: Refresh + Export + Add Employee */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap", width: { xs: "100%", sm: "auto" }, justifyContent: { xs: "flex-start", sm: "flex-end" } }}>
+            <Tooltip title="Refresh Data">
+              <IconButton
+                onClick={fetchEmployees}
+                size="small"
                 sx={{
-                  borderColor: "#f37021",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: 1.8,
+                  bgcolor: "#fff",
+                  width: 36,
+                  height: 36,
                   color: "#f37021",
-                  "&:hover": {
-                    borderColor: "#d95300",
-                    bgcolor: "#f8f0f4",
-                  },
-                  borderRadius: 2,
+                  "&:hover": { bgcolor: "#f2e6eb" },
+                }}
+              >
+                <Refresh fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            
+            {/* Export Button */}
+            <Button
+              variant="outlined"
+              startIcon={exporting ? <CircularProgress size={16} /> : <Download sx={{ fontSize: 18 }} />}
+              onClick={exportToExcel}
+              disabled={exporting || filteredEmployees.length === 0}
+              size="small"
+              sx={{
+                borderColor: "#f37021",
+                color: "#f37021",
+                "&:hover": {
+                  borderColor: "#d95300",
+                  bgcolor: "#f8f0f4",
+                },
+                borderRadius: 1.8,
+                textTransform: "none",
+                fontWeight: 600,
+                fontSize: "0.82rem",
+                height: 36,
+                px: 2,
+                flex: { xs: 1, sm: "none" },
+              }}
+            >
+              {exporting ? "Exporting..." : "Export"}
+            </Button>
+            
+            {isAdmin && (
+              <Button
+                variant="contained"
+                startIcon={<PersonAdd sx={{ fontSize: 18 }} />}
+                onClick={() => handleOpenForm("add")}
+                size="small"
+                sx={{
+                  bgcolor: "#f37021",
+                  color: "white",
+                  "&:hover": { bgcolor: "#d95300" },
+                  borderRadius: 1.8,
                   textTransform: "none",
-                  minWidth: { xs: "100px", sm: "120px" },
+                  fontWeight: 600,
+                  fontSize: "0.82rem",
+                  height: 36,
+                  px: 2,
+                  boxShadow: "0 2px 6px rgba(243, 112, 33, 0.25)",
                   flex: { xs: 1, sm: "none" },
                 }}
               >
-                {exporting ? "Exporting..." : "Export"}
+                Add Employee
               </Button>
-              
-              {isAdmin && (
-                <Button
-                  variant="contained"
-                  startIcon={<PersonAdd />}
-                  onClick={() => handleOpenForm("add")}
-                  sx={{
-                    bgcolor: "#f37021",
-                    color: "white",
-                    "&:hover": { bgcolor: "#d95300" },
-                    borderRadius: 2,
-                    textTransform: "none",
-                    flex: { xs: 1, sm: "none" },
-                  }}
-                >
-                  Add Employee
-                </Button>
-              )}
-            </Box>
+            )}
           </Box>
-
-          <Grid
-            container
-            spacing={2}
-            alignItems="center"
-            sx={{
-              mb: 1,
-              width: "100%",
-              m: 0,
-              "& .MuiInputBase-root": { borderRadius: 2 },
-            }}
-          >
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                variant="outlined"
-                placeholder="Search employees..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search color="action" />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{
-                  bgcolor: "#fff",
-                  boxShadow: "inset 0 1px 3px rgba(0,0,0,0.1)",
-                  "&:hover": { bgcolor: "#fefefe" },
-                }}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6} md={3}>
-              <Autocomplete
-                options={roleOptions}
-                value={filterRole}
-                onChange={(event, newValue) => setFilterRole(newValue || "")}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Filter by Role"
-                    variant="outlined"
-                  />
-                )}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    bgcolor: "#fff",
-                    borderRadius: 2,
-                  },
-                }}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6} md={3}>
-              <FormControl fullWidth size="small" sx={{ bgcolor: "#fff", borderRadius: 2 }}>
-                <InputLabel>Employee Status</InputLabel>
-                <Select
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                  label="Employee Status"
-                >
-                  <MenuItem value="1">Active Only</MenuItem>
-                  <MenuItem value="0">Inactive Only</MenuItem>
-                  <MenuItem value="">All Employees</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-          </Grid>
         </Paper>
 
         {error && (
@@ -2062,21 +2078,9 @@ const exportToExcel = () => {
           </Alert>
         )}
 
-        <Paper elevation={2} sx={{ borderRadius: 2, overflow: "hidden" }}>
+        <Paper elevation={0} sx={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", borderRadius: 2, overflow: "hidden", border: "1px solid #e2e8f0" }}>
           {isMobile ? (
-            <Box sx={{ p: { xs: 1.5, sm: 2 } }}>
-              <Typography
-                variant="h6"
-                gutterBottom
-                sx={{
-                  fontWeight: 700,
-                  fontSize: { xs: "1.05rem", sm: "1.25rem" },
-                  color: "#0f172a",
-                  mb: 2,
-                }}
-              >
-                Employee List ({filteredEmployees.length})
-              </Typography>
+            <Box sx={{ p: { xs: 1.5, sm: 2 }, flex: 1, overflowY: "auto" }}>
               <AnimatePresence>
                 {filteredEmployees
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -2095,50 +2099,56 @@ const exportToExcel = () => {
             </Box>
           ) : (
             // Desktop Table View
-            <TableContainer>
-              <Table>
-                <TableHead sx={{ bgcolor: "#f37021" }}>
+            <TableContainer sx={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
+              <Table stickyHeader size="small">
+                <TableHead
+                  sx={{
+                    bgcolor: "#f8fafc",
+                    "& .MuiTableCell-stickyHeader": {
+                      bgcolor: "#f8fafc",
+                      color: "#475569",
+                      fontWeight: 700,
+                      fontSize: "0.75rem",
+                      textTransform: "uppercase",
+                      borderBottom: "1px solid #e2e8f0",
+                    },
+                  }}
+                >
                   <TableRow>
-                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    <TableCell>
                       <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <Badge sx={{ mr: 1 }} />
+                        <Badge sx={{ mr: 1, fontSize: 16 }} />
                         Employee ID
                       </Box>
                     </TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    <TableCell>
                       <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <Person sx={{ mr: 1 }} />
+                        <Person sx={{ mr: 1, fontSize: 16 }} />
                         Name
                       </Box>
                     </TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    <TableCell>
                       <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <Phone sx={{ mr: 1 }} />
+                        <Phone sx={{ mr: 1, fontSize: 16 }} />
                         Mobile
                       </Box>
                     </TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    <TableCell>
                       <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <Email sx={{ mr: 1 }} />
+                        <Email sx={{ mr: 1, fontSize: 16 }} />
                         Email
                       </Box>
                     </TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    <TableCell>
                       <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <Work sx={{ mr: 1 }} />
+                        <Work sx={{ mr: 1, fontSize: 16 }} />
                         Role
                       </Box>
                     </TableCell>
-                    {/* <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <Schedule sx={{ mr: 1 }} />
-                        Shift
-                      </Box>
-                    </TableCell> */}
-                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    <TableCell>
                       Status
                     </TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    <TableCell>
                       Actions
                     </TableCell>
                   </TableRow>

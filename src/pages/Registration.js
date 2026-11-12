@@ -4,7 +4,7 @@ import DealerList from '../components/dealers/DealerList';
 
 function Registration() {
     return (
-        <PageWrapper title="Registration">
+        <PageWrapper title="Leads & Dealers">
             <DealerList />
         </PageWrapper>
     );

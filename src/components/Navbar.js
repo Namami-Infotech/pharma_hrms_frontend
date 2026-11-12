@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useAuth } from "../components/auth/AuthContext"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import {
   AppBar,
   Toolbar,
@@ -27,11 +27,54 @@ import {
   KeyboardArrowDown,
 } from "@mui/icons-material"
 
+const ROUTE_INFO = {
+  "/dashboard": { title: "Dashboard", subtitle: "Overview & key metrics" },
+  "/leave": { title: "Leave Management", subtitle: "Track employee leave requests, balances, and approval records" },
+  "/attendance": { title: "Attendance Management", subtitle: "Track daily attendance, check-in logs, and activity reports" },
+  "/manual-attendance": { title: "Manual Attendance", subtitle: "Mark or edit attendance records for employees manually" },
+  "/quotation": { title: "Quotations Management", subtitle: "Create, track, and manage client pharmaceutical price quotations and approvals" },
+  "/expense": { title: "Expense Management", subtitle: "Submit, review, and track employee business expenses and claims" },
+  "/advance": { title: "Advance Salary", subtitle: "Manage employee advance requests, approval workflows, and balances" },
+  "/product": { title: "Product Master", subtitle: "Manage medicine catalogue, pricing, packaging, and stock details" },
+  "/products": { title: "Product Master", subtitle: "Manage medicine catalogue, pricing, packaging, and stock details" },
+  "/employees": { title: "Employee Management", subtitle: "Manage company staff, designations, departments, and employee directory" },
+  "/employee": { title: "Employee Management", subtitle: "Manage company staff, designations, departments, and employee directory" },
+  "/offices": { title: "Offices Management", subtitle: "Locations and office branches" },
+  "/holiday": { title: "Holiday Calendar", subtitle: "Manage and view company holidays and official calendar" },
+  "/holidays": { title: "Holiday Calendar", subtitle: "Manage and view company holidays and official calendar" },
+  "/policy": { title: "Company Policies", subtitle: "Guidelines and documentation" },
+  "/notification": { title: "Notifications", subtitle: "System updates and alerts" },
+  "/invoices": { title: "Invoices", subtitle: "Manage and generate client invoices" },
+  "/salary": { title: "Salary Management", subtitle: "Generate salary slips, manage deductions, and track monthly payroll disbursements" },
+  "/profile": { title: "My Profile", subtitle: "Personal account details" },
+  "/user": { title: "My Profile", subtitle: "Personal account details" },
+  "/visit": { title: "Visit Management", subtitle: "Track and manage employee field visits, dealer check-ins, and activity logs" },
+  "/dealer": { title: "Visit Management", subtitle: "Track and manage employee field visits, dealer check-ins, and activity logs" },
+  "/plan-visit": { title: "Plan Visit", subtitle: "Schedule and manage planned dealer and clinic visits" },
+  "/assets": { title: "Asset Management", subtitle: "Company assigned assets" },
+  "/regularise": { title: "Regularise Attendance", subtitle: "Review attendance regularisation requests" },
+  "/report": { title: "Visit Reports", subtitle: "Daily field reports and logs" },
+  "/registration": { title: "Leads & Dealers", subtitle: "Register, manage and track all leads and dealer records in one place" },
+  "/maps": { title: "Field Maps & Tracking", subtitle: "Live field tracking and route coverage" },
+  "/live-track": { title: "Live Tracking", subtitle: "Real-time employee location" },
+  "/travel": { title: "Travel Management", subtitle: "Track travel requests and itineraries" },
+}
+
+const getRouteInfo = (pathname) => {
+  if (ROUTE_INFO[pathname]) return ROUTE_INFO[pathname]
+  for (const [path, info] of Object.entries(ROUTE_INFO)) {
+    if (path !== "/" && pathname.startsWith(path)) return info
+  }
+  return { title: "Aberdure HRMS", subtitle: "Pharmaceutical Management Portal" }
+}
+
 function Navbar({ onMenuClick }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const [notificationAnchor, setNotificationAnchor] = useState(null)
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const pageInfo = getRouteInfo(location.pathname)
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
 
@@ -76,18 +119,47 @@ function Navbar({ onMenuClick }) {
             boxSizing: "border-box",
           }}
         >
-          {/* Left: Mobile Drawer Toggle */}
-          <Box sx={{ display: "flex", alignItems: "center" }}>
+          {/* Left: Mobile Drawer Toggle + Page Title & Subtitle */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, minWidth: 0, pr: 2 }}>
             {isMobile && (
               <IconButton 
                 onClick={onMenuClick}
                 edge="start"
                 size="small"
-                sx={{ color: "#64748b" }}
+                sx={{ color: "#64748b", mr: 0.5 }}
               >
                 <MenuIcon />
               </IconButton>
             )}
+            <Box sx={{ minWidth: 0 }}>
+              <Typography
+                variant="h6"
+                noWrap
+                sx={{
+                  fontWeight: 700,
+                  color: "#0f172a",
+                  fontSize: { xs: "1.05rem", sm: "1.25rem" },
+                  letterSpacing: -0.3,
+                  lineHeight: 1.25,
+                }}
+              >
+                {pageInfo.title}
+              </Typography>
+              {pageInfo.subtitle && (
+                <Typography
+                  variant="caption"
+                  noWrap
+                  sx={{
+                    color: "#64748b",
+                    fontSize: { xs: "0.72rem", sm: "0.78rem" },
+                    display: { xs: "none", sm: "block" },
+                    mt: 0.2,
+                  }}
+                >
+                  {pageInfo.subtitle}
+                </Typography>
+              )}
+            </Box>
           </Box>
 
           {/* Right: User Profile (Notification Bell commented out for now) */}

@@ -37,6 +37,7 @@ import {
   Tabs,
   Tab,
   Badge,
+  ButtonBase,
 } from "@mui/material";
 import {
   Download,
@@ -56,6 +57,8 @@ import {
   Info,
   Today,
   Groups,
+  CheckCircle,
+  Cancel,
 } from "@mui/icons-material";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
@@ -300,82 +303,29 @@ const AttendanceCard = ({ activity, isMobile }) => {
   );
 };
 
-// Legend Component
+// Legend Component - compact dot strip
 const CalendarLegend = () => {
   const theme = useTheme();
 
   const legendItems = [
-    {
-      color: theme.palette.success.main,
-      label: "On Time",
-      icon: <AccessTime />,
-    },
-    { color: theme.palette.error.main, label: "Late", icon: <Schedule /> },
-    { color: theme.palette.warning.main, label: "Holiday", icon: <Event /> },
-    {
-      color: theme.palette.secondary.main,
-      label: "Week Off",
-      icon: <Weekend />,
-    },
-    { color: theme.palette.info.main, label: "Leave", icon: <BeachAccess /> },
+    { color: theme.palette.success.main, label: "On Time" },
+    { color: theme.palette.error.main, label: "Late" },
+    { color: theme.palette.warning.main, label: "Holiday" },
+    { color: theme.palette.secondary.main, label: "Week Off" },
+    { color: theme.palette.info.main, label: "Leave" },
   ];
 
   return (
-    <Paper
-      sx={{
-        p: { xs: 1.5, md: 2 },
-        mb: 2,
-        borderRadius: 2,
-        boxShadow: 1,
-      }}
-    >
-      <Typography
-        variant="subtitle2"
-        gutterBottom
-        sx={{ display: "flex", alignItems: "center", gap: 1, fontWeight: 500 }}
-      >
-        <Info fontSize="small" />
-        Calendar Legend
-      </Typography>
-
-      <Stack direction="row" spacing={2} flexWrap="wrap">
-        {legendItems.map((item, index) => (
-          <Box
-            key={index}
-            display="flex"
-            alignItems="center"
-            gap={1}
-            sx={{
-              mb: 1,
-              px: 1,
-              py: 0.5,
-              borderRadius: 1,
-              backgroundColor: "#f9f9f9",
-              border: `1px solid ${theme.palette.divider}`,
-            }}
-          >
-            <Box
-              sx={{
-                width: 18,
-                height: 18,
-                backgroundColor: item.color,
-                borderRadius: "50%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {React.cloneElement(item.icon, {
-                sx: { fontSize: 12, color: "#fff" },
-              })}
-            </Box>
-            <Typography variant="caption" sx={{ fontWeight: 500 }}>
-              {item.label}
-            </Typography>
-          </Box>
-        ))}
-      </Stack>
-    </Paper>
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flexWrap: "wrap" }}>
+      {legendItems.map((item, index) => (
+        <Box key={index} sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
+          <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: item.color }} />
+          <Typography sx={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 500 }}>
+            {item.label}
+          </Typography>
+        </Box>
+      ))}
+    </Box>
   );
 };
 
@@ -1420,442 +1370,415 @@ const AttendanceList = () => {
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Box
         sx={{
-          p: { xs: 2, sm: 3 },
+          p: { xs: 1, sm: 1.5 },
           bgcolor: "#f8fafc",
-          minHeight: "100vh",
+          height: "100%",
+          maxHeight: "100%",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
           boxSizing: "border-box",
         }}
       >
-        <Box sx={{ width: "100%" }}>
-          {/* Header Row */}
-          <Box sx={{ mb: 3, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
-            <Box>
-              <Typography
-                variant="h5"
-                sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}
-              >
-                Attendance Management
-              </Typography>
-              <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: "0.85rem" }}>
-                Track daily attendance, check-in logs, and activity reports
-              </Typography>
-            </Box>
+        {/* Top Control Bar: Tabs + Filters + Actions in a single sleek Paper */}
+        <Paper
+          elevation={0}
+          sx={{
+            p: 1,
+            mb: 1.2,
+            borderRadius: 2,
+            border: "1px solid #e2e8f0",
+            bgcolor: "#ffffff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 1.2,
+            flexShrink: 0,
+          }}
+        >
+          {/* Left: View Tabs */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              bgcolor: "#f1f5f9",
+              p: 0.4,
+              borderRadius: 2,
+              gap: 0.4,
+            }}
+          >
+            <ButtonBase
+              onClick={(e) => handleTabChange(e, 0)}
+              sx={{
+                px: 1.5,
+                py: 0.6,
+                borderRadius: 1.5,
+                fontSize: "0.82rem",
+                fontWeight: activeTab === 0 ? 700 : 500,
+                bgcolor: activeTab === 0 ? "#f37021" : "transparent",
+                color: activeTab === 0 ? "#ffffff" : "#64748b",
+                display: "flex",
+                alignItems: "center",
+                gap: 0.7,
+                transition: "all 0.15s ease",
+                boxShadow: activeTab === 0 ? "0 1px 3px rgba(243, 112, 33, 0.3)" : "none",
+                "&:hover": {
+                  bgcolor: activeTab === 0 ? "#e05f10" : "rgba(0,0,0,0.04)",
+                },
+              }}
+            >
+              <CalendarToday sx={{ fontSize: 16 }} />
+              Attendance History
+            </ButtonBase>
+            <ButtonBase
+              onClick={(e) => handleTabChange(e, 1)}
+              sx={{
+                px: 1.5,
+                py: 0.6,
+                borderRadius: 1.5,
+                fontSize: "0.82rem",
+                fontWeight: activeTab === 1 ? 700 : 500,
+                bgcolor: activeTab === 1 ? "#f37021" : "transparent",
+                color: activeTab === 1 ? "#ffffff" : "#64748b",
+                display: "flex",
+                alignItems: "center",
+                gap: 0.7,
+                transition: "all 0.15s ease",
+                boxShadow: activeTab === 1 ? "0 1px 3px rgba(243, 112, 33, 0.3)" : "none",
+                "&:hover": {
+                  bgcolor: activeTab === 1 ? "#e05f10" : "rgba(0,0,0,0.04)",
+                },
+              }}
+            >
+              <Today sx={{ fontSize: 16 }} />
+              Today's Attendance
+            </ButtonBase>
+          </Box>
 
-            {/* Action Buttons Row */}
-            <Stack direction="row" spacing={1} alignItems="center">
-              {/* Regularise Settings button removed as requested */}
+          {/* Middle: Filters for Active Tab */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              flexWrap: "wrap",
+              flex: 1,
+              justifyContent: { xs: "flex-start", md: "center" },
+            }}
+          >
+            {activeTab === 0 ? (
+              <>
+                {canSelectEmployee && (
+                  <Box sx={{ minWidth: { xs: 180, sm: 220 }, maxWidth: 280 }}>
+                    <Autocomplete
+                      options={filteredEmployees}
+                      getOptionLabel={(option) => `${option.Name} (${option.EmpId})`}
+                      value={employees.find((emp) => emp.EmpId === selectedEmpId) || null}
+                      onChange={(event, newValue) => {
+                        setSelectedEmpId(newValue ? newValue.EmpId : "");
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          placeholder="Select Employee"
+                          variant="outlined"
+                          size="small"
+                          InputProps={{
+                            ...params.InputProps,
+                            startAdornment: <Person sx={{ mr: 0.5, color: "#94a3b8", fontSize: 18 }} />,
+                          }}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              height: 36,
+                              fontSize: "0.82rem",
+                              borderRadius: 1.5,
+                            },
+                          }}
+                        />
+                      )}
+                    />
+                  </Box>
+                )}
 
-              <Tooltip
-                title={
-                  activeTab === 0
-                    ? "Export to CSV"
-                    : "Export Today's Data"
-                }
-              >
+                <DatePicker
+                  views={["year", "month"]}
+                  value={selectedDate}
+                  onChange={(newValue) => newValue && setSelectedDate(newValue)}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      size="small"
+                      sx={{
+                        width: 160,
+                        "& .MuiOutlinedInput-root": {
+                          height: 36,
+                          fontSize: "0.82rem",
+                          borderRadius: 1.5,
+                        },
+                      }}
+                    />
+                  )}
+                />
+
+                {/* View Mode Toggle: List / Calendar */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    bgcolor: "#f1f5f9",
+                    p: 0.3,
+                    borderRadius: 1.5,
+                  }}
+                >
+                  <ButtonBase
+                    onClick={() => setViewMode("list")}
+                    sx={{
+                      px: 1.2,
+                      py: 0.4,
+                      borderRadius: 1.2,
+                      fontSize: "0.78rem",
+                      fontWeight: viewMode === "list" ? 600 : 500,
+                      bgcolor: viewMode === "list" ? "#ffffff" : "transparent",
+                      color: viewMode === "list" ? "#0f172a" : "#64748b",
+                      boxShadow: viewMode === "list" ? "0 1px 2px rgba(0,0,0,0.06)" : "none",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 0.5,
+                    }}
+                  >
+                    <FilterList sx={{ fontSize: 15 }} />
+                    List
+                  </ButtonBase>
+                  <ButtonBase
+                    onClick={() => setViewMode("calendar")}
+                    sx={{
+                      px: 1.2,
+                      py: 0.4,
+                      borderRadius: 1.2,
+                      fontSize: "0.78rem",
+                      fontWeight: viewMode === "calendar" ? 600 : 500,
+                      bgcolor: viewMode === "calendar" ? "#ffffff" : "transparent",
+                      color: viewMode === "calendar" ? "#0f172a" : "#64748b",
+                      boxShadow: viewMode === "calendar" ? "0 1px 2px rgba(0,0,0,0.06)" : "none",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 0.5,
+                    }}
+                  >
+                    <CalendarToday sx={{ fontSize: 14 }} />
+                    Calendar
+                  </ButtonBase>
+                </Box>
+              </>
+            ) : (
+              <>
+                <DatePicker
+                  value={selectedTodayDate}
+                  onChange={(newDate) => newDate && setSelectedTodayDate(newDate)}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      size="small"
+                      sx={{
+                        width: 150,
+                        "& .MuiOutlinedInput-root": {
+                          height: 36,
+                          fontSize: "0.82rem",
+                          borderRadius: 1.5,
+                        },
+                      }}
+                    />
+                  )}
+                />
+
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.8 }}>
+                  <Chip
+                    clickable
+                    onClick={handleAllClick}
+                    size="small"
+                    label={`All: ${activeEmployeesCount}`}
+                    sx={{
+                      fontSize: "0.75rem",
+                      fontWeight: 600,
+                      bgcolor: todayFilter === "all" ? "#0f172a" : "#f1f5f9",
+                      color: todayFilter === "all" ? "#ffffff" : "#475569",
+                      "&:hover": { bgcolor: todayFilter === "all" ? "#1e293b" : "#e2e8f0" },
+                    }}
+                  />
+                  <Chip
+                    clickable
+                    onClick={handlePresentClick}
+                    size="small"
+                    label={`Present: ${presentCount}`}
+                    sx={{
+                      fontSize: "0.75rem",
+                      fontWeight: 600,
+                      bgcolor: todayFilter === "present" ? "#10b981" : "rgba(16, 185, 129, 0.12)",
+                      color: todayFilter === "present" ? "#ffffff" : "#047857",
+                      "&:hover": { bgcolor: todayFilter === "present" ? "#059669" : "rgba(16, 185, 129, 0.2)" },
+                    }}
+                  />
+                  <Chip
+                    clickable
+                    onClick={handleAbsentClick}
+                    size="small"
+                    label={`Absent: ${absentCount}`}
+                    sx={{
+                      fontSize: "0.75rem",
+                      fontWeight: 600,
+                      bgcolor: todayFilter === "absent" ? "#ef4444" : "rgba(239, 68, 68, 0.12)",
+                      color: todayFilter === "absent" ? "#ffffff" : "#b91c1c",
+                      "&:hover": { bgcolor: todayFilter === "absent" ? "#dc2626" : "rgba(239, 68, 68, 0.2)" },
+                    }}
+                  />
+                </Box>
+              </>
+            )}
+          </Box>
+
+          {/* Right: Export & Refresh */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Tooltip title={activeTab === 0 ? "Export to CSV" : "Export Today's Data"}>
+              <span>
                 <Button
                   variant="contained"
-                  onClick={
-                    activeTab === 0 ? exportToCsv : exportTodayToCsv
-                  }
+                  onClick={activeTab === 0 ? exportToCsv : exportTodayToCsv}
                   disabled={
                     activeTab === 0
                       ? filteredActivities.length === 0
                       : filteredTodayAttendance.length === 0
                   }
                   size="small"
-                  startIcon={<Download />}
+                  startIcon={<Download sx={{ fontSize: 16 }} />}
                   sx={{
                     bgcolor: "#f37021",
                     color: "#ffffff",
-                    borderRadius: 2,
+                    borderRadius: 1.5,
                     textTransform: "none",
                     fontWeight: 600,
-                    height: 38,
-                    px: 2,
+                    fontSize: "0.82rem",
+                    height: 36,
+                    px: 1.8,
                     boxShadow: "0 1px 3px rgba(243, 112, 33, 0.25)",
                     "&:hover": { bgcolor: "#d95300" },
                   }}
                 >
                   Export
                 </Button>
-              </Tooltip>
+              </span>
+            </Tooltip>
 
-              <Tooltip title="Refresh Data">
-                <IconButton
-                  onClick={refreshData}
-                  disabled={loading || todayLoading}
-                  size="small"
-                  sx={{
-                    bgcolor: "#ffffff",
-                    border: "1px solid #e2e8f0",
-                    color: "#64748b",
-                    width: 38,
-                    height: 38,
-                    borderRadius: 2,
-                    "&:hover": { bgcolor: "#f8fafc", color: "#0f172a" },
-                  }}
-                >
-                  {loading || todayLoading ? (
-                    <CircularProgress size={18} />
-                  ) : (
-                    <Refresh fontSize="small" />
-                  )}
-                </IconButton>
-              </Tooltip>
-            </Stack>
-          </Box>
-
-          {/* History Filters - Rendered only when Attendance History tab is active */}
-          {activeTab === 0 && (
-            <Paper
-              sx={{ p: 2, mb: 3, borderRadius: 2, border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}
-            >
-              <Box
-                display="flex"
-                flexDirection={{ xs: "column", md: "row" }}
-                alignItems="center"
-                justifyContent="space-between"
-                gap={2}
+            <Tooltip title="Refresh Data">
+              <IconButton
+                onClick={refreshData}
+                disabled={loading || todayLoading}
+                size="small"
+                sx={{
+                  bgcolor: "#ffffff",
+                  border: "1px solid #e2e8f0",
+                  color: "#64748b",
+                  width: 36,
+                  height: 36,
+                  borderRadius: 1.5,
+                  "&:hover": { bgcolor: "#f8fafc", color: "#0f172a" },
+                }}
               >
-                <Box
-                  display="flex"
-                  flexDirection={{ xs: "column", sm: "row" }}
-                  gap={1.5}
-                  flex={1}
-                  sx={{ width: { xs: "100%", md: "auto" } }}
-                >
-                  {canSelectEmployee && (
-                    <Box flex={{ xs: 1, sm: 1 }}>
-                      <Autocomplete
-                        options={filteredEmployees}
-                        getOptionLabel={(option) => `${option.Name} (${option.EmpId})`}
-                        value={employees.find((emp) => emp.EmpId === selectedEmpId) || null}
-                        onChange={(event, newValue) => {
-                          setSelectedEmpId(newValue ? newValue.EmpId : "");
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Select Employee"
-                            variant="outlined"
-                            fullWidth
-                            size="small"
-                            InputProps={{
-                              ...params.InputProps,
-                              startAdornment: <Person sx={{ mr: 1, color: "action.active" }} />,
-                            }}
-                          />
-                        )}
-                      />
-                    </Box>
-                  )}
+                {loading || todayLoading ? (
+                  <CircularProgress size={16} />
+                ) : (
+                  <Refresh sx={{ fontSize: 18 }} />
+                )}
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </Paper>
 
-                  {/* {isAdmin && (
-                    <Box sx={{ minWidth: 150 }}>
-                      <FormControl fullWidth size="small">
-                        <InputLabel>Employee Status</InputLabel>
-                        <Select
-                          value={employeeFilter}
-                          label="Employee Status"
-                          onChange={(e) => handleEmployeeFilterChange(e.target.value)}
-                        >
-                          <MenuItem value="active">Active Only</MenuItem>
-                          <MenuItem value="inactive">Inactive Only</MenuItem>
-                          <MenuItem value="all">All Employees</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Box>
-                  )} */}
+        {/* Error Alert */}
+        {error && (
+          <Alert
+            severity="error"
+            sx={{ mb: 1, py: 0.2, flexShrink: 0 }}
+            onClose={() => setError(null)}
+          >
+            {error}
+          </Alert>
+        )}
 
-                  <Box flex={{ xs: 1, sm: 1 }}>
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                      <DatePicker
-                        views={["year", "month"]}
-                        label="Select Month & Year"
-                        value={selectedDate}
-                        onChange={(newValue) => setSelectedDate(newValue)}
-                        renderInput={(params) => <TextField {...params} size="small" fullWidth />}
-                      />
-                    </LocalizationProvider>
-                  </Box>
-                </Box>
-
-                {/* View Mode Toggle */}
-                <Box sx={{ display: "flex", gap: 0.5 }}>
-                  <Button
-                    variant={viewMode === "calendar" ? "contained" : "outlined"}
-                    onClick={() => setViewMode("calendar")}
-                    size="small"
-                    startIcon={<CalendarToday />}
-                    sx={{
-                      borderRadius: 2,
-                      textTransform: "none",
-                      px: 2,
-                      bgcolor: viewMode === "calendar" ? "#f37021" : "transparent",
-                      color: viewMode === "calendar" ? "#fff" : "inherit",
-                      "&:hover": { bgcolor: viewMode === "calendar" ? "#d95300" : "rgba(0,0,0,0.04)" },
-                    }}
-                  >
-                    Calendar
-                  </Button>
-                  <Button
-                    variant={viewMode === "list" ? "contained" : "outlined"}
-                    onClick={() => setViewMode("list")}
-                    size="small"
-                    startIcon={<FilterList />}
-                    sx={{
-                      borderRadius: 2,
-                      textTransform: "none",
-                      px: 2,
-                      bgcolor: viewMode === "list" ? "#f37021" : "transparent",
-                      color: viewMode === "list" ? "#fff" : "inherit",
-                      "&:hover": { bgcolor: viewMode === "list" ? "#d95300" : "rgba(0,0,0,0.04)" },
-                    }}
-                  >
-                    List
-                  </Button>
-                </Box>
-              </Box>
-            </Paper>
-          )}
-
-          {/* Error Alert */}
-          {error && (
-            <Alert
-              severity="error"
-              sx={{ mb: 3 }}
-              onClose={() => setError(null)}
-            >
-              {error}
-            </Alert>
-          )}
-
-          {/* Loading Alert */}
-          {(loading || todayLoading) && (
-            <Alert severity="info" sx={{ mb: 3 }}>
-              <Box display="flex" alignItems="center" gap={2}>
-                <CircularProgress size={20} />
+        {/* Loading Alert */}
+        {(loading || todayLoading) && (
+          <Alert severity="info" sx={{ mb: 1, py: 0.2, flexShrink: 0 }}>
+            <Box display="flex" alignItems="center" gap={1.5}>
+              <CircularProgress size={16} />
+              <Typography variant="body2" sx={{ fontSize: "0.8rem" }}>
                 {activeTab === 0
                   ? "Loading attendance data..."
                   : "Loading today's attendance..."}
-              </Box>
-            </Alert>
-          )}
+              </Typography>
+            </Box>
+          </Alert>
+        )}
 
-          {/* Tabs for switching between views */}
-          <Paper sx={{ mb: 2, borderRadius: 2, boxShadow: 1 }}>
-            <Tabs
-              value={activeTab}
-              onChange={handleTabChange}
-              variant="fullWidth"
-              sx={{
-                borderBottom: 1,
-                borderColor: "divider",
-                "& .MuiTab-root": {
-                  minHeight: 48,
-                },
-              }}
-            >
-              <Tab
-                icon={<CalendarToday />}
-                label="Attendance History"
-                iconPosition="start"
-              />
-              <Tab
-                icon={<Today />}
-                label="Today's Attendance"
-                iconPosition="start"
-              />
-            </Tabs>
-          </Paper>
-
-          {activeTab === 0 ? (
-            <>
-              {/* Summary Cards for History View */}
-              <Grid container spacing={1} sx={{ mb: 2 }}>
-                <Grid item xs={6} sm={3}>
-                  <Card
-                    sx={{
-                      background:
-                        "linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)",
-                      p: 0.5,
-                      borderRadius: 1.5,
-                      boxShadow: 0.5,
-                    }}
-                  >
-                    <CardContent sx={{ p: 0.5, "&:last-child": { pb: 0.5 } }}>
-                      <Box
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="space-between"
-                      >
-                        <Box>
-                          <Typography variant="caption" color="text.secondary">
-                            Working Days
-                          </Typography>
-                          <Typography
-                            variant="subtitle2"
-                            fontWeight="bold"
-                            lineHeight={1}
-                          >
-                            {totalDays}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            Records
-                          </Typography>
-                        </Box>
-                        <CalendarToday
-                          sx={{ fontSize: 18, color: "#f37021" }}
-                        />
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
-
-                <Grid item xs={6} sm={3}>
-                  <Card
-                    sx={{
-                      background:
-                        "linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)",
-                      p: 0.5,
-                      borderRadius: 1.5,
-                      boxShadow: 0.5,
-                    }}
-                  >
-                    <CardContent sx={{ p: 0.5, "&:last-child": { pb: 0.5 } }}>
-                      <Box
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="space-between"
-                      >
-                        <Box>
-                          <Typography variant="caption" color="text.secondary">
-                            On Time
-                          </Typography>
-                          <Typography
-                            variant="subtitle2"
-                            fontWeight="bold"
-                            color="success.main"
-                            lineHeight={1}
-                          >
-                            {onTimeDays}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {totalDays > 0
-                              ? `${((onTimeDays / totalDays) * 100).toFixed(1)}%`
-                              : "0%"}
-                          </Typography>
-                        </Box>
-                        <AccessTime
-                          sx={{ fontSize: 18, color: "success.main" }}
-                        />
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
-
-                <Grid item xs={6} sm={3}>
-                  <Card
-                    sx={{
-                      background:
-                        "linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%)",
-                      p: 0.5,
-                      borderRadius: 1.5,
-                      boxShadow: 0.5,
-                    }}
-                  >
-                    <CardContent sx={{ p: 0.5, "&:last-child": { pb: 0.5 } }}>
-                      <Box
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="space-between"
-                      >
-                        <Box>
-                          <Typography variant="caption" color="text.secondary">
-                            Late Arrivals
-                          </Typography>
-                          <Typography
-                            variant="subtitle2"
-                            fontWeight="bold"
-                            color="error.main"
-                            lineHeight={1}
-                          >
-                            {lateDays}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {totalDays > 0
-                              ? `${((lateDays / totalDays) * 100).toFixed(1)}%`
-                              : "0%"}
-                          </Typography>
-                        </Box>
-                        <Schedule sx={{ fontSize: 18, color: "error.main" }} />
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
-
-                <Grid item xs={6} sm={3}>
-                  <Card
-                    sx={{
-                      background:
-                        "linear-gradient(135deg, #fff3e0 0%, #ffcc80 100%)",
-                      p: 0.5,
-                      borderRadius: 1.5,
-                      boxShadow: 0.5,
-                    }}
-                  >
-                    <CardContent sx={{ p: 0.5, "&:last-child": { pb: 0.5 } }}>
-                      <Box
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="space-between"
-                      >
-                        <Box>
-                          <Typography variant="caption" color="text.secondary">
-                            Non-Working
-                          </Typography>
-                          <Typography
-                            variant="subtitle2"
-                            fontWeight="bold"
-                            color="warning.main"
-                            lineHeight={1}
-                          >
-                            {holidayCount + weekOffCount + leaveCount}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            Holidays / Leaves
-                          </Typography>
-                        </Box>
-                        <Event sx={{ fontSize: 18, color: "warning.main" }} />
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              </Grid>
-
-              {/* Calendar Legend */}
-              <CalendarLegend />
-
-              {/* Main Content for History View */}
-              {viewMode === "calendar" ? (
+        {/* Main 2-Column Section Matching Screenshot 3 */}
+        <Box
+          sx={{
+            flex: 1,
+            minHeight: 0,
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", lg: "1fr 260px", xl: "1fr 280px" },
+            gap: 1.5,
+            overflow: "hidden",
+          }}
+        >
+          {/* Left Column: Table or Full Calendar */}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              minHeight: 0,
+              height: "100%",
+              overflow: "hidden",
+            }}
+          >
+            {activeTab === 0 ? (
+              viewMode === "calendar" ? (
                 <Paper
-                  sx={{ p: { xs: 1.5, md: 2 }, borderRadius: 2, boxShadow: 1, overflow: "hidden" }}
+                  sx={{
+                    flex: 1,
+                    minHeight: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    p: 1.5,
+                    borderRadius: 2.5,
+                    border: "1px solid #e2e8f0",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+                    overflow: "hidden",
+                    bgcolor: "#ffffff",
+                  }}
                 >
-                  <Typography
-                    variant="h6"
-                    gutterBottom
-                    sx={{ fontWeight: 500, fontSize: { xs: "0.95rem", sm: "1.25rem" } }}
-                  >
-                    Attendance Calendar - {format(selectedDate, "MMMM yyyy")}
-                  </Typography>
-
                   <Box
                     sx={{
-                      width: "100%",
-                      overflowX: "auto",
-                      WebkitOverflowScrolling: "touch",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      mb: 1,
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Typography sx={{ fontWeight: 600, fontSize: "0.95rem", color: "#0f172a" }}>
+                      Attendance Calendar - {format(selectedDate, "MMMM yyyy")}
+                    </Typography>
+                    <CalendarLegend />
+                  </Box>
+                  <Box
+                    sx={{
+                      flex: 1,
+                      minHeight: 0,
+                      overflow: "auto",
                       "& .rbc-calendar": {
                         minWidth: { xs: 480, sm: "100%" },
+                        height: "100% !important",
+                        minHeight: 400,
                       },
                     }}
                   >
@@ -1865,7 +1788,7 @@ const AttendanceList = () => {
                       startAccessor="start"
                       endAccessor="end"
                       style={{
-                        height: 450,
+                        height: "100%",
                         backgroundColor: "#fff",
                         borderRadius: 8,
                         padding: 4,
@@ -1886,37 +1809,69 @@ const AttendanceList = () => {
                   </Box>
                 </Paper>
               ) : (
-                <Paper sx={{ borderRadius: 2, boxShadow: 1 }}>
-                  <Box sx={{ p: { xs: 1.5, md: 2 } }}>
-                    <Typography
-                      variant="h6"
-                      gutterBottom
-                      sx={{ fontWeight: 500 }}
-                    >
-                      All Records - {format(selectedDate, "MMMM yyyy")}
-                    </Typography>
-                    <Divider sx={{ mb: 2 }} />
+                <Paper
+                  sx={{
+                    flex: 1,
+                    minHeight: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    borderRadius: 2.5,
+                    border: "1px solid #e2e8f0",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+                    overflow: "hidden",
+                    bgcolor: "#ffffff",
+                  }}
+                >
+                  {/* Table Card Header */}
+                  <Box
+                    sx={{
+                      p: 1.2,
+                      px: 2,
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      borderBottom: "1px solid #f1f5f9",
+                      flexShrink: 0,
+                      flexWrap: "wrap",
+                      gap: 1,
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Typography sx={{ fontWeight: 700, fontSize: "0.92rem", color: "#0f172a" }}>
+                        All Records - {format(selectedDate, "MMMM yyyy")}
+                      </Typography>
+                      <Chip
+                        label={`${filteredActivities.length} Records`}
+                        size="small"
+                        sx={{
+                          height: 20,
+                          fontSize: "0.7rem",
+                          fontWeight: 600,
+                          bgcolor: "#fff7ed",
+                          color: "#f37021",
+                          border: "1px solid #ffedd5",
+                        }}
+                      />
+                    </Box>
+                    <CalendarLegend />
+                  </Box>
 
+                  {/* Table Scrollable Container */}
+                  <TableContainer sx={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "auto" }}>
                     {filteredActivities.length === 0 ? (
                       <Box sx={{ textAlign: "center", py: 6 }}>
-                        <CalendarToday
-                          sx={{ fontSize: 60, color: "text.secondary", mb: 2 }}
-                        />
-                        <Typography
-                          variant="subtitle1"
-                          color="text.secondary"
-                          gutterBottom
-                        >
+                        <CalendarToday sx={{ fontSize: 48, color: "#cbd5e1", mb: 1.5 }} />
+                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                           No records found
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="caption" color="text.secondary">
                           {selectedEmpId
                             ? `No data available for ${format(selectedDate, "MMMM yyyy")}`
                             : "Please select an employee to view attendance data"}
                         </Typography>
                       </Box>
                     ) : isMobile ? (
-                      <Stack spacing={1}>
+                      <Stack spacing={1} sx={{ p: 1 }}>
                         {filteredActivities
                           .slice(
                             page * rowsPerPage,
@@ -1931,420 +1886,238 @@ const AttendanceList = () => {
                           ))}
                       </Stack>
                     ) : (
-                      <TableContainer sx={{ borderRadius: 2 }}>
-                        <Table>
-                          <TableHead>
-                            <TableRow
-                              sx={{
-                                backgroundColor: theme.palette.primary.main,
-                              }}
-                            >
-                              {[
-                                "Date",
-                                "Type",
-                                "Check In",
-                                "Check Out",
-                                "Working Hours",
-                                "Status",
-                              ].map((head) => (
-                                <TableCell
-                                  key={head}
-                                  sx={{
-                                    color: "#fff",
-                                    fontWeight: 600,
-                                    py: 1.2,
-                                  }}
-                                >
-                                  {head}
-                                </TableCell>
-                              ))}
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {filteredActivities
-                              .slice(
-                                page * rowsPerPage,
-                                page * rowsPerPage + rowsPerPage,
-                              )
-                              .map((activity, index) => (
-                                <TableRow
-                                  key={index}
-                                  sx={{
-                                    "&:hover": {
-                                      backgroundColor:
-                                        theme.palette.action.hover,
-                                    },
-                                    borderLeft: `4px solid ${activity.type === "attendance"
+                      <Table stickyHeader size="small">
+                        <TableHead>
+                          <TableRow>
+                            {[
+                              "Date",
+                              "Type",
+                              "Check In",
+                              "Check Out",
+                              "Working Hours",
+                              "Status",
+                            ].map((head) => (
+                              <TableCell
+                                key={head}
+                                sx={{
+                                  bgcolor: "#f8fafc",
+                                  color: "#475569",
+                                  fontWeight: 700,
+                                  fontSize: "0.75rem",
+                                  py: 1,
+                                  borderBottom: "1px solid #e2e8f0",
+                                }}
+                              >
+                                {head}
+                              </TableCell>
+                            ))}
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {filteredActivities
+                            .slice(
+                              page * rowsPerPage,
+                              page * rowsPerPage + rowsPerPage,
+                            )
+                            .map((activity, index) => (
+                              <TableRow
+                                key={index}
+                                sx={{
+                                  "&:hover": { bgcolor: "#f8fafc" },
+                                  borderLeft: `3px solid ${
+                                    activity.type === "attendance"
                                       ? activity.color === "green"
-                                        ? theme.palette.success.main
-                                        : theme.palette.error.main
+                                        ? "#10b981"
+                                        : "#ef4444"
                                       : activity.type === "holiday"
-                                        ? theme.palette.warning.main
-                                        : activity.type === "weekoff"
-                                          ? theme.palette.secondary.main
-                                          : theme.palette.info.main
-                                      }`,
-                                    transition: "background 0.3s",
-                                  }}
-                                >
-                                  <TableCell sx={{ py: 1 }}>
-                                    <Box
-                                      display="flex"
-                                      alignItems="center"
-                                      gap={1}
-                                    >
-                                      <CalendarToday
-                                        fontSize="small"
-                                        sx={{ color: "#f37021" }}
-                                      />
-                                      {activity.start
-                                        ? format(activity.start, "dd/MM/yyyy")
-                                        : "N/A"}
-                                    </Box>
-                                  </TableCell>
-
-                                  <TableCell sx={{ py: 1 }}>
-                                    <Box
-                                      display="flex"
-                                      alignItems="center"
-                                      gap={1}
-                                    >
-                                      {activity.type === "attendance" && (
-                                        <Person fontSize="small" />
-                                      )}
-                                      {activity.type === "holiday" && (
-                                        <Event fontSize="small" />
-                                      )}
-                                      {activity.type === "weekoff" && (
-                                        <Weekend fontSize="small" />
-                                      )}
-                                      {activity.type === "leave" && (
-                                        <BeachAccess fontSize="small" />
-                                      )}
-                                      <Typography
-                                        variant="body2"
-                                        sx={{ textTransform: "capitalize" }}
+                                      ? "#f59e0b"
+                                      : activity.type === "weekoff"
+                                      ? "#94a3b8"
+                                      : "#3b82f6"
+                                  }`,
+                                }}
+                              >
+                                <TableCell sx={{ py: 0.8, fontSize: "0.8rem" }}>
+                                  <Box display="flex" alignItems="center" gap={0.8}>
+                                    <CalendarToday sx={{ fontSize: 14, color: "#f37021" }} />
+                                    {activity.start ? format(activity.start, "dd/MM/yyyy") : "N/A"}
+                                  </Box>
+                                </TableCell>
+                                <TableCell sx={{ py: 0.8, fontSize: "0.8rem" }}>
+                                  <Box display="flex" alignItems="center" gap={0.8}>
+                                    {activity.type === "attendance" && <Person sx={{ fontSize: 15, color: "#64748b" }} />}
+                                    {activity.type === "holiday" && <Event sx={{ fontSize: 15, color: "#f59e0b" }} />}
+                                    {activity.type === "weekoff" && <Weekend sx={{ fontSize: 15, color: "#94a3b8" }} />}
+                                    {activity.type === "leave" && <BeachAccess sx={{ fontSize: 15, color: "#3b82f6" }} />}
+                                    <Typography sx={{ fontSize: "0.78rem", textTransform: "capitalize", fontWeight: 500 }}>
+                                      {activity.type}
+                                    </Typography>
+                                  </Box>
+                                </TableCell>
+                                <TableCell sx={{ py: 0.8, fontSize: "0.8rem" }}>
+                                  {activity.type === "attendance" ? (
+                                    <Tooltip title={`Location: ${activity.firstInLocation || "N/A"}`}>
+                                      <Box
+                                        component="a"
+                                        href={generateMapUrl(activity.firstInLocation)}
+                                        target="_blank"
+                                        sx={{
+                                          textDecoration: "none",
+                                          color: "#0284c7",
+                                          display: "flex",
+                                          alignItems: "center",
+                                          gap: 0.5,
+                                          fontSize: "0.78rem",
+                                          "&:hover": { textDecoration: "underline" },
+                                        }}
                                       >
-                                        {activity.type}
-                                      </Typography>
-                                    </Box>
-                                  </TableCell>
-
-                                  <TableCell sx={{ py: 1 }}>
-                                    {activity.type === "attendance" ? (
-                                      <Tooltip
-                                        title={`Location: ${activity.firstInLocation || "N/A"}`}
-                                      >
+                                        <LocationOn sx={{ fontSize: 14 }} />
+                                        {activity.firstIn} ({activity.firstEvent})
+                                      </Box>
+                                    </Tooltip>
+                                  ) : (
+                                    <Typography sx={{ color: "#94a3b8", fontSize: "0.78rem" }}>-</Typography>
+                                  )}
+                                </TableCell>
+                                <TableCell sx={{ py: 0.8, fontSize: "0.8rem" }}>
+                                  {activity.type === "attendance" ? (
+                                    activity.lastOutLocation !== "N/A" ? (
+                                      <Tooltip title={`Location: ${activity.lastOutLocation}`}>
                                         <Box
                                           component="a"
-                                          href={generateMapUrl(
-                                            activity.firstInLocation,
-                                          )}
+                                          href={generateMapUrl(activity.lastOutLocation)}
                                           target="_blank"
                                           sx={{
                                             textDecoration: "none",
-                                            color: "primary.main",
+                                            color: "#0284c7",
                                             display: "flex",
                                             alignItems: "center",
-                                            gap: 1,
-                                            "&:hover": {
-                                              textDecoration: "underline",
-                                            },
+                                            gap: 0.5,
+                                            fontSize: "0.78rem",
+                                            "&:hover": { textDecoration: "underline" },
                                           }}
                                         >
-                                          <LocationOn fontSize="small" />
-                                          {activity.firstIn} (
-                                          {activity.firstEvent})
+                                          <LocationOn sx={{ fontSize: 14 }} />
+                                          {activity.lastOut} ({activity.lastEvent})
                                         </Box>
                                       </Tooltip>
                                     ) : (
-                                      <Typography
-                                        variant="body2"
-                                        color="text.secondary"
-                                      >
-                                        -
-                                      </Typography>
-                                    )}
-                                  </TableCell>
-
-                                  <TableCell sx={{ py: 1 }}>
-                                    {activity.type === "attendance" ? (
-                                      activity.lastOutLocation !== "N/A" ? (
-                                        <Tooltip
-                                          title={`Location: ${activity.lastOutLocation}`}
-                                        >
-                                          <Box
-                                            component="a"
-                                            href={generateMapUrl(
-                                              activity.lastOutLocation,
-                                            )}
-                                            target="_blank"
-                                            sx={{
-                                              textDecoration: "none",
-                                              color: "primary.main",
-                                              display: "flex",
-                                              alignItems: "center",
-                                              gap: 1,
-                                              "&:hover": {
-                                                textDecoration: "underline",
-                                              },
-                                            }}
-                                          >
-                                            <LocationOn fontSize="small" />
-                                            {activity.lastOut} (
-                                            {activity.lastEvent})
-                                          </Box>
-                                        </Tooltip>
-                                      ) : (
-                                        <Box
-                                          display="flex"
-                                          alignItems="center"
-                                          gap={1}
-                                        >
-                                          <Schedule
-                                            fontSize="small"
-                                            color="disabled"
-                                          />
-                                          {activity.lastOut}
-                                        </Box>
-                                      )
-                                    ) : (
-                                      <Typography
-                                        variant="body2"
-                                        color="text.secondary"
-                                      >
-                                        -
-                                      </Typography>
-                                    )}
-                                  </TableCell>
-
-                                  <TableCell sx={{ py: 1 }}>
-                                    {activity.type === "attendance" ? (
-                                      <Box
-                                        display="flex"
-                                        alignItems="center"
-                                        gap={1}
-                                      >
-                                        <AccessTime
-                                          fontSize="small"
-                                          color="info"
-                                        />
-                                        <Typography fontWeight={500}>
-                                          {activity.workingHours}
-                                        </Typography>
+                                      <Box display="flex" alignItems="center" gap={0.5} sx={{ color: "#94a3b8", fontSize: "0.78rem" }}>
+                                        <Schedule sx={{ fontSize: 14 }} />
+                                        {activity.lastOut}
                                       </Box>
-                                    ) : (
-                                      <Typography
-                                        variant="body2"
-                                        color="text.secondary"
-                                      >
-                                        -
+                                    )
+                                  ) : (
+                                    <Typography sx={{ color: "#94a3b8", fontSize: "0.78rem" }}>-</Typography>
+                                  )}
+                                </TableCell>
+                                <TableCell sx={{ py: 0.8, fontSize: "0.8rem" }}>
+                                  {activity.type === "attendance" ? (
+                                    <Box display="flex" alignItems="center" gap={0.5}>
+                                      <AccessTime sx={{ fontSize: 14, color: "#64748b" }} />
+                                      <Typography sx={{ fontSize: "0.78rem", fontWeight: 600 }}>
+                                        {activity.workingHours}
                                       </Typography>
-                                    )}
-                                  </TableCell>
-
-                                  <TableCell sx={{ py: 1 }}>
-                                    {activity.type === "attendance" ? (
-                                      <AttendanceStatusChip
-                                        status={
-                                          activity.color === "green"
-                                            ? "on-time"
-                                            : "late"
-                                        }
-                                        time=""
-                                      />
-                                    ) : (
-                                      <AttendanceStatusChip
-                                        status={activity.type}
-                                      />
-                                    )}
-                                  </TableCell>
-                                </TableRow>
-                              ))}
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
+                                    </Box>
+                                  ) : (
+                                    <Typography sx={{ color: "#94a3b8", fontSize: "0.78rem" }}>-</Typography>
+                                  )}
+                                </TableCell>
+                                <TableCell sx={{ py: 0.8 }}>
+                                  {activity.type === "attendance" ? (
+                                    <AttendanceStatusChip
+                                      status={activity.color === "green" ? "on-time" : "late"}
+                                      time=""
+                                    />
+                                  ) : (
+                                    <AttendanceStatusChip status={activity.type} />
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                        </TableBody>
+                      </Table>
                     )}
+                  </TableContainer>
 
-                    {filteredActivities.length > 0 && (
-                      <TablePagination
-                        rowsPerPageOptions={[5, 10, 25]}
-                        component="div"
-                        count={filteredActivities.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={(event, newPage) => setPage(newPage)}
-                        onRowsPerPageChange={(event) => {
-                          setRowsPerPage(
-                            Number.parseInt(event.target.value, 10),
-                          );
-                          setPage(0);
-                        }}
-                      />
-                    )}
-                  </Box>
+                  {/* Table Pagination */}
+                  {filteredActivities.length > 0 && (
+                    <TablePagination
+                      rowsPerPageOptions={[5, 10, 25]}
+                      component="div"
+                      count={filteredActivities.length}
+                      rowsPerPage={rowsPerPage}
+                      page={page}
+                      onPageChange={(event, newPage) => setPage(newPage)}
+                      onRowsPerPageChange={(event) => {
+                        setRowsPerPage(Number.parseInt(event.target.value, 10));
+                        setPage(0);
+                      }}
+                      sx={{ flexShrink: 0, borderTop: "1px solid #f1f5f9" }}
+                    />
+                  )}
                 </Paper>
-              )}
-            </>
-          ) : (
-            <>
-              {/* Today's Attendance View */}
-              <Paper sx={{ borderRadius: 2, boxShadow: 1 }}>
-                <Box sx={{ p: { xs: 1.5, md: 2 } }}>
-                  <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    mb={2}
-                    flexWrap="wrap"
-                    gap={2}
-                  >
-                    <Box display="flex" alignItems="center" gap={2}>
-                      <Typography variant="h6" sx={{ fontWeight: 500 }}>
-                        Daily Attendance
-                      </Typography>
-                      <LocalizationProvider dateAdapter={AdapterDateFns}>
-                        <DatePicker
-                          label="Select Date"
-                          value={selectedTodayDate}
-                          onChange={(newDate) => setSelectedTodayDate(newDate)}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              size="small"
-                              sx={{ width: 150 }}
-                            />
-                          )}
-                        />
-                      </LocalizationProvider>
-                    </Box>
-
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      gap={2}
-                      flexWrap="wrap"
-                    >
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <Badge
-                          color="primary"
-                          badgeContent={activeEmployeesCount}
-                          sx={{ cursor: "pointer" }}
-                          onClick={handleAllClick}
-                        >
-                          <Groups
-                            color={todayFilter === "all" ? "primary" : "action"}
-                          />
-                        </Badge>
-                        <Typography
-                          variant="body2"
-                          onClick={handleAllClick}
-                          sx={{
-                            cursor: "pointer",
-                            fontWeight:
-                              todayFilter === "all" ? "bold" : "normal",
-                            borderBottom:
-                              todayFilter === "all"
-                                ? `2px solid ${theme.palette.primary.main}`
-                                : "none",
-                          }}
-                        >
-                          Total: <strong>{activeEmployeesCount}</strong>
-                        </Typography>
-                      </Box>
-
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <Box
-                          sx={{
-                            width: 12,
-                            height: 12,
-                            borderRadius: "50%",
-                            backgroundColor: "success.main",
-                            cursor: "pointer",
-                          }}
-                          onClick={handlePresentClick}
-                        />
-                        <Typography
-                          variant="body2"
-                          onClick={handlePresentClick}
-                          sx={{
-                            cursor: "pointer",
-                            fontWeight:
-                              todayFilter === "present" ? "bold" : "normal",
-                            borderBottom:
-                              todayFilter === "present"
-                                ? `2px solid ${theme.palette.success.main}`
-                                : "none",
-                          }}
-                        >
-                          Present: <strong>{presentCount}</strong>
-                        </Typography>
-                      </Box>
-
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <Box
-                          sx={{
-                            width: 12,
-                            height: 12,
-                            borderRadius: "50%",
-                            backgroundColor: "error.main",
-                            cursor: "pointer",
-                          }}
-                          onClick={handleAbsentClick}
-                        />
-                        <Typography
-                          variant="body2"
-                          onClick={handleAbsentClick}
-                          sx={{
-                            cursor: "pointer",
-                            fontWeight:
-                              todayFilter === "absent" ? "bold" : "normal",
-                            borderBottom:
-                              todayFilter === "absent"
-                                ? `2px solid ${theme.palette.error.main}`
-                                : "none",
-                          }}
-                        >
-                          Absent: <strong>{absentCount}</strong>
-                        </Typography>
-                      </Box>
-
-                      {/* Clear filter button */}
-                      {todayFilter !== "all" && (
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          onClick={() => setTodayFilter("all")}
-                          sx={{ ml: 1 }}
-                        >
-                          Clear Filter
-                        </Button>
-                      )}
-                    </Box>
+              )
+            ) : (
+              /* Today's Attendance Table */
+              <Paper
+                sx={{
+                  flex: 1,
+                  minHeight: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  borderRadius: 2.5,
+                  border: "1px solid #e2e8f0",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+                  overflow: "hidden",
+                  bgcolor: "#ffffff",
+                }}
+              >
+                {/* Header */}
+                <Box
+                  sx={{
+                    p: 1.2,
+                    px: 2,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    borderBottom: "1px solid #f1f5f9",
+                    flexShrink: 0,
+                  }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Typography sx={{ fontWeight: 700, fontSize: "0.92rem", color: "#0f172a" }}>
+                      Daily Attendance - {format(selectedTodayDate, "dd/MM/yyyy")}
+                    </Typography>
+                    <Chip
+                      label={`${filteredTodayAttendance.length} Employees`}
+                      size="small"
+                      sx={{
+                        height: 20,
+                        fontSize: "0.7rem",
+                        fontWeight: 600,
+                        bgcolor: "#fff7ed",
+                        color: "#f37021",
+                        border: "1px solid #ffedd5",
+                      }}
+                    />
                   </Box>
+                </Box>
 
-                  <Divider sx={{ mb: 2 }} />
-
+                {/* Table Container */}
+                <TableContainer sx={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "auto" }}>
                   {filteredTodayAttendance.length === 0 ? (
                     <Box sx={{ textAlign: "center", py: 6 }}>
-                      <Today
-                        sx={{ fontSize: 60, color: "text.secondary", mb: 2 }}
-                      />
-                      <Typography
-                        variant="subtitle1"
-                        color="text.secondary"
-                        gutterBottom
-                      >
-                        No attendance records for{" "}
-                        {format(selectedTodayDate, "dd/MM/yyyy")}
+                      <Today sx={{ fontSize: 48, color: "#cbd5e1", mb: 1.5 }} />
+                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                        No attendance records for {format(selectedTodayDate, "dd/MM/yyyy")}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        No employees have checked in yet or data is not
-                        available.
+                      <Typography variant="caption" color="text.secondary">
+                        No employees have checked in yet or data is not available.
                       </Typography>
                     </Box>
                   ) : isMobile ? (
-                    <Stack spacing={1}>
+                    <Stack spacing={1} sx={{ p: 1 }}>
                       {filteredTodayAttendance
                         .slice(
                           todayPage * todayRowsPerPage,
@@ -2360,260 +2133,587 @@ const AttendanceList = () => {
                         ))}
                     </Stack>
                   ) : (
-                    <TableContainer sx={{ borderRadius: 2 }}>
-                      <Table>
-                        <TableHead>
-                          <TableRow
-                            sx={{ backgroundColor: theme.palette.primary.main }}
-                          >
-                            {[
-                              "Employee",
-                              "Contact No.",
-                              "Check In",
-                              "Check Out",
-                              "Working Hours",
-                              "Status",
-                            ].map((head) => (
-                              <TableCell
-                                key={head}
-                                sx={{ color: "#fff", fontWeight: 600, py: 1.2 }}
-                              >
-                                {head}
-                              </TableCell>
-                            ))}
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {filteredTodayAttendance
-                            .slice(
-                              todayPage * todayRowsPerPage,
-                              todayPage * todayRowsPerPage + todayRowsPerPage,
-                            )
-                            .map((attendance, index) => {
-                              const employee =
-                                attendance._employee ||
-                                employees.find(
-                                  (emp) => emp.EmpId === attendance.EmpId,
-                                ) ||
-                                {};
-                              const status =
-                                attendance._status ||
-                                (attendance.FirstIn === "N/A" ||
-                                  !attendance.FirstIn
-                                  ? "absent"
-                                  : "present");
+                    <Table stickyHeader size="small">
+                      <TableHead>
+                        <TableRow>
+                          {[
+                            "Employee",
+                            "Contact No.",
+                            "Check In",
+                            "Check Out",
+                            "Working Hours",
+                            "Status",
+                          ].map((head) => (
+                            <TableCell
+                              key={head}
+                              sx={{
+                                bgcolor: "#f8fafc",
+                                color: "#475569",
+                                fontWeight: 700,
+                                fontSize: "0.75rem",
+                                py: 1,
+                                borderBottom: "1px solid #e2e8f0",
+                              }}
+                            >
+                              {head}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {filteredTodayAttendance
+                          .slice(
+                            todayPage * todayRowsPerPage,
+                            todayPage * todayRowsPerPage + todayRowsPerPage,
+                          )
+                          .map((attendance, index) => {
+                            const employee =
+                              attendance._employee ||
+                              employees.find(
+                                (emp) => emp.EmpId === attendance.EmpId,
+                              ) ||
+                              {};
+                            const status =
+                              attendance._status ||
+                              (attendance.FirstIn === "N/A" || !attendance.FirstIn
+                                ? "absent"
+                                : "present");
 
-                              return (
-                                <TableRow
-                                  key={index}
-                                  sx={{
-                                    "&:hover": {
-                                      backgroundColor:
-                                        theme.palette.action.hover,
-                                    },
-                                    borderLeft: `4px solid ${status === "present"
-                                      ? theme.palette.success.main
-                                      : theme.palette.error.main
-                                      }`,
-                                    transition: "background 0.3s",
-                                  }}
-                                >
-                                  <TableCell sx={{ py: 1 }}>
-                                    <Box
-                                      display="flex"
-                                      alignItems="center"
-                                      gap={1}
+                            return (
+                              <TableRow
+                                key={index}
+                                sx={{
+                                  "&:hover": { bgcolor: "#f8fafc" },
+                                  borderLeft: `3px solid ${
+                                    status === "present" ? "#10b981" : "#ef4444"
+                                  }`,
+                                }}
+                              >
+                                <TableCell sx={{ py: 0.8 }}>
+                                  <Box display="flex" alignItems="center" gap={1}>
+                                    <Avatar
+                                      sx={{
+                                        width: 28,
+                                        height: 28,
+                                        fontSize: "0.75rem",
+                                        fontWeight: 600,
+                                        bgcolor: "#f37021",
+                                      }}
                                     >
-                                      <Avatar
+                                      {employee.Name
+                                        ? employee.Name.charAt(0).toUpperCase()
+                                        : attendance.EmpId.charAt(0)}
+                                    </Avatar>
+                                    <Box>
+                                      <Typography sx={{ fontSize: "0.8rem", fontWeight: 600, color: "#0f172a" }}>
+                                        {employee.Name || attendance.EmpId}
+                                      </Typography>
+                                      <Typography sx={{ fontSize: "0.7rem", color: "#64748b" }}>
+                                        {attendance.EmpId}
+                                      </Typography>
+                                    </Box>
+                                  </Box>
+                                </TableCell>
+                                <TableCell sx={{ py: 0.8 }}>
+                                  <Box display="flex" alignItems="center" gap={0.5}>
+                                    <LocalPhoneIcon sx={{ fontSize: 14, color: "#64748b" }} />
+                                    <Typography sx={{ fontSize: "0.78rem", fontWeight: 500 }}>
+                                      {employee.Mobile || "N/A"}
+                                    </Typography>
+                                  </Box>
+                                </TableCell>
+                                <TableCell sx={{ py: 0.8 }}>
+                                  {status === "present" ? (
+                                    <Tooltip title={`Location: ${attendance.FirstInLocation || "N/A"}`}>
+                                      <Box
+                                        component="a"
+                                        href={generateMapUrl(attendance.FirstInLocation)}
+                                        target="_blank"
                                         sx={{
-                                          width: 32,
-                                          height: 32,
-                                          bgcolor: theme.palette.primary.main,
+                                          textDecoration: "none",
+                                          color: "#0284c7",
+                                          display: "flex",
+                                          alignItems: "center",
+                                          gap: 0.5,
+                                          fontSize: "0.78rem",
+                                          "&:hover": { textDecoration: "underline" },
                                         }}
                                       >
-                                        {employee.Name
-                                          ? employee.Name.charAt(
-                                            0,
-                                          ).toUpperCase()
-                                          : attendance.EmpId.charAt(0)}
-                                      </Avatar>
-                                      <Box>
-                                        <Typography
-                                          variant="body2"
-                                          fontWeight="medium"
-                                        >
-                                          {employee.Name || attendance.EmpId}
-                                        </Typography>
-                                        <Typography
-                                          variant="caption"
-                                          color="text.secondary"
-                                        >
-                                          {attendance.EmpId}
-                                        </Typography>
+                                        <LocationOn sx={{ fontSize: 14 }} />
+                                        {attendance.FirstIn} ({attendance.FirstEvent})
                                       </Box>
-                                    </Box>
-                                  </TableCell>
-
-                                  <TableCell sx={{ py: 1 }}>
-                                    <Box
-                                      display="flex"
-                                      alignItems="center"
-                                      gap={1}
-                                    >
-                                      <LocalPhoneIcon
-                                        fontSize="small"
-                                        color="info"
-                                      />
-                                      <Typography fontWeight={500}>
-                                        {employee.Mobile || "N/A"}
-                                      </Typography>
-                                    </Box>
-                                  </TableCell>
-
-                                  <TableCell sx={{ py: 1 }}>
-                                    {status === "present" ? (
-                                      <Tooltip
-                                        title={`Location: ${attendance.FirstInLocation || "N/A"}`}
-                                      >
-                                        <Box
-                                          component="a"
-                                          href={generateMapUrl(
-                                            attendance.FirstInLocation,
-                                          )}
-                                          target="_blank"
-                                          sx={{
-                                            textDecoration: "none",
-                                            color: "primary.main",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: 1,
-                                            "&:hover": {
-                                              textDecoration: "underline",
-                                            },
-                                          }}
-                                        >
-                                          <LocationOn fontSize="small" />
-                                          {attendance.FirstIn} (
-                                          {attendance.FirstEvent})
-                                        </Box>
-                                      </Tooltip>
-                                    ) : (
-                                      <Typography
-                                        variant="body2"
-                                        color="text.secondary"
-                                      >
-                                        Not Checked In
-                                      </Typography>
-                                    )}
-                                  </TableCell>
-
-                                  <TableCell sx={{ py: 1 }}>
-                                    {status === "present" &&
-                                      attendance.LastOutLocation !== "N/A" ? (
-                                      <Tooltip
-                                        title={`Location: ${attendance.LastOutLocation}`}
-                                      >
-                                        <Box
-                                          component="a"
-                                          href={generateMapUrl(
-                                            attendance.LastOutLocation,
-                                          )}
-                                          target="_blank"
-                                          sx={{
-                                            textDecoration: "none",
-                                            color: "primary.main",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: 1,
-                                            "&:hover": {
-                                              textDecoration: "underline",
-                                            },
-                                          }}
-                                        >
-                                          <LocationOn fontSize="small" />
-                                          {attendance.LastOut} (
-                                          {attendance.LastEvent})
-                                        </Box>
-                                      </Tooltip>
-                                    ) : (
+                                    </Tooltip>
+                                  ) : (
+                                    <Typography sx={{ color: "#94a3b8", fontSize: "0.78rem" }}>
+                                      Not Checked In
+                                    </Typography>
+                                  )}
+                                </TableCell>
+                                <TableCell sx={{ py: 0.8 }}>
+                                  {status === "present" && attendance.LastOutLocation !== "N/A" ? (
+                                    <Tooltip title={`Location: ${attendance.LastOutLocation}`}>
                                       <Box
-                                        display="flex"
-                                        alignItems="center"
-                                        gap={1}
+                                        component="a"
+                                        href={generateMapUrl(attendance.LastOutLocation)}
+                                        target="_blank"
+                                        sx={{
+                                          textDecoration: "none",
+                                          color: "#0284c7",
+                                          display: "flex",
+                                          alignItems: "center",
+                                          gap: 0.5,
+                                          fontSize: "0.78rem",
+                                          "&:hover": { textDecoration: "underline" },
+                                        }}
                                       >
-                                        <Schedule
-                                          fontSize="small"
-                                          color="disabled"
-                                        />
-                                        {attendance.LastOut}
+                                        <LocationOn sx={{ fontSize: 14 }} />
+                                        {attendance.LastOut} ({attendance.LastEvent})
                                       </Box>
-                                    )}
-                                  </TableCell>
-
-                                  <TableCell sx={{ py: 1 }}>
-                                    {status === "present" ? (
-                                      <Box
-                                        display="flex"
-                                        alignItems="center"
-                                        gap={1}
-                                      >
-                                        <AccessTime
-                                          fontSize="small"
-                                          color="info"
-                                        />
-                                        <Typography fontWeight={500}>
-                                          {attendance.WorkingHours}
-                                        </Typography>
-                                      </Box>
-                                    ) : (
-                                      <Typography
-                                        variant="body2"
-                                        color="text.secondary"
-                                      >
-                                        0h 0m
+                                    </Tooltip>
+                                  ) : (
+                                    <Box display="flex" alignItems="center" gap={0.5} sx={{ color: "#94a3b8", fontSize: "0.78rem" }}>
+                                      <Schedule sx={{ fontSize: 14 }} />
+                                      {attendance.LastOut}
+                                    </Box>
+                                  )}
+                                </TableCell>
+                                <TableCell sx={{ py: 0.8 }}>
+                                  {status === "present" ? (
+                                    <Box display="flex" alignItems="center" gap={0.5}>
+                                      <AccessTime sx={{ fontSize: 14, color: "#64748b" }} />
+                                      <Typography sx={{ fontSize: "0.78rem", fontWeight: 600 }}>
+                                        {attendance.WorkingHours}
                                       </Typography>
-                                    )}
-                                  </TableCell>
-
-                                  <TableCell sx={{ py: 1 }}>
-                                    <AttendanceStatusChip
-                                      status={status}
-                                      time={
-                                        status === "present" &&
-                                          attendance.FirstIn !== "N/A"
-                                          ? attendance.FirstIn
-                                          : ""
-                                      }
-                                    />
-                                  </TableCell>
-                                </TableRow>
-                              );
-                            })}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
+                                    </Box>
+                                  ) : (
+                                    <Typography sx={{ color: "#94a3b8", fontSize: "0.78rem" }}>
+                                      0h 0m
+                                    </Typography>
+                                  )}
+                                </TableCell>
+                                <TableCell sx={{ py: 0.8 }}>
+                                  <AttendanceStatusChip
+                                    status={status}
+                                    time={
+                                      status === "present" && attendance.FirstIn !== "N/A"
+                                        ? attendance.FirstIn
+                                        : ""
+                                    }
+                                  />
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                      </TableBody>
+                    </Table>
                   )}
+                </TableContainer>
 
-                  {filteredTodayAttendance.length > 0 && (
-                    <TablePagination
-                      rowsPerPageOptions={[5, 10, 25]}
-                      component="div"
-                      count={filteredTodayAttendance.length}
-                      rowsPerPage={todayRowsPerPage}
-                      page={todayPage}
-                      onPageChange={(event, newPage) => setTodayPage(newPage)}
-                      onRowsPerPageChange={(event) => {
-                        setTodayRowsPerPage(
-                          Number.parseInt(event.target.value, 10),
-                        );
-                        setTodayPage(0);
-                      }}
-                    />
-                  )}
-                </Box>
+                {/* Table Pagination */}
+                {filteredTodayAttendance.length > 0 && (
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={filteredTodayAttendance.length}
+                    rowsPerPage={todayRowsPerPage}
+                    page={todayPage}
+                    onPageChange={(event, newPage) => setTodayPage(newPage)}
+                    onRowsPerPageChange={(event) => {
+                      setTodayRowsPerPage(Number.parseInt(event.target.value, 10));
+                      setTodayPage(0);
+                    }}
+                    sx={{ flexShrink: 0, borderTop: "1px solid #f1f5f9" }}
+                  />
+                )}
               </Paper>
-            </>
-          )}
+            )}
+          </Box>
+
+          {/* Right Column: Attendance Overview & Summary Cards */}
+          <Paper
+            elevation={0}
+            sx={{
+              display: { xs: "none", lg: "flex" },
+              flexDirection: "column",
+              borderRadius: 2.5,
+              border: "1px solid #e2e8f0",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+              bgcolor: "#ffffff",
+              height: "100%",
+              minHeight: 0,
+              overflow: "hidden",
+            }}
+          >
+            {/* Header */}
+            <Box
+              sx={{
+                p: 1.2,
+                px: 2,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                borderBottom: "1px solid #f1f5f9",
+                flexShrink: 0,
+              }}
+            >
+              <Typography sx={{ fontWeight: 700, fontSize: "0.92rem", color: "#0f172a" }}>
+                {activeTab === 0 ? "Monthly Overview" : "Today's Overview"}
+              </Typography>
+              <Chip
+                label={activeTab === 0 ? format(selectedDate, "MMM yyyy") : format(selectedTodayDate, "dd MMM")}
+                size="small"
+                sx={{
+                  height: 22,
+                  fontSize: "0.72rem",
+                  fontWeight: 600,
+                  bgcolor: "#f1f5f9",
+                  color: "#475569",
+                  border: "1px solid #e2e8f0",
+                }}
+              />
+            </Box>
+
+            {/* Cards Container */}
+            <Box
+              sx={{
+                p: 1.5,
+                flex: 1,
+                minHeight: 0,
+                overflowY: "auto",
+                display: "flex",
+                flexDirection: "column",
+                gap: 1.2,
+              }}
+            >
+              {activeTab === 0 ? (
+                <>
+                  {/* Working Days Card (Soft Yellow/Amber) */}
+                  <Card
+                    elevation={0}
+                    sx={{
+                      bgcolor: "#fef9c3",
+                      border: "1px solid #fef08a",
+                      borderRadius: 2,
+                      p: 1.5,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1.5,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: 2,
+                        bgcolor: "#ffffff",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#ca8a04",
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <CalendarToday sx={{ fontSize: 22 }} />
+                    </Box>
+                    <Box sx={{ minWidth: 0, flex: 1 }}>
+                      <Typography sx={{ fontWeight: 800, fontSize: "1.35rem", lineHeight: 1.1, color: "#713f12" }}>
+                        {totalDays}
+                      </Typography>
+                      <Typography sx={{ fontSize: "0.78rem", fontWeight: 600, color: "#854d0e", mt: 0.2 }}>
+                        Working Days
+                      </Typography>
+                      <Typography sx={{ fontSize: "0.7rem", color: "#a16207", mt: 0.2 }}>
+                        {filteredActivities.length} records logged
+                      </Typography>
+                    </Box>
+                  </Card>
+
+                  {/* On Time Card (Soft Green) */}
+                  <Card
+                    elevation={0}
+                    sx={{
+                      bgcolor: "#dcfce7",
+                      border: "1px solid #bbf7d0",
+                      borderRadius: 2,
+                      p: 1.5,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1.5,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: 2,
+                        bgcolor: "#ffffff",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#16a34a",
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <CheckCircle sx={{ fontSize: 22 }} />
+                    </Box>
+                    <Box sx={{ minWidth: 0, flex: 1 }}>
+                      <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.8 }}>
+                        <Typography sx={{ fontWeight: 800, fontSize: "1.35rem", lineHeight: 1.1, color: "#14532d" }}>
+                          {onTimeDays}
+                        </Typography>
+                        {totalDays > 0 && (
+                          <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#15803d" }}>
+                            ({((onTimeDays / totalDays) * 100).toFixed(0)}%)
+                          </Typography>
+                        )}
+                      </Box>
+                      <Typography sx={{ fontSize: "0.78rem", fontWeight: 600, color: "#166534", mt: 0.2 }}>
+                        On Time Check-ins
+                      </Typography>
+                      <Typography sx={{ fontSize: "0.7rem", color: "#15803d", mt: 0.2 }}>
+                        Punctual attendance
+                      </Typography>
+                    </Box>
+                  </Card>
+
+                  {/* Late Arrivals Card (Soft Red) */}
+                  <Card
+                    elevation={0}
+                    sx={{
+                      bgcolor: "#fee2e2",
+                      border: "1px solid #fecaca",
+                      borderRadius: 2,
+                      p: 1.5,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1.5,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: 2,
+                        bgcolor: "#ffffff",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#dc2626",
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <Cancel sx={{ fontSize: 22 }} />
+                    </Box>
+                    <Box sx={{ minWidth: 0, flex: 1 }}>
+                      <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.8 }}>
+                        <Typography sx={{ fontWeight: 800, fontSize: "1.35rem", lineHeight: 1.1, color: "#7f1d1d" }}>
+                          {lateDays}
+                        </Typography>
+                        {totalDays > 0 && (
+                          <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#b91c1c" }}>
+                            ({((lateDays / totalDays) * 100).toFixed(0)}%)
+                          </Typography>
+                        )}
+                      </Box>
+                      <Typography sx={{ fontSize: "0.78rem", fontWeight: 600, color: "#991b1b", mt: 0.2 }}>
+                        Late Arrivals
+                      </Typography>
+                      <Typography sx={{ fontSize: "0.7rem", color: "#b91c1c", mt: 0.2 }}>
+                        Delayed check-ins
+                      </Typography>
+                    </Box>
+                  </Card>
+
+                  {/* Non-Working / Leaves Card */}
+                  <Card
+                    elevation={0}
+                    sx={{
+                      bgcolor: "#fff7ed",
+                      border: "1px solid #ffedd5",
+                      borderRadius: 2,
+                      p: 1.5,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1.5,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: 2,
+                        bgcolor: "#ffffff",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#ea580c",
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <Event sx={{ fontSize: 22 }} />
+                    </Box>
+                    <Box sx={{ minWidth: 0, flex: 1 }}>
+                      <Typography sx={{ fontWeight: 800, fontSize: "1.35rem", lineHeight: 1.1, color: "#7c2d12" }}>
+                        {holidayCount + weekOffCount + leaveCount}
+                      </Typography>
+                      <Typography sx={{ fontSize: "0.78rem", fontWeight: 600, color: "#9a3412", mt: 0.2 }}>
+                        Non-Working / Leaves
+                      </Typography>
+                      <Typography sx={{ fontSize: "0.7rem", color: "#c2410c", mt: 0.2 }}>
+                        {holidayCount} Hol • {weekOffCount} Off • {leaveCount} Lv
+                      </Typography>
+                    </Box>
+                  </Card>
+                </>
+              ) : (
+                <>
+                  {/* Today: Total Employees */}
+                  <Card
+                    elevation={0}
+                    sx={{
+                      bgcolor: "#fef9c3",
+                      border: "1px solid #fef08a",
+                      borderRadius: 2,
+                      p: 1.5,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1.5,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: 2,
+                        bgcolor: "#ffffff",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#ca8a04",
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <Groups sx={{ fontSize: 22 }} />
+                    </Box>
+                    <Box sx={{ minWidth: 0, flex: 1 }}>
+                      <Typography sx={{ fontWeight: 800, fontSize: "1.35rem", lineHeight: 1.1, color: "#713f12" }}>
+                        {activeEmployeesCount}
+                      </Typography>
+                      <Typography sx={{ fontSize: "0.78rem", fontWeight: 600, color: "#854d0e", mt: 0.2 }}>
+                        Total Employees
+                      </Typography>
+                      <Typography sx={{ fontSize: "0.7rem", color: "#a16207", mt: 0.2 }}>
+                        Active staff count
+                      </Typography>
+                    </Box>
+                  </Card>
+
+                  {/* Today: Present Today */}
+                  <Card
+                    elevation={0}
+                    sx={{
+                      bgcolor: "#dcfce7",
+                      border: "1px solid #bbf7d0",
+                      borderRadius: 2,
+                      p: 1.5,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1.5,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: 2,
+                        bgcolor: "#ffffff",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#16a34a",
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <CheckCircle sx={{ fontSize: 22 }} />
+                    </Box>
+                    <Box sx={{ minWidth: 0, flex: 1 }}>
+                      <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.8 }}>
+                        <Typography sx={{ fontWeight: 800, fontSize: "1.35rem", lineHeight: 1.1, color: "#14532d" }}>
+                          {presentCount}
+                        </Typography>
+                        {activeEmployeesCount > 0 && (
+                          <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#15803d" }}>
+                            ({((presentCount / activeEmployeesCount) * 100).toFixed(0)}%)
+                          </Typography>
+                        )}
+                      </Box>
+                      <Typography sx={{ fontSize: "0.78rem", fontWeight: 600, color: "#166534", mt: 0.2 }}>
+                        Present Today
+                      </Typography>
+                      <Typography sx={{ fontSize: "0.7rem", color: "#15803d", mt: 0.2 }}>
+                        Checked-in employees
+                      </Typography>
+                    </Box>
+                  </Card>
+
+                  {/* Today: Absent Today */}
+                  <Card
+                    elevation={0}
+                    sx={{
+                      bgcolor: "#fee2e2",
+                      border: "1px solid #fecaca",
+                      borderRadius: 2,
+                      p: 1.5,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1.5,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: 2,
+                        bgcolor: "#ffffff",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#dc2626",
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <Cancel sx={{ fontSize: 22 }} />
+                    </Box>
+                    <Box sx={{ minWidth: 0, flex: 1 }}>
+                      <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.8 }}>
+                        <Typography sx={{ fontWeight: 800, fontSize: "1.35rem", lineHeight: 1.1, color: "#7f1d1d" }}>
+                          {absentCount}
+                        </Typography>
+                        {activeEmployeesCount > 0 && (
+                          <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#b91c1c" }}>
+                            ({((absentCount / activeEmployeesCount) * 100).toFixed(0)}%)
+                          </Typography>
+                        )}
+                      </Box>
+                      <Typography sx={{ fontSize: "0.78rem", fontWeight: 600, color: "#991b1b", mt: 0.2 }}>
+                        Absent Today
+                      </Typography>
+                      <Typography sx={{ fontSize: "0.7rem", color: "#b91c1c", mt: 0.2 }}>
+                        Pending check-in
+                      </Typography>
+                    </Box>
+                  </Card>
+                </>
+              )}
+            </Box>
+          </Paper>
         </Box>
       </Box>
     </LocalizationProvider>

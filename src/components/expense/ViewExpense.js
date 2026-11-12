@@ -325,65 +325,7 @@ function EnhancedViewExpense() {
   }
 
   return (
-    <Box sx={{ p: { xs: 1.5, sm: 3 }, bgcolor: '#f8fafc', minHeight: '100vh', boxSizing: 'border-box' }}>
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} flexWrap="wrap" gap={2}>
-          <Box>
-            <Typography variant="h5" sx={{ fontWeight: 700, color: "#0f172a", letterSpacing: -0.3 }}>
-              Expense Management
-            </Typography>
-            <Typography variant="body2" sx={{ color: "#64748b", mt: 0.3, fontSize: "0.85rem" }}>
-              Submit, review, and track employee business expenses and claims
-            </Typography>
-          </Box>
-          <Box display="flex" gap={1.5} flexWrap="wrap" width={{ xs: "100%", sm: "auto" }}>
-            <Button
-              variant="contained"
-              startIcon={<Add />}
-              onClick={() => setCreateExpenseOpen(true)}
-              sx={{
-                borderRadius: 2,
-                bgcolor: '#f37021',
-                color: '#fff',
-                fontWeight: 'bold',
-                textTransform: 'none',
-                px: 2,
-                boxShadow: '0 3px 10px rgba(243, 112, 33, 0.3)',
-                flex: { xs: 1, sm: "none" },
-                '&:hover': {
-                  bgcolor: '#d95300',
-                }
-              }}
-            >
-              Add Expense
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<GetApp />}
-              onClick={exportToCsv}
-              sx={{
-                borderRadius: 2,
-                borderColor: "#e2e8f0",
-                color: "#475569",
-                bgcolor: "#ffffff",
-                textTransform: "none",
-                fontWeight: 600,
-                px: 2,
-                flex: { xs: 1, sm: "none" },
-                "&:hover": { bgcolor: "#f8fafc", borderColor: "#cbd5e1" },
-              }}
-            >
-              Export
-            </Button>
-          </Box>
-        </Box>
-      </motion.div>
-
+    <Box sx={{ p: { xs: 1, sm: 1.5 }, bgcolor: '#f8fafc', height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxSizing: 'border-box' }}>
       {/* Statistics Cards */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
@@ -398,8 +340,9 @@ function EnhancedViewExpense() {
               sm: "1fr 1fr",
               md: "1fr 1fr 1fr 1fr",
             },
-            gap: { xs: 1.5, sm: 2, md: 2.5 },
-            mb: 3,
+            gap: { xs: 1.5, sm: 2 },
+            mb: 1.5,
+            flexShrink: 0,
             width: "100%",
           }}
         >
@@ -505,78 +448,134 @@ function EnhancedViewExpense() {
         </Box>
       </motion.div>
 
-      {/* Search and Filter */}
+      {/* Search, Filter, Export & Add Expense - All in One Place */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
+        transition={{ duration: 0.3 }}
       >
-        <Card elevation={0} sx={{ mb: 3, borderRadius: 2.5, border: "1px solid #e2e8f0", bgcolor: "#ffffff", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
-          <CardContent sx={{ p: { xs: 1.5, sm: 2 }, "&:last-child": { pb: { xs: 1.5, sm: 2 } } }}>
+        <Card elevation={0} sx={{ mb: 1.5, flexShrink: 0, borderRadius: 2, border: "1px solid #e2e8f0", bgcolor: "#ffffff", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
+          <CardContent sx={{ p: 1.2, px: 1.5, "&:last-child": { pb: 1.2 } }}>
             <Box
               sx={{
                 display: "flex",
-                flexDirection: { xs: "column", md: "row" },
                 alignItems: "center",
-                gap: 2,
+                justifyContent: "space-between",
+                flexWrap: "wrap",
+                gap: 1.2,
                 width: "100%",
               }}
             >
-              <TextField
-                fullWidth
-                size="small"
-                placeholder="Search by employee name or expense type..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search sx={{ color: "#94a3b8" }} />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{
-                  flex: { xs: "none", md: 1 },
-                  width: "100%",
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: 2,
-                    height: 42,
-                  },
-                }}
-              />
-              <TextField
-                select
-                size="small"
-                label="Filter by Status"
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                sx={{
-                  width: { xs: "100%", md: 220 },
-                  flexShrink: 0,
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: 2,
-                    height: 42,
-                  },
-                }}
-              >
-                <MenuItem value="All">All Status</MenuItem>
-                <MenuItem value="Pending">Pending</MenuItem>
-                <MenuItem value="Approved">Approved</MenuItem>
-                <MenuItem value="Rejected">Rejected</MenuItem>
-              </TextField>
+              {/* Left: Search + Status Filter */}
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, flexWrap: "wrap", flex: 1, minWidth: { xs: "100%", md: 450 } }}>
+                <TextField
+                  size="small"
+                  placeholder="Search by employee name or expense type..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Search sx={{ color: "#94a3b8", fontSize: 18 }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    width: { xs: "100%", sm: 260, md: 320 },
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: 1.8,
+                      height: 36,
+                      fontSize: "0.82rem",
+                    },
+                  }}
+                />
+
+                <TextField
+                  select
+                  size="small"
+                  label="Filter by Status"
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  sx={{
+                    width: { xs: "100%", sm: 170 },
+                    flexShrink: 0,
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: 1.8,
+                      height: 36,
+                      fontSize: "0.82rem",
+                    },
+                  }}
+                >
+                  <MenuItem value="All">All Status</MenuItem>
+                  <MenuItem value="Pending">Pending</MenuItem>
+                  <MenuItem value="Approved">Approved</MenuItem>
+                  <MenuItem value="Rejected">Rejected</MenuItem>
+                </TextField>
+              </Box>
+
+              {/* Right: Export + Add Expense */}
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap", width: { xs: "100%", sm: "auto" }, justifyContent: { xs: "flex-start", sm: "flex-end" } }}>
+                <Button
+                  variant="outlined"
+                  startIcon={<GetApp sx={{ fontSize: 18 }} />}
+                  onClick={exportToCsv}
+                  size="small"
+                  sx={{
+                    borderRadius: 1.8,
+                    borderColor: "#e2e8f0",
+                    color: "#475569",
+                    bgcolor: "#ffffff",
+                    textTransform: "none",
+                    fontWeight: 600,
+                    fontSize: "0.82rem",
+                    height: 36,
+                    px: 2,
+                    flex: { xs: 1, sm: "none" },
+                    "&:hover": { bgcolor: "#f8fafc", borderColor: "#cbd5e1" },
+                  }}
+                >
+                  Export
+                </Button>
+
+                <Button
+                  variant="contained"
+                  startIcon={<Add sx={{ fontSize: 18 }} />}
+                  onClick={() => setCreateExpenseOpen(true)}
+                  size="small"
+                  sx={{
+                    borderRadius: 1.8,
+                    bgcolor: '#f37021',
+                    color: '#fff',
+                    fontWeight: 600,
+                    fontSize: "0.82rem",
+                    textTransform: 'none',
+                    height: 36,
+                    px: 2,
+                    boxShadow: '0 2px 6px rgba(243, 112, 33, 0.25)',
+                    flex: { xs: 1, sm: "none" },
+                    '&:hover': {
+                      bgcolor: '#d95300',
+                    }
+                  }}
+                >
+                  Add Expense
+                </Button>
+              </Box>
             </Box>
           </CardContent>
         </Card>
       </motion.div>
 
       {/* Expense List */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
+      <Box
+        component={motion.div}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
+        transition={{ duration: 0.3 }}
+        sx={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}
       >
-        <TableContainer component={Paper} elevation={4} sx={{ borderRadius: 3 }}>
-            <Table>
+        <TableContainer component={Paper} elevation={0} sx={{ flex: 1, minHeight: 0, overflowY: "auto", borderRadius: 2, border: "1px solid #e2e8f0" }}>
+          <Table stickyHeader size="small">
               <TableHead>
                 <TableRow sx={{ bgcolor: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
                   <TableCell sx={{ color: '#475569', fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Employee</TableCell>
@@ -692,7 +691,18 @@ function EnhancedViewExpense() {
                       </TableRow>
                     ))}
               </TableBody>
-              <TableFooter>
+              <TableFooter
+                  sx={{
+                      position: "sticky",
+                      bottom: 0,
+                      zIndex: 3,
+                      backgroundColor: "#ffffff",
+                      // "& .MuiTableCell-root": {
+                      //   backgroundColor: "#ffffff",
+                      //   borderTop: "1px solid #e2e8f0",
+                      // },
+                    }}
+               >
                 <TableRow>
                   <TablePagination
                     rowsPerPageOptions={[5, 10, 25, 50]}
@@ -709,7 +719,7 @@ function EnhancedViewExpense() {
               </TableFooter>
             </Table>
           </TableContainer>
-      </motion.div>
+      </Box>
 
       {/* Image Dialog */}
       <Dialog
